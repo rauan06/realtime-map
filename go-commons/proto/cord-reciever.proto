@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+package location;
+
+option go_package = "example.com/project/locationpb";
+
+import "google/api/annotations.proto";
+
+message OBUData {
+  double latitude = 1;
+  double longitude = 2;
+  int64 timestamp = 3;
+}
+
+message LocationResponse {
+  string status = 1;
+}
+
+service LocationService {
+  rpc SendLocation (OBUData) returns (LocationResponse) {
+    option (google.api.http) = {
+      post: "/v1/location"
+      body: "*"
+    };
+  }
+
+  rpc StreamLocations (stream OBUData) returns (LocationResponse);
+}

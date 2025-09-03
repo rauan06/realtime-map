@@ -1,0 +1,5 @@
+version: v1
+name: buf.build/your-org/go-commons
+
+deps:
+  - buf.build/googleapis/googleapis
