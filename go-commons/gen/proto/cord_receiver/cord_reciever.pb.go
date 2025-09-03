@@ -2,7 +2,7 @@
 // versions:
 // 	protoc-gen-go v1.36.8
 // 	protoc        (unknown)
-// source: proto/cord-receiver/cord-reciever.proto
+// source: proto/cord_receiver/cord_reciever.proto
 
 package receiverpb
 
@@ -130,7 +130,7 @@ var File_proto_cord_receiver_cord_reciever_proto protoreflect.FileDescriptor
 
 const file_proto_cord_receiver_cord_reciever_proto_rawDesc = "" +
 	"\n" +
-	"'proto/cord-receiver/cord-reciever.proto\x12\blocation\x1a\x1cgoogle/api/annotations.proto\"a\n" +
+	"'proto/cord_receiver/cord_reciever.proto\x12\blocation\x1a\x1cgoogle/api/annotations.proto\"a\n" +
 	"\aOBUData\x12\x1a\n" +
 	"\blatitude\x18\x01 \x01(\x01R\blatitude\x12\x1c\n" +
 	"\tlongitude\x18\x02 \x01(\x01R\tlongitude\x12\x1c\n" +

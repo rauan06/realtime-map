@@ -1,7 +1,7 @@
 {
   "swagger": "2.0",
   "info": {
-    "title": "proto/cord-receiver/cord-reciever.proto",
+    "title": "proto/cord_receiver/cord_reciever.proto",
     "version": "version not set"
   },
   "tags": [
