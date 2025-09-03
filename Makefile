@@ -1,4 +1,4 @@
-.PHONY: all buf-install deps generate clean
+.PHONY: all buf-install deps generate clean seeder
 
 # Directories
 COMMONS_DIR = go-commons
@@ -25,16 +25,15 @@ deps:
 
 # Run buf generate inside go-commons
 generate:
-	cd $(COMMONS_DIR) && buf generate
+	@cd $(COMMONS_DIR) && rm -rf gen
+	@cd $(COMMONS_DIR) && buf generate
 
 
 # Clean generated files 
-.PHONY: clean
 clean:
-	rm -rf gen
+	@cd $(COMMONS_DIR) && rm -rf gen && clear
 
 # Initialize OBUData seeder
 seeder:
 		@go run seeder/seed.go
 
-.PHONY: seeder

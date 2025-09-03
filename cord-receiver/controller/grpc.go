@@ -7,7 +7,7 @@ import (
 	"net"
 	"net/http"
 
-	"github.com/rauan06/realtime-map/go-commons/gen/locationpb"
+	"github.com/rauan06/realtime-map/go-commons/gen/proto/cord_receiver/locationpb"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"

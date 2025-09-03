@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package location;
 
-option go_package = "example.com/project/locationpb";
+option go_package = "proto/gen/cord-receiver;locationpb";
 
 import "google/api/annotations.proto";
 

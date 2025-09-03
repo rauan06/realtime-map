@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.5.1
 // - protoc             (unknown)
-// source: proto/cord-reciever.proto
+// source: proto/cord-receiver/cord-reciever.proto
 
 package locationpb
 
@@ -149,5 +149,5 @@ var LocationService_ServiceDesc = grpc.ServiceDesc{
 			ClientStreams: true,
 		},
 	},
-	Metadata: "proto/cord-reciever.proto",
+	Metadata: "proto/cord-receiver/cord-reciever.proto",
 }
