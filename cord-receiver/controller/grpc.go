@@ -16,7 +16,7 @@ import (
 
 // Implement the service
 type locationServer struct {
-	receiverpb,
+	receiverpb
 }
 
 func (s *locationServer) SendLocation(ctx context.Context, req *receiverpb.GpsData) (*receiverpb.LocationResponse, error) {
