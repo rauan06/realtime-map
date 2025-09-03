@@ -15,17 +15,17 @@ message OBUData {
   int64 timestamp = 4;
 }
 
-message LocationResponse {
+message ReceiverResponse {
   string status = 1;
 }
 
-service LocationService {
-  rpc SendLocation (OBUData) returns (stream LocationResponse) {
+service ReceiverService {
+  rpc SendLocation (OBUData) returns (ReceiverResponse) {
     option (google.api.http) = {
       post: "/v1/location"
       body: "*"
     };
   }
 
-  rpc StreamLocations (stream OBUData) returns (LocationResponse);
+  rpc StreamLocations (stream OBUData) returns (ReceiverResponse);
 }

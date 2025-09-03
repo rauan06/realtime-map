@@ -35,7 +35,7 @@ var (
 	_ = metadata.Join
 )
 
-func request_LocationService_SendLocation_0(ctx context.Context, marshaler runtime.Marshaler, client LocationServiceClient, req *http.Request, pathParams map[string]string) (LocationService_SendLocationClient, runtime.ServerMetadata, error) {
+func request_ReceiverService_SendLocation_0(ctx context.Context, marshaler runtime.Marshaler, client ReceiverServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var (
 		protoReq OBUData
 		metadata runtime.ServerMetadata
@@ -46,37 +46,55 @@ func request_LocationService_SendLocation_0(ctx context.Context, marshaler runti
 	if req.Body != nil {
 		_, _ = io.Copy(io.Discard, req.Body)
 	}
-	stream, err := client.SendLocation(ctx, &protoReq)
-	if err != nil {
-		return nil, metadata, err
-	}
-	header, err := stream.Header()
-	if err != nil {
-		return nil, metadata, err
-	}
-	metadata.HeaderMD = header
-	return stream, metadata, nil
+	msg, err := client.SendLocation(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	return msg, metadata, err
 }
 
-// RegisterLocationServiceHandlerServer registers the http handlers for service LocationService to "mux".
-// UnaryRPC     :call LocationServiceServer directly.
+func local_request_ReceiverService_SendLocation_0(ctx context.Context, marshaler runtime.Marshaler, server ReceiverServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var (
+		protoReq OBUData
+		metadata runtime.ServerMetadata
+	)
+	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil && !errors.Is(err, io.EOF) {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+	msg, err := server.SendLocation(ctx, &protoReq)
+	return msg, metadata, err
+}
+
+// RegisterReceiverServiceHandlerServer registers the http handlers for service ReceiverService to "mux".
+// UnaryRPC     :call ReceiverServiceServer directly.
 // StreamingRPC :currently unsupported pending https://github.com/grpc/grpc-go/issues/906.
-// Note that using this registration option will cause many gRPC library features to stop working. Consider using RegisterLocationServiceHandlerFromEndpoint instead.
+// Note that using this registration option will cause many gRPC library features to stop working. Consider using RegisterReceiverServiceHandlerFromEndpoint instead.
 // GRPC interceptors will not work for this type of registration. To use interceptors, you must use the "runtime.WithMiddlewares" option in the "runtime.NewServeMux" call.
-func RegisterLocationServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux, server LocationServiceServer) error {
-	mux.Handle(http.MethodPost, pattern_LocationService_SendLocation_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
-		err := status.Error(codes.Unimplemented, "streaming calls are not yet supported in the in-process transport")
-		_, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
-		return
+func RegisterReceiverServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux, server ReceiverServiceServer) error {
+	mux.Handle(http.MethodPost, pattern_ReceiverService_SendLocation_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		var stream runtime.ServerTransportStream
+		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/location.ReceiverService/SendLocation", runtime.WithHTTPPathPattern("/v1/location"))
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := local_request_ReceiverService_SendLocation_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
+		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
+		if err != nil {
+			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		forward_ReceiverService_SendLocation_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 	})
 
 	return nil
 }
 
-// RegisterLocationServiceHandlerFromEndpoint is same as RegisterLocationServiceHandler but
+// RegisterReceiverServiceHandlerFromEndpoint is same as RegisterReceiverServiceHandler but
 // automatically dials to "endpoint" and closes the connection when "ctx" gets done.
-func RegisterLocationServiceHandlerFromEndpoint(ctx context.Context, mux *runtime.ServeMux, endpoint string, opts []grpc.DialOption) (err error) {
+func RegisterReceiverServiceHandlerFromEndpoint(ctx context.Context, mux *runtime.ServeMux, endpoint string, opts []grpc.DialOption) (err error) {
 	conn, err := grpc.NewClient(endpoint, opts...)
 	if err != nil {
 		return err
@@ -95,45 +113,45 @@ func RegisterLocationServiceHandlerFromEndpoint(ctx context.Context, mux *runtim
 			}
 		}()
 	}()
-	return RegisterLocationServiceHandler(ctx, mux, conn)
+	return RegisterReceiverServiceHandler(ctx, mux, conn)
 }
 
-// RegisterLocationServiceHandler registers the http handlers for service LocationService to "mux".
+// RegisterReceiverServiceHandler registers the http handlers for service ReceiverService to "mux".
 // The handlers forward requests to the grpc endpoint over "conn".
-func RegisterLocationServiceHandler(ctx context.Context, mux *runtime.ServeMux, conn *grpc.ClientConn) error {
-	return RegisterLocationServiceHandlerClient(ctx, mux, NewLocationServiceClient(conn))
+func RegisterReceiverServiceHandler(ctx context.Context, mux *runtime.ServeMux, conn *grpc.ClientConn) error {
+	return RegisterReceiverServiceHandlerClient(ctx, mux, NewReceiverServiceClient(conn))
 }
 
-// RegisterLocationServiceHandlerClient registers the http handlers for service LocationService
-// to "mux". The handlers forward requests to the grpc endpoint over the given implementation of "LocationServiceClient".
-// Note: the gRPC framework executes interceptors within the gRPC handler. If the passed in "LocationServiceClient"
+// RegisterReceiverServiceHandlerClient registers the http handlers for service ReceiverService
+// to "mux". The handlers forward requests to the grpc endpoint over the given implementation of "ReceiverServiceClient".
+// Note: the gRPC framework executes interceptors within the gRPC handler. If the passed in "ReceiverServiceClient"
 // doesn't go through the normal gRPC flow (creating a gRPC client etc.) then it will be up to the passed in
-// "LocationServiceClient" to call the correct interceptors. This client ignores the HTTP middlewares.
-func RegisterLocationServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux, client LocationServiceClient) error {
-	mux.Handle(http.MethodPost, pattern_LocationService_SendLocation_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+// "ReceiverServiceClient" to call the correct interceptors. This client ignores the HTTP middlewares.
+func RegisterReceiverServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux, client ReceiverServiceClient) error {
+	mux.Handle(http.MethodPost, pattern_ReceiverService_SendLocation_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/location.LocationService/SendLocation", runtime.WithHTTPPathPattern("/v1/location"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/location.ReceiverService/SendLocation", runtime.WithHTTPPathPattern("/v1/location"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_LocationService_SendLocation_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_ReceiverService_SendLocation_0(annotatedContext, inboundMarshaler, client, req, pathParams)
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		forward_LocationService_SendLocation_0(annotatedContext, mux, outboundMarshaler, w, req, func() (proto.Message, error) { return resp.Recv() }, mux.GetForwardResponseOptions()...)
+		forward_ReceiverService_SendLocation_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 	})
 	return nil
 }
 
 var (
-	pattern_LocationService_SendLocation_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"v1", "location"}, ""))
+	pattern_ReceiverService_SendLocation_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"v1", "location"}, ""))
 )
 
 var (
-	forward_LocationService_SendLocation_0 = runtime.ForwardResponseStream
+	forward_ReceiverService_SendLocation_0 = runtime.ForwardResponseMessage
 )

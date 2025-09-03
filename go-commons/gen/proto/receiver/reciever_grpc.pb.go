@@ -19,135 +19,133 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	LocationService_SendLocation_FullMethodName    = "/location.LocationService/SendLocation"
-	LocationService_StreamLocations_FullMethodName = "/location.LocationService/StreamLocations"
+	ReceiverService_SendLocation_FullMethodName    = "/location.ReceiverService/SendLocation"
+	ReceiverService_StreamLocations_FullMethodName = "/location.ReceiverService/StreamLocations"
 )
 
-// LocationServiceClient is the client API for LocationService service.
+// ReceiverServiceClient is the client API for ReceiverService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-type LocationServiceClient interface {
-	SendLocation(ctx context.Context, in *OBUData, opts ...grpc.CallOption) (grpc.ServerStreamingClient[LocationResponse], error)
-	StreamLocations(ctx context.Context, opts ...grpc.CallOption) (grpc.ClientStreamingClient[OBUData, LocationResponse], error)
+type ReceiverServiceClient interface {
+	SendLocation(ctx context.Context, in *OBUData, opts ...grpc.CallOption) (*ReceiverResponse, error)
+	StreamLocations(ctx context.Context, opts ...grpc.CallOption) (grpc.ClientStreamingClient[OBUData, ReceiverResponse], error)
 }
 
-type locationServiceClient struct {
+type receiverServiceClient struct {
 	cc grpc.ClientConnInterface
 }
 
-func NewLocationServiceClient(cc grpc.ClientConnInterface) LocationServiceClient {
-	return &locationServiceClient{cc}
+func NewReceiverServiceClient(cc grpc.ClientConnInterface) ReceiverServiceClient {
+	return &receiverServiceClient{cc}
 }
 
-func (c *locationServiceClient) SendLocation(ctx context.Context, in *OBUData, opts ...grpc.CallOption) (grpc.ServerStreamingClient[LocationResponse], error) {
+func (c *receiverServiceClient) SendLocation(ctx context.Context, in *OBUData, opts ...grpc.CallOption) (*ReceiverResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	stream, err := c.cc.NewStream(ctx, &LocationService_ServiceDesc.Streams[0], LocationService_SendLocation_FullMethodName, cOpts...)
+	out := new(ReceiverResponse)
+	err := c.cc.Invoke(ctx, ReceiverService_SendLocation_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
-	x := &grpc.GenericClientStream[OBUData, LocationResponse]{ClientStream: stream}
-	if err := x.ClientStream.SendMsg(in); err != nil {
+	return out, nil
+}
+
+func (c *receiverServiceClient) StreamLocations(ctx context.Context, opts ...grpc.CallOption) (grpc.ClientStreamingClient[OBUData, ReceiverResponse], error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	stream, err := c.cc.NewStream(ctx, &ReceiverService_ServiceDesc.Streams[0], ReceiverService_StreamLocations_FullMethodName, cOpts...)
+	if err != nil {
 		return nil, err
 	}
-	if err := x.ClientStream.CloseSend(); err != nil {
-		return nil, err
-	}
+	x := &grpc.GenericClientStream[OBUData, ReceiverResponse]{ClientStream: stream}
 	return x, nil
 }
 
 // This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
-type LocationService_SendLocationClient = grpc.ServerStreamingClient[LocationResponse]
+type ReceiverService_StreamLocationsClient = grpc.ClientStreamingClient[OBUData, ReceiverResponse]
 
-func (c *locationServiceClient) StreamLocations(ctx context.Context, opts ...grpc.CallOption) (grpc.ClientStreamingClient[OBUData, LocationResponse], error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	stream, err := c.cc.NewStream(ctx, &LocationService_ServiceDesc.Streams[1], LocationService_StreamLocations_FullMethodName, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	x := &grpc.GenericClientStream[OBUData, LocationResponse]{ClientStream: stream}
-	return x, nil
-}
-
-// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
-type LocationService_StreamLocationsClient = grpc.ClientStreamingClient[OBUData, LocationResponse]
-
-// LocationServiceServer is the server API for LocationService service.
-// All implementations must embed UnimplementedLocationServiceServer
+// ReceiverServiceServer is the server API for ReceiverService service.
+// All implementations must embed UnimplementedReceiverServiceServer
 // for forward compatibility.
-type LocationServiceServer interface {
-	SendLocation(*OBUData, grpc.ServerStreamingServer[LocationResponse]) error
-	StreamLocations(grpc.ClientStreamingServer[OBUData, LocationResponse]) error
-	mustEmbedUnimplementedLocationServiceServer()
+type ReceiverServiceServer interface {
+	SendLocation(context.Context, *OBUData) (*ReceiverResponse, error)
+	StreamLocations(grpc.ClientStreamingServer[OBUData, ReceiverResponse]) error
+	mustEmbedUnimplementedReceiverServiceServer()
 }
 
-// UnimplementedLocationServiceServer must be embedded to have
+// UnimplementedReceiverServiceServer must be embedded to have
 // forward compatible implementations.
 //
 // NOTE: this should be embedded by value instead of pointer to avoid a nil
 // pointer dereference when methods are called.
-type UnimplementedLocationServiceServer struct{}
+type UnimplementedReceiverServiceServer struct{}
 
-func (UnimplementedLocationServiceServer) SendLocation(*OBUData, grpc.ServerStreamingServer[LocationResponse]) error {
-	return status.Errorf(codes.Unimplemented, "method SendLocation not implemented")
+func (UnimplementedReceiverServiceServer) SendLocation(context.Context, *OBUData) (*ReceiverResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SendLocation not implemented")
 }
-func (UnimplementedLocationServiceServer) StreamLocations(grpc.ClientStreamingServer[OBUData, LocationResponse]) error {
+func (UnimplementedReceiverServiceServer) StreamLocations(grpc.ClientStreamingServer[OBUData, ReceiverResponse]) error {
 	return status.Errorf(codes.Unimplemented, "method StreamLocations not implemented")
 }
-func (UnimplementedLocationServiceServer) mustEmbedUnimplementedLocationServiceServer() {}
-func (UnimplementedLocationServiceServer) testEmbeddedByValue()                         {}
+func (UnimplementedReceiverServiceServer) mustEmbedUnimplementedReceiverServiceServer() {}
+func (UnimplementedReceiverServiceServer) testEmbeddedByValue()                         {}
 
-// UnsafeLocationServiceServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to LocationServiceServer will
+// UnsafeReceiverServiceServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to ReceiverServiceServer will
 // result in compilation errors.
-type UnsafeLocationServiceServer interface {
-	mustEmbedUnimplementedLocationServiceServer()
+type UnsafeReceiverServiceServer interface {
+	mustEmbedUnimplementedReceiverServiceServer()
 }
 
-func RegisterLocationServiceServer(s grpc.ServiceRegistrar, srv LocationServiceServer) {
-	// If the following call pancis, it indicates UnimplementedLocationServiceServer was
+func RegisterReceiverServiceServer(s grpc.ServiceRegistrar, srv ReceiverServiceServer) {
+	// If the following call pancis, it indicates UnimplementedReceiverServiceServer was
 	// embedded by pointer and is nil.  This will cause panics if an
 	// unimplemented method is ever invoked, so we test this at initialization
 	// time to prevent it from happening at runtime later due to I/O.
 	if t, ok := srv.(interface{ testEmbeddedByValue() }); ok {
 		t.testEmbeddedByValue()
 	}
-	s.RegisterService(&LocationService_ServiceDesc, srv)
+	s.RegisterService(&ReceiverService_ServiceDesc, srv)
 }
 
-func _LocationService_SendLocation_Handler(srv interface{}, stream grpc.ServerStream) error {
-	m := new(OBUData)
-	if err := stream.RecvMsg(m); err != nil {
-		return err
+func _ReceiverService_SendLocation_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(OBUData)
+	if err := dec(in); err != nil {
+		return nil, err
 	}
-	return srv.(LocationServiceServer).SendLocation(m, &grpc.GenericServerStream[OBUData, LocationResponse]{ServerStream: stream})
+	if interceptor == nil {
+		return srv.(ReceiverServiceServer).SendLocation(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ReceiverService_SendLocation_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ReceiverServiceServer).SendLocation(ctx, req.(*OBUData))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ReceiverService_StreamLocations_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(ReceiverServiceServer).StreamLocations(&grpc.GenericServerStream[OBUData, ReceiverResponse]{ServerStream: stream})
 }
 
 // This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
-type LocationService_SendLocationServer = grpc.ServerStreamingServer[LocationResponse]
+type ReceiverService_StreamLocationsServer = grpc.ClientStreamingServer[OBUData, ReceiverResponse]
 
-func _LocationService_StreamLocations_Handler(srv interface{}, stream grpc.ServerStream) error {
-	return srv.(LocationServiceServer).StreamLocations(&grpc.GenericServerStream[OBUData, LocationResponse]{ServerStream: stream})
-}
-
-// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
-type LocationService_StreamLocationsServer = grpc.ClientStreamingServer[OBUData, LocationResponse]
-
-// LocationService_ServiceDesc is the grpc.ServiceDesc for LocationService service.
+// ReceiverService_ServiceDesc is the grpc.ServiceDesc for ReceiverService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
-var LocationService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "location.LocationService",
-	HandlerType: (*LocationServiceServer)(nil),
-	Methods:     []grpc.MethodDesc{},
+var ReceiverService_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "location.ReceiverService",
+	HandlerType: (*ReceiverServiceServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "SendLocation",
+			Handler:    _ReceiverService_SendLocation_Handler,
+		},
+	},
 	Streams: []grpc.StreamDesc{
 		{
-			StreamName:    "SendLocation",
-			Handler:       _LocationService_SendLocation_Handler,
-			ServerStreams: true,
-		},
-		{
 			StreamName:    "StreamLocations",
-			Handler:       _LocationService_StreamLocations_Handler,
+			Handler:       _ReceiverService_StreamLocations_Handler,
 			ClientStreams: true,
 		},
 	},

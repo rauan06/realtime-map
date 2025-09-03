@@ -82,27 +82,27 @@ func (x *OBUData) GetTimestamp() int64 {
 	return 0
 }
 
-type LocationResponse struct {
+type ReceiverResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Status        string                 `protobuf:"bytes,1,opt,name=status,proto3" json:"status,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *LocationResponse) Reset() {
-	*x = LocationResponse{}
+func (x *ReceiverResponse) Reset() {
+	*x = ReceiverResponse{}
 	mi := &file_proto_receiver_reciever_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *LocationResponse) String() string {
+func (x *ReceiverResponse) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*LocationResponse) ProtoMessage() {}
+func (*ReceiverResponse) ProtoMessage() {}
 
-func (x *LocationResponse) ProtoReflect() protoreflect.Message {
+func (x *ReceiverResponse) ProtoReflect() protoreflect.Message {
 	mi := &file_proto_receiver_reciever_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -114,12 +114,12 @@ func (x *LocationResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use LocationResponse.ProtoReflect.Descriptor instead.
-func (*LocationResponse) Descriptor() ([]byte, []int) {
+// Deprecated: Use ReceiverResponse.ProtoReflect.Descriptor instead.
+func (*ReceiverResponse) Descriptor() ([]byte, []int) {
 	return file_proto_receiver_reciever_proto_rawDescGZIP(), []int{1}
 }
 
-func (x *LocationResponse) GetStatus() string {
+func (x *ReceiverResponse) GetStatus() string {
 	if x != nil {
 		return x.Status
 	}
@@ -135,11 +135,11 @@ const file_proto_receiver_reciever_proto_rawDesc = "" +
 	"\blatitude\x18\x02 \x01(\x01R\blatitude\x12\x1c\n" +
 	"\tlongitude\x18\x03 \x01(\x01R\tlongitude\x12\x1c\n" +
 	"\ttimestamp\x18\x04 \x01(\x03R\ttimestampJ\x04\b\x01\x10\x02\"*\n" +
-	"\x10LocationResponse\x12\x16\n" +
-	"\x06status\x18\x01 \x01(\tR\x06status2\xaf\x01\n" +
-	"\x0fLocationService\x12X\n" +
-	"\fSendLocation\x12\x11.location.OBUData\x1a\x1a.location.LocationResponse\"\x17\x82\xd3\xe4\x93\x02\x11:\x01*\"\f/v1/location0\x01\x12B\n" +
-	"\x0fStreamLocations\x12\x11.location.OBUData\x1a\x1a.location.LocationResponse(\x01BJZHgithub.com/rauan06/realtime-map/go-commons/gen/proto/receiver;receiverpbb\x06proto3"
+	"\x10ReceiverResponse\x12\x16\n" +
+	"\x06status\x18\x01 \x01(\tR\x06status2\xad\x01\n" +
+	"\x0fReceiverService\x12V\n" +
+	"\fSendLocation\x12\x11.location.OBUData\x1a\x1a.location.ReceiverResponse\"\x17\x82\xd3\xe4\x93\x02\x11:\x01*\"\f/v1/location\x12B\n" +
+	"\x0fStreamLocations\x12\x11.location.OBUData\x1a\x1a.location.ReceiverResponse(\x01BJZHgithub.com/rauan06/realtime-map/go-commons/gen/proto/receiver;receiverpbb\x06proto3"
 
 var (
 	file_proto_receiver_reciever_proto_rawDescOnce sync.Once
@@ -156,13 +156,13 @@ func file_proto_receiver_reciever_proto_rawDescGZIP() []byte {
 var file_proto_receiver_reciever_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
 var file_proto_receiver_reciever_proto_goTypes = []any{
 	(*OBUData)(nil),          // 0: location.OBUData
-	(*LocationResponse)(nil), // 1: location.LocationResponse
+	(*ReceiverResponse)(nil), // 1: location.ReceiverResponse
 }
 var file_proto_receiver_reciever_proto_depIdxs = []int32{
-	0, // 0: location.LocationService.SendLocation:input_type -> location.OBUData
-	0, // 1: location.LocationService.StreamLocations:input_type -> location.OBUData
-	1, // 2: location.LocationService.SendLocation:output_type -> location.LocationResponse
-	1, // 3: location.LocationService.StreamLocations:output_type -> location.LocationResponse
+	0, // 0: location.ReceiverService.SendLocation:input_type -> location.OBUData
+	0, // 1: location.ReceiverService.StreamLocations:input_type -> location.OBUData
+	1, // 2: location.ReceiverService.SendLocation:output_type -> location.ReceiverResponse
+	1, // 3: location.ReceiverService.StreamLocations:output_type -> location.ReceiverResponse
 	2, // [2:4] is the sub-list for method output_type
 	0, // [0:2] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
