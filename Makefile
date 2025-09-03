@@ -35,5 +35,5 @@ clean:
 
 # Initialize OBUData seeder
 seeder:
-		@go run seeder/seed.go
+		@go run seeder/cmd/app/seed.go
 

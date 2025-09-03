@@ -1,4 +1,4 @@
-module github.com/rauan06/realtime-map/cord-receiver
+module github.com/rauan06/realtime-map/api-gateway
 
 go 1.24.6
 
