@@ -6,7 +6,7 @@ import (
 	"log"
 	"net"
 
-	receivepb "github.com/rauan06/realtime-map/go-commons/gen/proto/cord_receiver"
+	receivepb "github.com/rauan06/realtime-map/go-commons/gen/proto/receiver"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"

@@ -1,1 +1,1 @@
-Receives GPS signals via grpc stream
+Receives GPS signals via a gRPC stream

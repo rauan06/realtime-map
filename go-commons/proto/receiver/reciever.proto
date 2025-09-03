@@ -2,14 +2,17 @@ syntax = "proto3";
 
 package location;
 
-option go_package = "github.com/rauan06/realtime-map/go-commons/gen/proto/cord_receiver;receiverpb";
+option go_package = "github.com/rauan06/realtime-map/go-commons/gen/proto/receiver;receiverpb";
 
 import "google/api/annotations.proto";
 
 message OBUData {
-  double latitude = 1;
-  double longitude = 2;
-  int64 timestamp = 3;
+  // reserved 1 for uuid (future use)
+  reserved 1;
+
+  double latitude = 2;
+  double longitude = 3;
+  int64 timestamp = 4;
 }
 
 message LocationResponse {
@@ -17,7 +20,7 @@ message LocationResponse {
 }
 
 service LocationService {
-  rpc SendLocation (OBUData) returns (LocationResponse) {
+  rpc SendLocation (OBUData) returns (stream LocationResponse) {
     option (google.api.http) = {
       post: "/v1/location"
       body: "*"

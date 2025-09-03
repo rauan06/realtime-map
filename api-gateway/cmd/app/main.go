@@ -5,7 +5,7 @@ import (
 	"log"
 	"net/http"
 
-	receivepb "github.com/rauan06/realtime-map/go-commons/gen/proto/cord_receiver"
+	receivepb "github.com/rauan06/realtime-map/go-commons/gen/proto/receiver"
 
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"google.golang.org/grpc"

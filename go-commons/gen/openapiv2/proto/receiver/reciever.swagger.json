@@ -1,7 +1,7 @@
 {
   "swagger": "2.0",
   "info": {
-    "title": "proto/cord_receiver/cord_reciever.proto",
+    "title": "proto/receiver/reciever.proto",
     "version": "version not set"
   },
   "tags": [
@@ -21,9 +21,18 @@
         "operationId": "LocationService_SendLocation",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "A successful response.(streaming responses)",
             "schema": {
-              "$ref": "#/definitions/locationLocationResponse"
+              "type": "object",
+              "properties": {
+                "result": {
+                  "$ref": "#/definitions/locationLocationResponse"
+                },
+                "error": {
+                  "$ref": "#/definitions/rpcStatus"
+                }
+              },
+              "title": "Stream result of locationLocationResponse"
             }
           },
           "default": {

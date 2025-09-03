@@ -2,7 +2,7 @@
 // versions:
 // 	protoc-gen-go v1.36.8
 // 	protoc        (unknown)
-// source: proto/cord_receiver/cord_reciever.proto
+// source: proto/receiver/reciever.proto
 
 package receiverpb
 
@@ -24,16 +24,16 @@ const (
 
 type OBUData struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Latitude      float64                `protobuf:"fixed64,1,opt,name=latitude,proto3" json:"latitude,omitempty"`
-	Longitude     float64                `protobuf:"fixed64,2,opt,name=longitude,proto3" json:"longitude,omitempty"`
-	Timestamp     int64                  `protobuf:"varint,3,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
+	Latitude      float64                `protobuf:"fixed64,2,opt,name=latitude,proto3" json:"latitude,omitempty"`
+	Longitude     float64                `protobuf:"fixed64,3,opt,name=longitude,proto3" json:"longitude,omitempty"`
+	Timestamp     int64                  `protobuf:"varint,4,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *OBUData) Reset() {
 	*x = OBUData{}
-	mi := &file_proto_cord_receiver_cord_reciever_proto_msgTypes[0]
+	mi := &file_proto_receiver_reciever_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -45,7 +45,7 @@ func (x *OBUData) String() string {
 func (*OBUData) ProtoMessage() {}
 
 func (x *OBUData) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_cord_receiver_cord_reciever_proto_msgTypes[0]
+	mi := &file_proto_receiver_reciever_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -58,7 +58,7 @@ func (x *OBUData) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use OBUData.ProtoReflect.Descriptor instead.
 func (*OBUData) Descriptor() ([]byte, []int) {
-	return file_proto_cord_receiver_cord_reciever_proto_rawDescGZIP(), []int{0}
+	return file_proto_receiver_reciever_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *OBUData) GetLatitude() float64 {
@@ -91,7 +91,7 @@ type LocationResponse struct {
 
 func (x *LocationResponse) Reset() {
 	*x = LocationResponse{}
-	mi := &file_proto_cord_receiver_cord_reciever_proto_msgTypes[1]
+	mi := &file_proto_receiver_reciever_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -103,7 +103,7 @@ func (x *LocationResponse) String() string {
 func (*LocationResponse) ProtoMessage() {}
 
 func (x *LocationResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_cord_receiver_cord_reciever_proto_msgTypes[1]
+	mi := &file_proto_receiver_reciever_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -116,7 +116,7 @@ func (x *LocationResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LocationResponse.ProtoReflect.Descriptor instead.
 func (*LocationResponse) Descriptor() ([]byte, []int) {
-	return file_proto_cord_receiver_cord_reciever_proto_rawDescGZIP(), []int{1}
+	return file_proto_receiver_reciever_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *LocationResponse) GetStatus() string {
@@ -126,39 +126,39 @@ func (x *LocationResponse) GetStatus() string {
 	return ""
 }
 
-var File_proto_cord_receiver_cord_reciever_proto protoreflect.FileDescriptor
+var File_proto_receiver_reciever_proto protoreflect.FileDescriptor
 
-const file_proto_cord_receiver_cord_reciever_proto_rawDesc = "" +
+const file_proto_receiver_reciever_proto_rawDesc = "" +
 	"\n" +
-	"'proto/cord_receiver/cord_reciever.proto\x12\blocation\x1a\x1cgoogle/api/annotations.proto\"a\n" +
+	"\x1dproto/receiver/reciever.proto\x12\blocation\x1a\x1cgoogle/api/annotations.proto\"g\n" +
 	"\aOBUData\x12\x1a\n" +
-	"\blatitude\x18\x01 \x01(\x01R\blatitude\x12\x1c\n" +
-	"\tlongitude\x18\x02 \x01(\x01R\tlongitude\x12\x1c\n" +
-	"\ttimestamp\x18\x03 \x01(\x03R\ttimestamp\"*\n" +
+	"\blatitude\x18\x02 \x01(\x01R\blatitude\x12\x1c\n" +
+	"\tlongitude\x18\x03 \x01(\x01R\tlongitude\x12\x1c\n" +
+	"\ttimestamp\x18\x04 \x01(\x03R\ttimestampJ\x04\b\x01\x10\x02\"*\n" +
 	"\x10LocationResponse\x12\x16\n" +
-	"\x06status\x18\x01 \x01(\tR\x06status2\xad\x01\n" +
-	"\x0fLocationService\x12V\n" +
-	"\fSendLocation\x12\x11.location.OBUData\x1a\x1a.location.LocationResponse\"\x17\x82\xd3\xe4\x93\x02\x11:\x01*\"\f/v1/location\x12B\n" +
-	"\x0fStreamLocations\x12\x11.location.OBUData\x1a\x1a.location.LocationResponse(\x01BOZMgithub.com/rauan06/realtime-map/go-commons/gen/proto/cord_receiver;receiverpbb\x06proto3"
+	"\x06status\x18\x01 \x01(\tR\x06status2\xaf\x01\n" +
+	"\x0fLocationService\x12X\n" +
+	"\fSendLocation\x12\x11.location.OBUData\x1a\x1a.location.LocationResponse\"\x17\x82\xd3\xe4\x93\x02\x11:\x01*\"\f/v1/location0\x01\x12B\n" +
+	"\x0fStreamLocations\x12\x11.location.OBUData\x1a\x1a.location.LocationResponse(\x01BJZHgithub.com/rauan06/realtime-map/go-commons/gen/proto/receiver;receiverpbb\x06proto3"
 
 var (
-	file_proto_cord_receiver_cord_reciever_proto_rawDescOnce sync.Once
-	file_proto_cord_receiver_cord_reciever_proto_rawDescData []byte
+	file_proto_receiver_reciever_proto_rawDescOnce sync.Once
+	file_proto_receiver_reciever_proto_rawDescData []byte
 )
 
-func file_proto_cord_receiver_cord_reciever_proto_rawDescGZIP() []byte {
-	file_proto_cord_receiver_cord_reciever_proto_rawDescOnce.Do(func() {
-		file_proto_cord_receiver_cord_reciever_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_proto_cord_receiver_cord_reciever_proto_rawDesc), len(file_proto_cord_receiver_cord_reciever_proto_rawDesc)))
+func file_proto_receiver_reciever_proto_rawDescGZIP() []byte {
+	file_proto_receiver_reciever_proto_rawDescOnce.Do(func() {
+		file_proto_receiver_reciever_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_proto_receiver_reciever_proto_rawDesc), len(file_proto_receiver_reciever_proto_rawDesc)))
 	})
-	return file_proto_cord_receiver_cord_reciever_proto_rawDescData
+	return file_proto_receiver_reciever_proto_rawDescData
 }
 
-var file_proto_cord_receiver_cord_reciever_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
-var file_proto_cord_receiver_cord_reciever_proto_goTypes = []any{
+var file_proto_receiver_reciever_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
+var file_proto_receiver_reciever_proto_goTypes = []any{
 	(*OBUData)(nil),          // 0: location.OBUData
 	(*LocationResponse)(nil), // 1: location.LocationResponse
 }
-var file_proto_cord_receiver_cord_reciever_proto_depIdxs = []int32{
+var file_proto_receiver_reciever_proto_depIdxs = []int32{
 	0, // 0: location.LocationService.SendLocation:input_type -> location.OBUData
 	0, // 1: location.LocationService.StreamLocations:input_type -> location.OBUData
 	1, // 2: location.LocationService.SendLocation:output_type -> location.LocationResponse
@@ -170,26 +170,26 @@ var file_proto_cord_receiver_cord_reciever_proto_depIdxs = []int32{
 	0, // [0:0] is the sub-list for field type_name
 }
 
-func init() { file_proto_cord_receiver_cord_reciever_proto_init() }
-func file_proto_cord_receiver_cord_reciever_proto_init() {
-	if File_proto_cord_receiver_cord_reciever_proto != nil {
+func init() { file_proto_receiver_reciever_proto_init() }
+func file_proto_receiver_reciever_proto_init() {
+	if File_proto_receiver_reciever_proto != nil {
 		return
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_cord_receiver_cord_reciever_proto_rawDesc), len(file_proto_cord_receiver_cord_reciever_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_receiver_reciever_proto_rawDesc), len(file_proto_receiver_reciever_proto_rawDesc)),
 			NumEnums:      0,
 			NumMessages:   2,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
-		GoTypes:           file_proto_cord_receiver_cord_reciever_proto_goTypes,
-		DependencyIndexes: file_proto_cord_receiver_cord_reciever_proto_depIdxs,
-		MessageInfos:      file_proto_cord_receiver_cord_reciever_proto_msgTypes,
+		GoTypes:           file_proto_receiver_reciever_proto_goTypes,
+		DependencyIndexes: file_proto_receiver_reciever_proto_depIdxs,
+		MessageInfos:      file_proto_receiver_reciever_proto_msgTypes,
 	}.Build()
-	File_proto_cord_receiver_cord_reciever_proto = out.File
-	file_proto_cord_receiver_cord_reciever_proto_goTypes = nil
-	file_proto_cord_receiver_cord_reciever_proto_depIdxs = nil
+	File_proto_receiver_reciever_proto = out.File
+	file_proto_receiver_reciever_proto_goTypes = nil
+	file_proto_receiver_reciever_proto_depIdxs = nil
 }

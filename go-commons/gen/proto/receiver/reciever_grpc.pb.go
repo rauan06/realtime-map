@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.5.1
 // - protoc             (unknown)
-// source: proto/cord_receiver/cord_reciever.proto
+// source: proto/receiver/reciever.proto
 
 package receiverpb
 
@@ -27,7 +27,7 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type LocationServiceClient interface {
-	SendLocation(ctx context.Context, in *OBUData, opts ...grpc.CallOption) (*LocationResponse, error)
+	SendLocation(ctx context.Context, in *OBUData, opts ...grpc.CallOption) (grpc.ServerStreamingClient[LocationResponse], error)
 	StreamLocations(ctx context.Context, opts ...grpc.CallOption) (grpc.ClientStreamingClient[OBUData, LocationResponse], error)
 }
 
@@ -39,19 +39,28 @@ func NewLocationServiceClient(cc grpc.ClientConnInterface) LocationServiceClient
 	return &locationServiceClient{cc}
 }
 
-func (c *locationServiceClient) SendLocation(ctx context.Context, in *OBUData, opts ...grpc.CallOption) (*LocationResponse, error) {
+func (c *locationServiceClient) SendLocation(ctx context.Context, in *OBUData, opts ...grpc.CallOption) (grpc.ServerStreamingClient[LocationResponse], error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(LocationResponse)
-	err := c.cc.Invoke(ctx, LocationService_SendLocation_FullMethodName, in, out, cOpts...)
+	stream, err := c.cc.NewStream(ctx, &LocationService_ServiceDesc.Streams[0], LocationService_SendLocation_FullMethodName, cOpts...)
 	if err != nil {
 		return nil, err
 	}
-	return out, nil
+	x := &grpc.GenericClientStream[OBUData, LocationResponse]{ClientStream: stream}
+	if err := x.ClientStream.SendMsg(in); err != nil {
+		return nil, err
+	}
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	return x, nil
 }
+
+// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
+type LocationService_SendLocationClient = grpc.ServerStreamingClient[LocationResponse]
 
 func (c *locationServiceClient) StreamLocations(ctx context.Context, opts ...grpc.CallOption) (grpc.ClientStreamingClient[OBUData, LocationResponse], error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	stream, err := c.cc.NewStream(ctx, &LocationService_ServiceDesc.Streams[0], LocationService_StreamLocations_FullMethodName, cOpts...)
+	stream, err := c.cc.NewStream(ctx, &LocationService_ServiceDesc.Streams[1], LocationService_StreamLocations_FullMethodName, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -66,7 +75,7 @@ type LocationService_StreamLocationsClient = grpc.ClientStreamingClient[OBUData,
 // All implementations must embed UnimplementedLocationServiceServer
 // for forward compatibility.
 type LocationServiceServer interface {
-	SendLocation(context.Context, *OBUData) (*LocationResponse, error)
+	SendLocation(*OBUData, grpc.ServerStreamingServer[LocationResponse]) error
 	StreamLocations(grpc.ClientStreamingServer[OBUData, LocationResponse]) error
 	mustEmbedUnimplementedLocationServiceServer()
 }
@@ -78,8 +87,8 @@ type LocationServiceServer interface {
 // pointer dereference when methods are called.
 type UnimplementedLocationServiceServer struct{}
 
-func (UnimplementedLocationServiceServer) SendLocation(context.Context, *OBUData) (*LocationResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SendLocation not implemented")
+func (UnimplementedLocationServiceServer) SendLocation(*OBUData, grpc.ServerStreamingServer[LocationResponse]) error {
+	return status.Errorf(codes.Unimplemented, "method SendLocation not implemented")
 }
 func (UnimplementedLocationServiceServer) StreamLocations(grpc.ClientStreamingServer[OBUData, LocationResponse]) error {
 	return status.Errorf(codes.Unimplemented, "method StreamLocations not implemented")
@@ -105,23 +114,16 @@ func RegisterLocationServiceServer(s grpc.ServiceRegistrar, srv LocationServiceS
 	s.RegisterService(&LocationService_ServiceDesc, srv)
 }
 
-func _LocationService_SendLocation_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(OBUData)
-	if err := dec(in); err != nil {
-		return nil, err
+func _LocationService_SendLocation_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(OBUData)
+	if err := stream.RecvMsg(m); err != nil {
+		return err
 	}
-	if interceptor == nil {
-		return srv.(LocationServiceServer).SendLocation(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: LocationService_SendLocation_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(LocationServiceServer).SendLocation(ctx, req.(*OBUData))
-	}
-	return interceptor(ctx, in, info, handler)
+	return srv.(LocationServiceServer).SendLocation(m, &grpc.GenericServerStream[OBUData, LocationResponse]{ServerStream: stream})
 }
+
+// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
+type LocationService_SendLocationServer = grpc.ServerStreamingServer[LocationResponse]
 
 func _LocationService_StreamLocations_Handler(srv interface{}, stream grpc.ServerStream) error {
 	return srv.(LocationServiceServer).StreamLocations(&grpc.GenericServerStream[OBUData, LocationResponse]{ServerStream: stream})
@@ -136,18 +138,18 @@ type LocationService_StreamLocationsServer = grpc.ClientStreamingServer[OBUData,
 var LocationService_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "location.LocationService",
 	HandlerType: (*LocationServiceServer)(nil),
-	Methods: []grpc.MethodDesc{
-		{
-			MethodName: "SendLocation",
-			Handler:    _LocationService_SendLocation_Handler,
-		},
-	},
+	Methods:     []grpc.MethodDesc{},
 	Streams: []grpc.StreamDesc{
+		{
+			StreamName:    "SendLocation",
+			Handler:       _LocationService_SendLocation_Handler,
+			ServerStreams: true,
+		},
 		{
 			StreamName:    "StreamLocations",
 			Handler:       _LocationService_StreamLocations_Handler,
 			ClientStreams: true,
 		},
 	},
-	Metadata: "proto/cord_receiver/cord_reciever.proto",
+	Metadata: "proto/receiver/reciever.proto",
 }
