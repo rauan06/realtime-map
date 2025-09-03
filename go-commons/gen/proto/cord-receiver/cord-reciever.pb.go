@@ -4,7 +4,7 @@
 // 	protoc        (unknown)
 // source: proto/cord-receiver/cord-reciever.proto
 
-package locationpb
+package receiverpb
 
 import (
 	_ "google.golang.org/genproto/googleapis/api/annotations"
@@ -139,7 +139,7 @@ const file_proto_cord_receiver_cord_reciever_proto_rawDesc = "" +
 	"\x06status\x18\x01 \x01(\tR\x06status2\xad\x01\n" +
 	"\x0fLocationService\x12V\n" +
 	"\fSendLocation\x12\x11.location.OBUData\x1a\x1a.location.LocationResponse\"\x17\x82\xd3\xe4\x93\x02\x11:\x01*\"\f/v1/location\x12B\n" +
-	"\x0fStreamLocations\x12\x11.location.OBUData\x1a\x1a.location.LocationResponse(\x01B$Z\"proto/gen/cord-receiver;locationpbb\x06proto3"
+	"\x0fStreamLocations\x12\x11.location.OBUData\x1a\x1a.location.LocationResponse(\x01B$Z\"proto/gen/cord-receiver;receiverpbb\x06proto3"
 
 var (
 	file_proto_cord_receiver_cord_reciever_proto_rawDescOnce sync.Once

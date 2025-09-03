@@ -2,11 +2,11 @@
 // source: proto/cord-receiver/cord-reciever.proto
 
 /*
-Package locationpb is a reverse proxy.
+Package receiverpb is a reverse proxy.
 
 It translates gRPC into RESTful JSON APIs.
 */
-package locationpb
+package receiverpb
 
 import (
 	"context"

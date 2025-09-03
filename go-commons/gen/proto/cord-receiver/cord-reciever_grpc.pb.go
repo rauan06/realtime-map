@@ -4,7 +4,7 @@
 // - protoc             (unknown)
 // source: proto/cord-receiver/cord-reciever.proto
 
-package locationpb
+package receiverpb
 
 import (
 	context "context"
