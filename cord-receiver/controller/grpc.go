@@ -7,7 +7,7 @@ import (
 	"net"
 	"net/http"
 
-	receiverpb "github.com/rauan06/realtime-map/go-commons/gen/proto/cord-receiver"
+	receiverpb "github.com/rauan06/realtime-map/go-commons/gen/proto/cord_receiver"
 
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"google.golang.org/grpc"
@@ -16,7 +16,7 @@ import (
 
 // Implement the service
 type locationServer struct {
-	receiverpb.UnimplementedLocationServiceServer
+	receiverpb,
 }
 
 func (s *locationServer) SendLocation(ctx context.Context, req *receiverpb.GpsData) (*receiverpb.LocationResponse, error) {
