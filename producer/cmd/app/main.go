@@ -3,8 +3,8 @@ package main
 import (
 	"log"
 
-	"github.com/rauan06/realtime-map/receiver/config"
-	"github.com/rauan06/realtime-map/receiver/internal/app"
+	"github.com/rauan06/realtime-map/producer/config"
+	"github.com/rauan06/realtime-map/producer/internal/app"
 )
 
 func main() {
