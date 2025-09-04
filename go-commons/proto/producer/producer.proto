@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package location;
 
-option go_package = "github.com/rauan06/realtime-map/go-commons/gen/proto/producerr;producerrpb";
+option go_package = "github.com/rauan06/realtime-map/go-commons/gen/proto/producer;producerpb";
 
 import "google/api/annotations.proto";
 

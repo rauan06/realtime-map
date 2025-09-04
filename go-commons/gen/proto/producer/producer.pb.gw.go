@@ -2,11 +2,11 @@
 // source: proto/producer/producer.proto
 
 /*
-Package producerrpb is a reverse proxy.
+Package producerpb is a reverse proxy.
 
 It translates gRPC into RESTful JSON APIs.
 */
-package producerrpb
+package producerpb
 
 import (
 	"context"

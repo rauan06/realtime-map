@@ -4,7 +4,7 @@
 // - protoc             (unknown)
 // source: proto/producer/producer.proto
 
-package producerrpb
+package producerpb
 
 import (
 	context "context"
