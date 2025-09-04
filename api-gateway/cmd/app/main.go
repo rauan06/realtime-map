@@ -17,13 +17,13 @@ func main() {
 	ctx := context.Background()
 	opts := []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())}
 
-	err := receivepb.RegisterLocationServiceHandlerFromEndpoint(ctx, mux, "localhost:50051", opts)
+	err := receivepb.RegisterReceiverServiceHandlerFromEndpoint(ctx, mux, "localhost:50051", opts)
 	if err != nil {
 		log.Fatalf("failed to start HTTP gateway: %v", err)
 	}
 
 	log.Println("HTTP gateway listening on :8080")
-	if err := http.ListenAndServe(":8080", mux); err != nil {
+	if err := http.ListenAndServe(":3000", mux); err != nil {
 		log.Fatalf("failed to serve HTTP: %v", err)
 	}
 }

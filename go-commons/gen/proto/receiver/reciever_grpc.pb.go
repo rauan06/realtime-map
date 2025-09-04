@@ -19,8 +19,7 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	ReceiverService_SendLocation_FullMethodName    = "/location.ReceiverService/SendLocation"
-	ReceiverService_StreamLocations_FullMethodName = "/location.ReceiverService/StreamLocations"
+	ReceiverService_SendLocation_FullMethodName = "/location.ReceiverService/SendLocation"
 )
 
 // ReceiverServiceClient is the client API for ReceiverService service.
@@ -28,7 +27,6 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ReceiverServiceClient interface {
 	SendLocation(ctx context.Context, in *OBUData, opts ...grpc.CallOption) (*ReceiverResponse, error)
-	StreamLocations(ctx context.Context, opts ...grpc.CallOption) (grpc.ClientStreamingClient[OBUData, ReceiverResponse], error)
 }
 
 type receiverServiceClient struct {
@@ -49,25 +47,11 @@ func (c *receiverServiceClient) SendLocation(ctx context.Context, in *OBUData, o
 	return out, nil
 }
 
-func (c *receiverServiceClient) StreamLocations(ctx context.Context, opts ...grpc.CallOption) (grpc.ClientStreamingClient[OBUData, ReceiverResponse], error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	stream, err := c.cc.NewStream(ctx, &ReceiverService_ServiceDesc.Streams[0], ReceiverService_StreamLocations_FullMethodName, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	x := &grpc.GenericClientStream[OBUData, ReceiverResponse]{ClientStream: stream}
-	return x, nil
-}
-
-// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
-type ReceiverService_StreamLocationsClient = grpc.ClientStreamingClient[OBUData, ReceiverResponse]
-
 // ReceiverServiceServer is the server API for ReceiverService service.
 // All implementations must embed UnimplementedReceiverServiceServer
 // for forward compatibility.
 type ReceiverServiceServer interface {
 	SendLocation(context.Context, *OBUData) (*ReceiverResponse, error)
-	StreamLocations(grpc.ClientStreamingServer[OBUData, ReceiverResponse]) error
 	mustEmbedUnimplementedReceiverServiceServer()
 }
 
@@ -80,9 +64,6 @@ type UnimplementedReceiverServiceServer struct{}
 
 func (UnimplementedReceiverServiceServer) SendLocation(context.Context, *OBUData) (*ReceiverResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SendLocation not implemented")
-}
-func (UnimplementedReceiverServiceServer) StreamLocations(grpc.ClientStreamingServer[OBUData, ReceiverResponse]) error {
-	return status.Errorf(codes.Unimplemented, "method StreamLocations not implemented")
 }
 func (UnimplementedReceiverServiceServer) mustEmbedUnimplementedReceiverServiceServer() {}
 func (UnimplementedReceiverServiceServer) testEmbeddedByValue()                         {}
@@ -123,13 +104,6 @@ func _ReceiverService_SendLocation_Handler(srv interface{}, ctx context.Context,
 	return interceptor(ctx, in, info, handler)
 }
 
-func _ReceiverService_StreamLocations_Handler(srv interface{}, stream grpc.ServerStream) error {
-	return srv.(ReceiverServiceServer).StreamLocations(&grpc.GenericServerStream[OBUData, ReceiverResponse]{ServerStream: stream})
-}
-
-// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
-type ReceiverService_StreamLocationsServer = grpc.ClientStreamingServer[OBUData, ReceiverResponse]
-
 // ReceiverService_ServiceDesc is the grpc.ServiceDesc for ReceiverService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -142,12 +116,6 @@ var ReceiverService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _ReceiverService_SendLocation_Handler,
 		},
 	},
-	Streams: []grpc.StreamDesc{
-		{
-			StreamName:    "StreamLocations",
-			Handler:       _ReceiverService_StreamLocations_Handler,
-			ClientStreams: true,
-		},
-	},
+	Streams:  []grpc.StreamDesc{},
 	Metadata: "proto/receiver/reciever.proto",
 }

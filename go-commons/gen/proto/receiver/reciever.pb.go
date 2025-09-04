@@ -136,10 +136,9 @@ const file_proto_receiver_reciever_proto_rawDesc = "" +
 	"\tlongitude\x18\x03 \x01(\x01R\tlongitude\x12\x1c\n" +
 	"\ttimestamp\x18\x04 \x01(\x03R\ttimestampJ\x04\b\x01\x10\x02\"*\n" +
 	"\x10ReceiverResponse\x12\x16\n" +
-	"\x06status\x18\x01 \x01(\tR\x06status2\xad\x01\n" +
+	"\x06status\x18\x01 \x01(\tR\x06status2i\n" +
 	"\x0fReceiverService\x12V\n" +
-	"\fSendLocation\x12\x11.location.OBUData\x1a\x1a.location.ReceiverResponse\"\x17\x82\xd3\xe4\x93\x02\x11:\x01*\"\f/v1/location\x12B\n" +
-	"\x0fStreamLocations\x12\x11.location.OBUData\x1a\x1a.location.ReceiverResponse(\x01BJZHgithub.com/rauan06/realtime-map/go-commons/gen/proto/receiver;receiverpbb\x06proto3"
+	"\fSendLocation\x12\x11.location.OBUData\x1a\x1a.location.ReceiverResponse\"\x17\x82\xd3\xe4\x93\x02\x11:\x01*\"\f/v1/locationBJZHgithub.com/rauan06/realtime-map/go-commons/gen/proto/receiver;receiverpbb\x06proto3"
 
 var (
 	file_proto_receiver_reciever_proto_rawDescOnce sync.Once
@@ -160,11 +159,9 @@ var file_proto_receiver_reciever_proto_goTypes = []any{
 }
 var file_proto_receiver_reciever_proto_depIdxs = []int32{
 	0, // 0: location.ReceiverService.SendLocation:input_type -> location.OBUData
-	0, // 1: location.ReceiverService.StreamLocations:input_type -> location.OBUData
-	1, // 2: location.ReceiverService.SendLocation:output_type -> location.ReceiverResponse
-	1, // 3: location.ReceiverService.StreamLocations:output_type -> location.ReceiverResponse
-	2, // [2:4] is the sub-list for method output_type
-	0, // [0:2] is the sub-list for method input_type
+	1, // 1: location.ReceiverService.SendLocation:output_type -> location.ReceiverResponse
+	1, // [1:2] is the sub-list for method output_type
+	0, // [0:1] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
 	0, // [0:0] is the sub-list for extension extendee
 	0, // [0:0] is the sub-list for field type_name

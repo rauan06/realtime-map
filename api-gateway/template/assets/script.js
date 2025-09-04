@@ -14,5 +14,5 @@ async function initMap() {
   });
 }
 
-initMap();:console.warn();
-
+initMap();
+console.warn();

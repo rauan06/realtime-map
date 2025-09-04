@@ -26,6 +26,4 @@ service ReceiverService {
       body: "*"
     };
   }
-
-  rpc StreamLocations (stream OBUData) returns (ReceiverResponse);
 }
