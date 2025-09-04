@@ -2,9 +2,9 @@
 // versions:
 // 	protoc-gen-go v1.36.8
 // 	protoc        (unknown)
-// source: proto/receiver/reciever.proto
+// source: proto/producer/producer.proto
 
-package receiverpb
+package producerrpb
 
 import (
 	_ "google.golang.org/genproto/googleapis/api/annotations"
@@ -33,7 +33,7 @@ type OBUData struct {
 
 func (x *OBUData) Reset() {
 	*x = OBUData{}
-	mi := &file_proto_receiver_reciever_proto_msgTypes[0]
+	mi := &file_proto_producer_producer_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -45,7 +45,7 @@ func (x *OBUData) String() string {
 func (*OBUData) ProtoMessage() {}
 
 func (x *OBUData) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_receiver_reciever_proto_msgTypes[0]
+	mi := &file_proto_producer_producer_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -58,7 +58,7 @@ func (x *OBUData) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use OBUData.ProtoReflect.Descriptor instead.
 func (*OBUData) Descriptor() ([]byte, []int) {
-	return file_proto_receiver_reciever_proto_rawDescGZIP(), []int{0}
+	return file_proto_producer_producer_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *OBUData) GetLatitude() float64 {
@@ -82,28 +82,28 @@ func (x *OBUData) GetTimestamp() int64 {
 	return 0
 }
 
-type ReceiverResponse struct {
+type ProducerResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Status        string                 `protobuf:"bytes,1,opt,name=status,proto3" json:"status,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *ReceiverResponse) Reset() {
-	*x = ReceiverResponse{}
-	mi := &file_proto_receiver_reciever_proto_msgTypes[1]
+func (x *ProducerResponse) Reset() {
+	*x = ProducerResponse{}
+	mi := &file_proto_producer_producer_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *ReceiverResponse) String() string {
+func (x *ProducerResponse) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*ReceiverResponse) ProtoMessage() {}
+func (*ProducerResponse) ProtoMessage() {}
 
-func (x *ReceiverResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_receiver_reciever_proto_msgTypes[1]
+func (x *ProducerResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_producer_producer_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -114,52 +114,52 @@ func (x *ReceiverResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use ReceiverResponse.ProtoReflect.Descriptor instead.
-func (*ReceiverResponse) Descriptor() ([]byte, []int) {
-	return file_proto_receiver_reciever_proto_rawDescGZIP(), []int{1}
+// Deprecated: Use ProducerResponse.ProtoReflect.Descriptor instead.
+func (*ProducerResponse) Descriptor() ([]byte, []int) {
+	return file_proto_producer_producer_proto_rawDescGZIP(), []int{1}
 }
 
-func (x *ReceiverResponse) GetStatus() string {
+func (x *ProducerResponse) GetStatus() string {
 	if x != nil {
 		return x.Status
 	}
 	return ""
 }
 
-var File_proto_receiver_reciever_proto protoreflect.FileDescriptor
+var File_proto_producer_producer_proto protoreflect.FileDescriptor
 
-const file_proto_receiver_reciever_proto_rawDesc = "" +
+const file_proto_producer_producer_proto_rawDesc = "" +
 	"\n" +
-	"\x1dproto/receiver/reciever.proto\x12\blocation\x1a\x1cgoogle/api/annotations.proto\"g\n" +
+	"\x1dproto/producer/producer.proto\x12\blocation\x1a\x1cgoogle/api/annotations.proto\"g\n" +
 	"\aOBUData\x12\x1a\n" +
 	"\blatitude\x18\x02 \x01(\x01R\blatitude\x12\x1c\n" +
 	"\tlongitude\x18\x03 \x01(\x01R\tlongitude\x12\x1c\n" +
 	"\ttimestamp\x18\x04 \x01(\x03R\ttimestampJ\x04\b\x01\x10\x02\"*\n" +
-	"\x10ReceiverResponse\x12\x16\n" +
+	"\x10ProducerResponse\x12\x16\n" +
 	"\x06status\x18\x01 \x01(\tR\x06status2i\n" +
-	"\x0fReceiverService\x12V\n" +
-	"\fSendLocation\x12\x11.location.OBUData\x1a\x1a.location.ReceiverResponse\"\x17\x82\xd3\xe4\x93\x02\x11:\x01*\"\f/v1/locationBJZHgithub.com/rauan06/realtime-map/go-commons/gen/proto/receiver;receiverpbb\x06proto3"
+	"\x0fProducerService\x12V\n" +
+	"\fSendLocation\x12\x11.location.OBUData\x1a\x1a.location.ProducerResponse\"\x17\x82\xd3\xe4\x93\x02\x11:\x01*\"\f/v1/locationBLZJgithub.com/rauan06/realtime-map/go-commons/gen/proto/producerr;producerrpbb\x06proto3"
 
 var (
-	file_proto_receiver_reciever_proto_rawDescOnce sync.Once
-	file_proto_receiver_reciever_proto_rawDescData []byte
+	file_proto_producer_producer_proto_rawDescOnce sync.Once
+	file_proto_producer_producer_proto_rawDescData []byte
 )
 
-func file_proto_receiver_reciever_proto_rawDescGZIP() []byte {
-	file_proto_receiver_reciever_proto_rawDescOnce.Do(func() {
-		file_proto_receiver_reciever_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_proto_receiver_reciever_proto_rawDesc), len(file_proto_receiver_reciever_proto_rawDesc)))
+func file_proto_producer_producer_proto_rawDescGZIP() []byte {
+	file_proto_producer_producer_proto_rawDescOnce.Do(func() {
+		file_proto_producer_producer_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_proto_producer_producer_proto_rawDesc), len(file_proto_producer_producer_proto_rawDesc)))
 	})
-	return file_proto_receiver_reciever_proto_rawDescData
+	return file_proto_producer_producer_proto_rawDescData
 }
 
-var file_proto_receiver_reciever_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
-var file_proto_receiver_reciever_proto_goTypes = []any{
+var file_proto_producer_producer_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
+var file_proto_producer_producer_proto_goTypes = []any{
 	(*OBUData)(nil),          // 0: location.OBUData
-	(*ReceiverResponse)(nil), // 1: location.ReceiverResponse
+	(*ProducerResponse)(nil), // 1: location.ProducerResponse
 }
-var file_proto_receiver_reciever_proto_depIdxs = []int32{
-	0, // 0: location.ReceiverService.SendLocation:input_type -> location.OBUData
-	1, // 1: location.ReceiverService.SendLocation:output_type -> location.ReceiverResponse
+var file_proto_producer_producer_proto_depIdxs = []int32{
+	0, // 0: location.ProducerService.SendLocation:input_type -> location.OBUData
+	1, // 1: location.ProducerService.SendLocation:output_type -> location.ProducerResponse
 	1, // [1:2] is the sub-list for method output_type
 	0, // [0:1] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
@@ -167,26 +167,26 @@ var file_proto_receiver_reciever_proto_depIdxs = []int32{
 	0, // [0:0] is the sub-list for field type_name
 }
 
-func init() { file_proto_receiver_reciever_proto_init() }
-func file_proto_receiver_reciever_proto_init() {
-	if File_proto_receiver_reciever_proto != nil {
+func init() { file_proto_producer_producer_proto_init() }
+func file_proto_producer_producer_proto_init() {
+	if File_proto_producer_producer_proto != nil {
 		return
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_receiver_reciever_proto_rawDesc), len(file_proto_receiver_reciever_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_producer_producer_proto_rawDesc), len(file_proto_producer_producer_proto_rawDesc)),
 			NumEnums:      0,
 			NumMessages:   2,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
-		GoTypes:           file_proto_receiver_reciever_proto_goTypes,
-		DependencyIndexes: file_proto_receiver_reciever_proto_depIdxs,
-		MessageInfos:      file_proto_receiver_reciever_proto_msgTypes,
+		GoTypes:           file_proto_producer_producer_proto_goTypes,
+		DependencyIndexes: file_proto_producer_producer_proto_depIdxs,
+		MessageInfos:      file_proto_producer_producer_proto_msgTypes,
 	}.Build()
-	File_proto_receiver_reciever_proto = out.File
-	file_proto_receiver_reciever_proto_goTypes = nil
-	file_proto_receiver_reciever_proto_depIdxs = nil
+	File_proto_producer_producer_proto = out.File
+	file_proto_producer_producer_proto_goTypes = nil
+	file_proto_producer_producer_proto_depIdxs = nil
 }

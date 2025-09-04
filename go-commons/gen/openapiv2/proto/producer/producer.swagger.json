@@ -1,12 +1,12 @@
 {
   "swagger": "2.0",
   "info": {
-    "title": "proto/receiver/reciever.proto",
+    "title": "proto/producer/producer.proto",
     "version": "version not set"
   },
   "tags": [
     {
-      "name": "ReceiverService"
+      "name": "ProducerService"
     }
   ],
   "consumes": [
@@ -18,12 +18,12 @@
   "paths": {
     "/v1/location": {
       "post": {
-        "operationId": "ReceiverService_SendLocation",
+        "operationId": "ProducerService_SendLocation",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/locationReceiverResponse"
+              "$ref": "#/definitions/locationProducerResponse"
             }
           },
           "default": {
@@ -44,7 +44,7 @@
           }
         ],
         "tags": [
-          "ReceiverService"
+          "ProducerService"
         ]
       }
     }
@@ -67,7 +67,7 @@
         }
       }
     },
-    "locationReceiverResponse": {
+    "locationProducerResponse": {
       "type": "object",
       "properties": {
         "status": {

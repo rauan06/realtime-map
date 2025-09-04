@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package location;
 
-option go_package = "github.com/rauan06/realtime-map/go-commons/gen/proto/receiver;receiverpb";
+option go_package = "github.com/rauan06/realtime-map/go-commons/gen/proto/producerr;producerrpb";
 
 import "google/api/annotations.proto";
 
@@ -15,12 +15,12 @@ message OBUData {
   int64 timestamp = 4;
 }
 
-message ReceiverResponse {
+message ProducerResponse {
   string status = 1;
 }
 
-service ReceiverService {
-  rpc SendLocation (OBUData) returns (ReceiverResponse) {
+service ProducerService {
+  rpc SendLocation (OBUData) returns (ProducerResponse) {
     option (google.api.http) = {
       post: "/v1/location"
       body: "*"
