@@ -1,27 +1,27 @@
-package server
+package consumer
 
 import "time"
 
 // Option -.
-type Option func(*Server)
+type Option func(*Consumer)
 
 // Timeout -.
 func Timeout(timeout time.Duration) Option {
-	return func(s *Server) {
-		s.timeout = timeout
+	return func(c *Consumer) {
+		c.timeout = timeout
 	}
 }
 
 // ConnWaitTime -.
 func ConnWaitTime(timeout time.Duration) Option {
-	return func(s *Server) {
-		s.conn.WaitTime = timeout
+	return func(c *Consumer) {
+		c.waitTime = timeout
 	}
 }
 
 // ConnAttempts -.
 func ConnAttempts(attempts int) Option {
-	return func(s *Server) {
-		s.conn.Attempts = attempts
+	return func(c *Consumer) {
+		c.attempts = attempts
 	}
 }

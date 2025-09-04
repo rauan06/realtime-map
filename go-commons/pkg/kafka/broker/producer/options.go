@@ -1,27 +1,27 @@
-package client
+package producer
 
 import "time"
 
 // Option -.
-type Option func(*Client)
+type Option func(*Producer)
 
 // Timeout -.
 func Timeout(timeout time.Duration) Option {
-	return func(c *Client) {
-		c.timeout = timeout
+	return func(p *Producer) {
+		p.timeout = timeout
 	}
 }
 
 // ConnWaitTime -.
 func ConnWaitTime(timeout time.Duration) Option {
-	return func(c *Client) {
-		c.conn.WaitTime = timeout
+	return func(p *Producer) {
+		p.waitTime = timeout
 	}
 }
 
 // ConnAttempts -.
 func ConnAttempts(attempts int) Option {
-	return func(c *Client) {
-		c.conn.Attempts = attempts
+	return func(p *Producer) {
+		p.attempts = attempts
 	}
 }

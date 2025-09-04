@@ -4,6 +4,7 @@ go 1.24.6
 
 require (
 	github.com/Masterminds/squirrel v1.5.4
+	github.com/confluentinc/confluent-kafka-go/v2 v2.11.1
 	github.com/evrone/go-clean-template v1.12.6
 	github.com/goccy/go-json v0.10.5
 	github.com/gofiber/fiber/v2 v2.52.9

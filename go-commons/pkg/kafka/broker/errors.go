@@ -1,4 +1,4 @@
-package rmqrpc
+package broker
 
 import "errors"
 
@@ -8,7 +8,7 @@ var (
 	// ErrInternalServer -.
 	ErrInternalServer = errors.New("internal server error")
 	// ErrBadHandler -.
-	ErrBadHandler = errors.New("unregistered handler")
+	ErrBadTopc = errors.New("unrecognized topic")
 )
 
 // Success -.
