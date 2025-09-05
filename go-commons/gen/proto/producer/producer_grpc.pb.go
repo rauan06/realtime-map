@@ -26,7 +26,7 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ProducerServiceClient interface {
-	SendLocation(ctx context.Context, in *OBUData, opts ...grpc.CallOption) (*ProducerResponse, error)
+	SendLocation(ctx context.Context, opts ...grpc.CallOption) (grpc.ClientStreamingClient[OBUData, ProducerResponse], error)
 }
 
 type producerServiceClient struct {
@@ -37,21 +37,24 @@ func NewProducerServiceClient(cc grpc.ClientConnInterface) ProducerServiceClient
 	return &producerServiceClient{cc}
 }
 
-func (c *producerServiceClient) SendLocation(ctx context.Context, in *OBUData, opts ...grpc.CallOption) (*ProducerResponse, error) {
+func (c *producerServiceClient) SendLocation(ctx context.Context, opts ...grpc.CallOption) (grpc.ClientStreamingClient[OBUData, ProducerResponse], error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(ProducerResponse)
-	err := c.cc.Invoke(ctx, ProducerService_SendLocation_FullMethodName, in, out, cOpts...)
+	stream, err := c.cc.NewStream(ctx, &ProducerService_ServiceDesc.Streams[0], ProducerService_SendLocation_FullMethodName, cOpts...)
 	if err != nil {
 		return nil, err
 	}
-	return out, nil
+	x := &grpc.GenericClientStream[OBUData, ProducerResponse]{ClientStream: stream}
+	return x, nil
 }
+
+// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
+type ProducerService_SendLocationClient = grpc.ClientStreamingClient[OBUData, ProducerResponse]
 
 // ProducerServiceServer is the server API for ProducerService service.
 // All implementations must embed UnimplementedProducerServiceServer
 // for forward compatibility.
 type ProducerServiceServer interface {
-	SendLocation(context.Context, *OBUData) (*ProducerResponse, error)
+	SendLocation(grpc.ClientStreamingServer[OBUData, ProducerResponse]) error
 	mustEmbedUnimplementedProducerServiceServer()
 }
 
@@ -62,8 +65,8 @@ type ProducerServiceServer interface {
 // pointer dereference when methods are called.
 type UnimplementedProducerServiceServer struct{}
 
-func (UnimplementedProducerServiceServer) SendLocation(context.Context, *OBUData) (*ProducerResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SendLocation not implemented")
+func (UnimplementedProducerServiceServer) SendLocation(grpc.ClientStreamingServer[OBUData, ProducerResponse]) error {
+	return status.Errorf(codes.Unimplemented, "method SendLocation not implemented")
 }
 func (UnimplementedProducerServiceServer) mustEmbedUnimplementedProducerServiceServer() {}
 func (UnimplementedProducerServiceServer) testEmbeddedByValue()                         {}
@@ -86,23 +89,12 @@ func RegisterProducerServiceServer(s grpc.ServiceRegistrar, srv ProducerServiceS
 	s.RegisterService(&ProducerService_ServiceDesc, srv)
 }
 
-func _ProducerService_SendLocation_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(OBUData)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ProducerServiceServer).SendLocation(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: ProducerService_SendLocation_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ProducerServiceServer).SendLocation(ctx, req.(*OBUData))
-	}
-	return interceptor(ctx, in, info, handler)
+func _ProducerService_SendLocation_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(ProducerServiceServer).SendLocation(&grpc.GenericServerStream[OBUData, ProducerResponse]{ServerStream: stream})
 }
+
+// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
+type ProducerService_SendLocationServer = grpc.ClientStreamingServer[OBUData, ProducerResponse]
 
 // ProducerService_ServiceDesc is the grpc.ServiceDesc for ProducerService service.
 // It's only intended for direct use with grpc.RegisterService,
@@ -110,12 +102,13 @@ func _ProducerService_SendLocation_Handler(srv interface{}, ctx context.Context,
 var ProducerService_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "location.ProducerService",
 	HandlerType: (*ProducerServiceServer)(nil),
-	Methods: []grpc.MethodDesc{
+	Methods:     []grpc.MethodDesc{},
+	Streams: []grpc.StreamDesc{
 		{
-			MethodName: "SendLocation",
-			Handler:    _ProducerService_SendLocation_Handler,
+			StreamName:    "SendLocation",
+			Handler:       _ProducerService_SendLocation_Handler,
+			ClientStreams: true,
 		},
 	},
-	Streams:  []grpc.StreamDesc{},
 	Metadata: "proto/producer/producer.proto",
 }

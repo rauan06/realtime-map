@@ -136,9 +136,9 @@ const file_proto_producer_producer_proto_rawDesc = "" +
 	"\tlongitude\x18\x03 \x01(\x01R\tlongitude\x12\x1c\n" +
 	"\ttimestamp\x18\x04 \x01(\x03R\ttimestampJ\x04\b\x01\x10\x02\"*\n" +
 	"\x10ProducerResponse\x12\x16\n" +
-	"\x06status\x18\x01 \x01(\tR\x06status2i\n" +
-	"\x0fProducerService\x12V\n" +
-	"\fSendLocation\x12\x11.location.OBUData\x1a\x1a.location.ProducerResponse\"\x17\x82\xd3\xe4\x93\x02\x11:\x01*\"\f/v1/locationBJZHgithub.com/rauan06/realtime-map/go-commons/gen/proto/producer;producerpbb\x06proto3"
+	"\x06status\x18\x01 \x01(\tR\x06status2k\n" +
+	"\x0fProducerService\x12X\n" +
+	"\fSendLocation\x12\x11.location.OBUData\x1a\x1a.location.ProducerResponse\"\x17\x82\xd3\xe4\x93\x02\x11:\x01*\"\f/v1/location(\x01BJZHgithub.com/rauan06/realtime-map/go-commons/gen/proto/producer;producerpbb\x06proto3"
 
 var (
 	file_proto_producer_producer_proto_rawDescOnce sync.Once

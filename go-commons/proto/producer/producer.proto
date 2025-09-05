@@ -20,7 +20,7 @@ message ProducerResponse {
 }
 
 service ProducerService {
-  rpc SendLocation (OBUData) returns (ProducerResponse) {
+  rpc SendLocation (stream OBUData) returns (ProducerResponse) {
     option (google.api.http) = {
       post: "/v1/location"
       body: "*"
