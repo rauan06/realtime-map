@@ -1,5 +1,6 @@
 package usecase
 
-type IRecieverUseCase interface {
+type IProducerUseCase interface {
+	StartTracking()
 	ProcessOBUData()
 }

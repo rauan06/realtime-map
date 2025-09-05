@@ -12,7 +12,8 @@ type (
 	Config struct {
 		App     App
 		Log     Log
-		GRPC    GRPC
+		GRPC    
+		Kafka
 		Metrics Metrics
 		Swagger Swagger
 	}
