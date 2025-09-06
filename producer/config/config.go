@@ -37,6 +37,7 @@ type (
 	// GRPC -.
 	GRPC struct {
 		Port string `env:"GRPC_PORT,required"`
+		ReflectionEnabled bool `env:"GRPC_REFLECTION_ENABLED" envDefault:"true"`
 	}
 
 	// Metrics -.

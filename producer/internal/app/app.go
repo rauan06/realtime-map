@@ -5,6 +5,7 @@ import (
 
 	"github.com/rauan06/realtime-map/go-commons/pkg/logger"
 	"github.com/rauan06/realtime-map/producer/config"
+	"github.com/rauan06/realtime-map/go-commons/pkg/grpcserver"
 	"github.com/rauan06/realtime-map/producer/internal/repo/eventbus"
 )
 
@@ -17,10 +18,6 @@ func Run(cfg *config.Config) {
 	}
 	defer eb.Close()
 
-	// producerUseCase := producer.New(*eb)
-
-	l.Debug("123")
-	// gRPC Server
-	// grpcServer := grpcserver.New(grpcserver.Port(cfg.GRPC.Port))
-	// grpc.NewRouter(grpcServer.App, translationUseCase, l)
+	grpcServer := grpcserver.New(grpcserver.Port(cfg.GRPC.Port))
+	
 }
