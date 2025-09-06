@@ -1,17 +1,22 @@
 package v1
 
 import (
-	v1 "github.com/evrone/go-clean-template/docs/proto/v1"
-	"github.com/go-playground/validator"
 	"github.com/go-playground/validator/v10"
-	usecase "github.com/rauan06/realtime-map/distance-calculator"
+	producerpb "github.com/rauan06/realtime-map/go-commons/gen/proto/producer"
 	"github.com/rauan06/realtime-map/go-commons/pkg/logger"
+	"github.com/rauan06/realtime-map/producer/internal/usecase"
+	"google.golang.org/grpc"
 )
 
 type V1 struct {
-	v1.TranslationServer
+	producerpb.ProducerServiceServer
 
-	t usecase.IDistanceCalcUseCase
+	t usecase.IProducerUseCase
 	l logger.Interface
 	v *validator.Validate
+}
+
+func (r *V1) SendLocation(
+	stream grpc.ClientStreamingServer[producerpb.OBUData, producerpb.ProducerResponse]) error {
+		return nil
 }
