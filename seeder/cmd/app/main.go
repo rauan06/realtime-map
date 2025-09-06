@@ -1,15 +1,15 @@
 package main
 
 import (
-	"encoding/json"
-	"fmt"
+	"context"
 	"log"
 	"math/rand/v2"
 	"time"
 
 	"github.com/google/uuid"
-	client "github.com/rauan06/realtime-map/seeder/controller"
-	"github.com/rauan06/realtime-map/seeder/domain"
+	producerpb "github.com/rauan06/realtime-map/go-commons/gen/proto/producer"
+	"github.com/rauan06/realtime-map/seeder/internal/domain"
+	"github.com/rauan06/realtime-map/seeder/internal/repo/grpcclient"
 )
 
 func genCord() float64 {
@@ -25,18 +25,27 @@ func genOBUData() domain.OBUData {
 }
 
 func main() {
-	client := client.NewHTTPClient(nil, "")
+	client := grpcclient.New()
+	stream, err := client.SendLocation(context.Background())
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	go func() {
+		time.Sleep(3 * time.Second)
+		stream.CloseSend()
+	}()
 
 	for {
-		time.Sleep(time.Duration(genCord()))
+		time.Sleep(500 * time.Millisecond)
 
-		obuData := genOBUData()
-		encodedData, err  := json.Marshal(obuData)
+		err = stream.Send(&producerpb.OBUData{
+			Latitude:  genCord(),
+			Longitude: genCord(),
+			Timestamp: time.Now().Unix(),
+		})
 		if err != nil {
 			log.Fatal(err)
 		}
-
-		client.NewRequest("POST", "/v1/locate", encodedData)
-		fmt.Printf("%+v\n", obuData)
 	}
 }

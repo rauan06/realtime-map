@@ -32,8 +32,3 @@ generate:
 # Clean generated files 
 clean:
 	@cd $(COMMONS_DIR) && rm -rf gen && clear
-
-# Initialize OBUData seeder
-seeder:
-	@go run seeder/cmd/app/seed.go
-
