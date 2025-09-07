@@ -2,27 +2,25 @@ syntax = "proto3";
 
 package location;
 
-option go_package = "github.com/rauan06/realtime-map/go-commons/gen/proto/producer;producerpb";
-
+option go_package = "github.com/rauan06/realtime-map/go-commons/gen/proto/route;route";
 import "google/api/annotations.proto";
+import "google/protobuf/timestamp.proto";
 
+// Location data sent by OBU (On-Board Unit)
 message OBUData {
-  // reserved 1 for uuid (future use)
+  // Reserved field 1 for future use (e.g., uuid)
   reserved 1;
 
   double latitude = 2;
   double longitude = 3;
-  int64 timestamp = 4;
+  google.protobuf.Timestamp timestamp = 4;
 }
 
-message ProducerResponse {
-  string status = 1;
-}
-
+// Bidirectional streaming service for real-time location updates
 service ProducerService {
-  rpc SendLocation (stream OBUData) returns (ProducerResponse) {
+  rpc RouteChat (stream OBUData) returns (stream OBUData) {
     option (google.api.http) = {
-      post: "/v1/location"
+      post: "/v1/location/send"
       body: "*"
     };
   }

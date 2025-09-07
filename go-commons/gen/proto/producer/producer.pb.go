@@ -4,12 +4,13 @@
 // 	protoc        (unknown)
 // source: proto/producer/producer.proto
 
-package producerpb
+package route
 
 import (
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	reflect "reflect"
 	sync "sync"
 	unsafe "unsafe"
@@ -22,11 +23,12 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// Location data sent by OBU (On-Board Unit)
 type OBUData struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Latitude      float64                `protobuf:"fixed64,2,opt,name=latitude,proto3" json:"latitude,omitempty"`
 	Longitude     float64                `protobuf:"fixed64,3,opt,name=longitude,proto3" json:"longitude,omitempty"`
-	Timestamp     int64                  `protobuf:"varint,4,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
+	Timestamp     *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -75,70 +77,24 @@ func (x *OBUData) GetLongitude() float64 {
 	return 0
 }
 
-func (x *OBUData) GetTimestamp() int64 {
+func (x *OBUData) GetTimestamp() *timestamppb.Timestamp {
 	if x != nil {
 		return x.Timestamp
 	}
-	return 0
-}
-
-type ProducerResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Status        string                 `protobuf:"bytes,1,opt,name=status,proto3" json:"status,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *ProducerResponse) Reset() {
-	*x = ProducerResponse{}
-	mi := &file_proto_producer_producer_proto_msgTypes[1]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *ProducerResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*ProducerResponse) ProtoMessage() {}
-
-func (x *ProducerResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_producer_producer_proto_msgTypes[1]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use ProducerResponse.ProtoReflect.Descriptor instead.
-func (*ProducerResponse) Descriptor() ([]byte, []int) {
-	return file_proto_producer_producer_proto_rawDescGZIP(), []int{1}
-}
-
-func (x *ProducerResponse) GetStatus() string {
-	if x != nil {
-		return x.Status
-	}
-	return ""
+	return nil
 }
 
 var File_proto_producer_producer_proto protoreflect.FileDescriptor
 
 const file_proto_producer_producer_proto_rawDesc = "" +
 	"\n" +
-	"\x1dproto/producer/producer.proto\x12\blocation\x1a\x1cgoogle/api/annotations.proto\"g\n" +
+	"\x1dproto/producer/producer.proto\x12\blocation\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x83\x01\n" +
 	"\aOBUData\x12\x1a\n" +
 	"\blatitude\x18\x02 \x01(\x01R\blatitude\x12\x1c\n" +
-	"\tlongitude\x18\x03 \x01(\x01R\tlongitude\x12\x1c\n" +
-	"\ttimestamp\x18\x04 \x01(\x03R\ttimestampJ\x04\b\x01\x10\x02\"*\n" +
-	"\x10ProducerResponse\x12\x16\n" +
-	"\x06status\x18\x01 \x01(\tR\x06status2k\n" +
-	"\x0fProducerService\x12X\n" +
-	"\fSendLocation\x12\x11.location.OBUData\x1a\x1a.location.ProducerResponse\"\x17\x82\xd3\xe4\x93\x02\x11:\x01*\"\f/v1/location(\x01BJZHgithub.com/rauan06/realtime-map/go-commons/gen/proto/producer;producerpbb\x06proto3"
+	"\tlongitude\x18\x03 \x01(\x01R\tlongitude\x128\n" +
+	"\ttimestamp\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\ttimestampJ\x04\b\x01\x10\x022f\n" +
+	"\x0fProducerService\x12S\n" +
+	"\tRouteChat\x12\x11.location.OBUData\x1a\x11.location.OBUData\"\x1c\x82\xd3\xe4\x93\x02\x16:\x01*\"\x11/v1/location/send(\x010\x01BBZ@github.com/rauan06/realtime-map/go-commons/gen/proto/route;routeb\x06proto3"
 
 var (
 	file_proto_producer_producer_proto_rawDescOnce sync.Once
@@ -152,19 +108,20 @@ func file_proto_producer_producer_proto_rawDescGZIP() []byte {
 	return file_proto_producer_producer_proto_rawDescData
 }
 
-var file_proto_producer_producer_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
+var file_proto_producer_producer_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
 var file_proto_producer_producer_proto_goTypes = []any{
-	(*OBUData)(nil),          // 0: location.OBUData
-	(*ProducerResponse)(nil), // 1: location.ProducerResponse
+	(*OBUData)(nil),               // 0: location.OBUData
+	(*timestamppb.Timestamp)(nil), // 1: google.protobuf.Timestamp
 }
 var file_proto_producer_producer_proto_depIdxs = []int32{
-	0, // 0: location.ProducerService.SendLocation:input_type -> location.OBUData
-	1, // 1: location.ProducerService.SendLocation:output_type -> location.ProducerResponse
-	1, // [1:2] is the sub-list for method output_type
-	0, // [0:1] is the sub-list for method input_type
-	0, // [0:0] is the sub-list for extension type_name
-	0, // [0:0] is the sub-list for extension extendee
-	0, // [0:0] is the sub-list for field type_name
+	1, // 0: location.OBUData.timestamp:type_name -> google.protobuf.Timestamp
+	0, // 1: location.ProducerService.RouteChat:input_type -> location.OBUData
+	0, // 2: location.ProducerService.RouteChat:output_type -> location.OBUData
+	2, // [2:3] is the sub-list for method output_type
+	1, // [1:2] is the sub-list for method input_type
+	1, // [1:1] is the sub-list for extension type_name
+	1, // [1:1] is the sub-list for extension extendee
+	0, // [0:1] is the sub-list for field type_name
 }
 
 func init() { file_proto_producer_producer_proto_init() }
@@ -178,7 +135,7 @@ func file_proto_producer_producer_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_producer_producer_proto_rawDesc), len(file_proto_producer_producer_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   2,
+			NumMessages:   1,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

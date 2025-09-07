@@ -4,7 +4,7 @@
 // - protoc             (unknown)
 // source: proto/producer/producer.proto
 
-package producerpb
+package route
 
 import (
 	context "context"
@@ -19,14 +19,16 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	ProducerService_SendLocation_FullMethodName = "/location.ProducerService/SendLocation"
+	ProducerService_RouteChat_FullMethodName = "/location.ProducerService/RouteChat"
 )
 
 // ProducerServiceClient is the client API for ProducerService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+//
+// Bidirectional streaming service for real-time location updates
 type ProducerServiceClient interface {
-	SendLocation(ctx context.Context, opts ...grpc.CallOption) (grpc.ClientStreamingClient[OBUData, ProducerResponse], error)
+	RouteChat(ctx context.Context, opts ...grpc.CallOption) (grpc.BidiStreamingClient[OBUData, OBUData], error)
 }
 
 type producerServiceClient struct {
@@ -37,24 +39,26 @@ func NewProducerServiceClient(cc grpc.ClientConnInterface) ProducerServiceClient
 	return &producerServiceClient{cc}
 }
 
-func (c *producerServiceClient) SendLocation(ctx context.Context, opts ...grpc.CallOption) (grpc.ClientStreamingClient[OBUData, ProducerResponse], error) {
+func (c *producerServiceClient) RouteChat(ctx context.Context, opts ...grpc.CallOption) (grpc.BidiStreamingClient[OBUData, OBUData], error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	stream, err := c.cc.NewStream(ctx, &ProducerService_ServiceDesc.Streams[0], ProducerService_SendLocation_FullMethodName, cOpts...)
+	stream, err := c.cc.NewStream(ctx, &ProducerService_ServiceDesc.Streams[0], ProducerService_RouteChat_FullMethodName, cOpts...)
 	if err != nil {
 		return nil, err
 	}
-	x := &grpc.GenericClientStream[OBUData, ProducerResponse]{ClientStream: stream}
+	x := &grpc.GenericClientStream[OBUData, OBUData]{ClientStream: stream}
 	return x, nil
 }
 
 // This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
-type ProducerService_SendLocationClient = grpc.ClientStreamingClient[OBUData, ProducerResponse]
+type ProducerService_RouteChatClient = grpc.BidiStreamingClient[OBUData, OBUData]
 
 // ProducerServiceServer is the server API for ProducerService service.
 // All implementations must embed UnimplementedProducerServiceServer
 // for forward compatibility.
+//
+// Bidirectional streaming service for real-time location updates
 type ProducerServiceServer interface {
-	SendLocation(grpc.ClientStreamingServer[OBUData, ProducerResponse]) error
+	RouteChat(grpc.BidiStreamingServer[OBUData, OBUData]) error
 	mustEmbedUnimplementedProducerServiceServer()
 }
 
@@ -65,8 +69,8 @@ type ProducerServiceServer interface {
 // pointer dereference when methods are called.
 type UnimplementedProducerServiceServer struct{}
 
-func (UnimplementedProducerServiceServer) SendLocation(grpc.ClientStreamingServer[OBUData, ProducerResponse]) error {
-	return status.Errorf(codes.Unimplemented, "method SendLocation not implemented")
+func (UnimplementedProducerServiceServer) RouteChat(grpc.BidiStreamingServer[OBUData, OBUData]) error {
+	return status.Errorf(codes.Unimplemented, "method RouteChat not implemented")
 }
 func (UnimplementedProducerServiceServer) mustEmbedUnimplementedProducerServiceServer() {}
 func (UnimplementedProducerServiceServer) testEmbeddedByValue()                         {}
@@ -89,12 +93,12 @@ func RegisterProducerServiceServer(s grpc.ServiceRegistrar, srv ProducerServiceS
 	s.RegisterService(&ProducerService_ServiceDesc, srv)
 }
 
-func _ProducerService_SendLocation_Handler(srv interface{}, stream grpc.ServerStream) error {
-	return srv.(ProducerServiceServer).SendLocation(&grpc.GenericServerStream[OBUData, ProducerResponse]{ServerStream: stream})
+func _ProducerService_RouteChat_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(ProducerServiceServer).RouteChat(&grpc.GenericServerStream[OBUData, OBUData]{ServerStream: stream})
 }
 
 // This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
-type ProducerService_SendLocationServer = grpc.ClientStreamingServer[OBUData, ProducerResponse]
+type ProducerService_RouteChatServer = grpc.BidiStreamingServer[OBUData, OBUData]
 
 // ProducerService_ServiceDesc is the grpc.ServiceDesc for ProducerService service.
 // It's only intended for direct use with grpc.RegisterService,
@@ -105,8 +109,9 @@ var ProducerService_ServiceDesc = grpc.ServiceDesc{
 	Methods:     []grpc.MethodDesc{},
 	Streams: []grpc.StreamDesc{
 		{
-			StreamName:    "SendLocation",
-			Handler:       _ProducerService_SendLocation_Handler,
+			StreamName:    "RouteChat",
+			Handler:       _ProducerService_RouteChat_Handler,
+			ServerStreams: true,
 			ClientStreams: true,
 		},
 	},

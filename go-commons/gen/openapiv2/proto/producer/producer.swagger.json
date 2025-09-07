@@ -16,14 +16,23 @@
     "application/json"
   ],
   "paths": {
-    "/v1/location": {
+    "/v1/location/send": {
       "post": {
-        "operationId": "ProducerService_SendLocation",
+        "operationId": "ProducerService_RouteChat",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "A successful response.(streaming responses)",
             "schema": {
-              "$ref": "#/definitions/locationProducerResponse"
+              "type": "object",
+              "properties": {
+                "result": {
+                  "$ref": "#/definitions/locationOBUData"
+                },
+                "error": {
+                  "$ref": "#/definitions/rpcStatus"
+                }
+              },
+              "title": "Stream result of locationOBUData"
             }
           },
           "default": {
@@ -64,17 +73,10 @@
         },
         "timestamp": {
           "type": "string",
-          "format": "int64"
+          "format": "date-time"
         }
-      }
-    },
-    "locationProducerResponse": {
-      "type": "object",
-      "properties": {
-        "status": {
-          "type": "string"
-        }
-      }
+      },
+      "title": "Location data sent by OBU (On-Board Unit)"
     },
     "protobufAny": {
       "type": "object",

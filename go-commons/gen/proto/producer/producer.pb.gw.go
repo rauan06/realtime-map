@@ -2,11 +2,11 @@
 // source: proto/producer/producer.proto
 
 /*
-Package producerpb is a reverse proxy.
+Package route is a reverse proxy.
 
 It translates gRPC into RESTful JSON APIs.
 */
-package producerpb
+package route
 
 import (
 	"context"
@@ -35,45 +35,47 @@ var (
 	_ = metadata.Join
 )
 
-func request_ProducerService_SendLocation_0(ctx context.Context, marshaler runtime.Marshaler, client ProducerServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func request_ProducerService_RouteChat_0(ctx context.Context, marshaler runtime.Marshaler, client ProducerServiceClient, req *http.Request, pathParams map[string]string) (ProducerService_RouteChatClient, runtime.ServerMetadata, error) {
 	var metadata runtime.ServerMetadata
-	stream, err := client.SendLocation(ctx)
+	stream, err := client.RouteChat(ctx)
 	if err != nil {
 		grpclog.Errorf("Failed to start streaming: %v", err)
 		return nil, metadata, err
 	}
 	dec := marshaler.NewDecoder(req.Body)
-	for {
+	handleSend := func() error {
 		var protoReq OBUData
-		err = dec.Decode(&protoReq)
+		err := dec.Decode(&protoReq)
 		if errors.Is(err, io.EOF) {
-			break
+			return err
 		}
 		if err != nil {
 			grpclog.Errorf("Failed to decode request: %v", err)
-			return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+			return status.Errorf(codes.InvalidArgument, "Failed to decode request: %v", err)
 		}
-		if err = stream.Send(&protoReq); err != nil {
-			if errors.Is(err, io.EOF) {
+		if err := stream.Send(&protoReq); err != nil {
+			grpclog.Errorf("Failed to send request: %v", err)
+			return err
+		}
+		return nil
+	}
+	go func() {
+		for {
+			if err := handleSend(); err != nil {
 				break
 			}
-			grpclog.Errorf("Failed to send request: %v", err)
-			return nil, metadata, err
 		}
-	}
-	if err := stream.CloseSend(); err != nil {
-		grpclog.Errorf("Failed to terminate client stream: %v", err)
-		return nil, metadata, err
-	}
+		if err := stream.CloseSend(); err != nil {
+			grpclog.Errorf("Failed to terminate client stream: %v", err)
+		}
+	}()
 	header, err := stream.Header()
 	if err != nil {
 		grpclog.Errorf("Failed to get header from client: %v", err)
 		return nil, metadata, err
 	}
 	metadata.HeaderMD = header
-	msg, err := stream.CloseAndRecv()
-	metadata.TrailerMD = stream.Trailer()
-	return msg, metadata, err
+	return stream, metadata, nil
 }
 
 // RegisterProducerServiceHandlerServer registers the http handlers for service ProducerService to "mux".
@@ -82,7 +84,7 @@ func request_ProducerService_SendLocation_0(ctx context.Context, marshaler runti
 // Note that using this registration option will cause many gRPC library features to stop working. Consider using RegisterProducerServiceHandlerFromEndpoint instead.
 // GRPC interceptors will not work for this type of registration. To use interceptors, you must use the "runtime.WithMiddlewares" option in the "runtime.NewServeMux" call.
 func RegisterProducerServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux, server ProducerServiceServer) error {
-	mux.Handle(http.MethodPost, pattern_ProducerService_SendLocation_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle(http.MethodPost, pattern_ProducerService_RouteChat_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		err := status.Error(codes.Unimplemented, "streaming calls are not yet supported in the in-process transport")
 		_, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
@@ -128,30 +130,30 @@ func RegisterProducerServiceHandler(ctx context.Context, mux *runtime.ServeMux, 
 // doesn't go through the normal gRPC flow (creating a gRPC client etc.) then it will be up to the passed in
 // "ProducerServiceClient" to call the correct interceptors. This client ignores the HTTP middlewares.
 func RegisterProducerServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux, client ProducerServiceClient) error {
-	mux.Handle(http.MethodPost, pattern_ProducerService_SendLocation_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle(http.MethodPost, pattern_ProducerService_RouteChat_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/location.ProducerService/SendLocation", runtime.WithHTTPPathPattern("/v1/location"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/location.ProducerService/RouteChat", runtime.WithHTTPPathPattern("/v1/location/send"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_ProducerService_SendLocation_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_ProducerService_RouteChat_0(annotatedContext, inboundMarshaler, client, req, pathParams)
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		forward_ProducerService_SendLocation_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_ProducerService_RouteChat_0(annotatedContext, mux, outboundMarshaler, w, req, func() (proto.Message, error) { return resp.Recv() }, mux.GetForwardResponseOptions()...)
 	})
 	return nil
 }
 
 var (
-	pattern_ProducerService_SendLocation_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"v1", "location"}, ""))
+	pattern_ProducerService_RouteChat_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"v1", "location", "send"}, ""))
 )
 
 var (
-	forward_ProducerService_SendLocation_0 = runtime.ForwardResponseMessage
+	forward_ProducerService_RouteChat_0 = runtime.ForwardResponseStream
 )
