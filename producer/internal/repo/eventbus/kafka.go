@@ -24,7 +24,7 @@ func New(cfg *config.Config) (*EventBus, error) {
 		return nil,err
 	}
 
-	return &EventBus{p, cfg.Topic}, nil
+	return &EventBus{p, cfg.Kafka.Topic}, nil
 }
 
 func (eb *EventBus) Run(l *logger.Logger) {

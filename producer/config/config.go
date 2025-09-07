@@ -12,8 +12,9 @@ type (
 	Config struct {
 		App     App
 		Log     Log
-		GRPC    
-		Kafka
+		GRPC    GRPC
+		Redis   Redis
+		Kafka   Kafka
 		Metrics Metrics
 		Swagger Swagger
 	}
@@ -29,15 +30,22 @@ type (
 		Level string `env:"LOG_LEVEL,required"`
 	}
 
+	// Kafka -.
 	Kafka struct {
 		BootstrapServers string `env:"KAFKA_BOOTSTRAP_SERVERS" envDefault:"localhost"`
 		Topic            string `env:"KAFKA_TOPIC,required"`
 	}
 
+	// Redis -.
+	Redis struct {
+		RedisURI      string `env:"REDIS_URL" envDefault:"localhost:6379"`
+		RedisPassword string `env:"REDIS_PASSWORD" envDefault:""`
+	}
+
 	// GRPC -.
 	GRPC struct {
-		Port string `env:"GRPC_PORT,required"`
-		ReflectionEnabled bool `env:"GRPC_REFLECTION_ENABLED" envDefault:"true"`
+		Port              string `env:"GRPC_PORT,required"`
+		ReflectionEnabled bool   `env:"GRPC_REFLECTION_ENABLED" envDefault:"true"`
 	}
 
 	// Metrics -.

@@ -8,8 +8,8 @@ import (
 	"google.golang.org/grpc"
 )
 
-func NewTranslationRoutes(sv *grpc.Server, t usecase.IProducerUseCase, l logger.Interface) {
-	r := &V1{t: t, l: l, v: validator.New(validator.WithRequiredStructEnabled())}
+func NewTranslationRoutes(sv *grpc.Server, uc usecase.IProducerUseCase, l logger.Interface) {
+	r := &V1{uc:uc, l: l, v: validator.New(validator.WithRequiredStructEnabled())}
 
 	routepb.RegisterRouteServer(sv, r)
 }
