@@ -13,10 +13,32 @@ message OBUData {
   google.protobuf.Timestamp timestamp = 4;
 }
 
+message DeviceID {
+  bytes device_id = 1;
+}
+
+message InitResponse {
+  bytes session_id = 1;
+}
+
 service Route {
+  rpc StartSession (DeviceID) returns (InitResponse) {
+  option (google.api.http) = {
+      post: "/v1/route/start"
+      body: "*"
+    };
+  }
+  
+  rpc EndSession (DeviceID) returns () {
+  option (google.api.http) = {
+      post: "/v1/route/end"
+      body: "*"
+    };
+  }  
+
   rpc RouteChat (stream OBUData) returns (stream OBUData) {
     option (google.api.http) = {
-      post: "/v1/location/send"
+      post: "/v1/route/location"
       body: "*"
     };
   }

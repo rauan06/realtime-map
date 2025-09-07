@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Realtime Map with GPS + IP Fallback</title>
+  <style>
+    #map {
+      height: 100vh;
+      width: 100%;
+    }
+  </style>
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+</head>
+<body>
+  <div id="map"></div>
+  <script>
+    // Initialize map
+    const map = L.map('map').setView([0, 0], 2);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
+
+    // Add marker
+    let marker = L.marker([0, 0]).addTo(map);
+
+    function setLocation(lat, lon, source) {
+      marker.setLatLng([lat, lon]);
+      map.setView([lat, lon], 13);
+      marker.bindPopup(`You are here (via ${source})`).openPopup();
+    }
+
+    // Try GPS
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        pos => {
+          setLocation(pos.coords.latitude, pos.coords.longitude, "GPS");
+        },
+        err => {
+          console.warn("GPS failed, falling back to IP:", err.message);
+          // fallback to IP
+          fetch("https://ipapi.co/json/")
+            .then(res => res.json())
+            .then(data => {
+              setLocation(data.latitude, data.longitude, "IP");
+            })
+            .catch(e => console.error("IP lookup failed:", e));
+        }
+      );
+    } else {
+      // No geolocation support → fallback
+      fetch("https://ipapi.co/json/")
+        .then(res => res.json())
+        .then(data => {
+          setLocation(data.latitude, data.longitude, "IP");
+        })
+        .catch(e => console.error("IP lookup failed:", e));
+    }
+  </script>
+</body>
+</html>
