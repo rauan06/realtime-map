@@ -19,29 +19,27 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	ProducerService_RouteChat_FullMethodName = "/location.ProducerService/RouteChat"
+	Route_RouteChat_FullMethodName = "/location.Route/RouteChat"
 )
 
-// ProducerServiceClient is the client API for ProducerService service.
+// RouteClient is the client API for Route service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-//
-// Bidirectional streaming service for real-time location updates
-type ProducerServiceClient interface {
+type RouteClient interface {
 	RouteChat(ctx context.Context, opts ...grpc.CallOption) (grpc.BidiStreamingClient[OBUData, OBUData], error)
 }
 
-type producerServiceClient struct {
+type routeClient struct {
 	cc grpc.ClientConnInterface
 }
 
-func NewProducerServiceClient(cc grpc.ClientConnInterface) ProducerServiceClient {
-	return &producerServiceClient{cc}
+func NewRouteClient(cc grpc.ClientConnInterface) RouteClient {
+	return &routeClient{cc}
 }
 
-func (c *producerServiceClient) RouteChat(ctx context.Context, opts ...grpc.CallOption) (grpc.BidiStreamingClient[OBUData, OBUData], error) {
+func (c *routeClient) RouteChat(ctx context.Context, opts ...grpc.CallOption) (grpc.BidiStreamingClient[OBUData, OBUData], error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	stream, err := c.cc.NewStream(ctx, &ProducerService_ServiceDesc.Streams[0], ProducerService_RouteChat_FullMethodName, cOpts...)
+	stream, err := c.cc.NewStream(ctx, &Route_ServiceDesc.Streams[0], Route_RouteChat_FullMethodName, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -50,67 +48,65 @@ func (c *producerServiceClient) RouteChat(ctx context.Context, opts ...grpc.Call
 }
 
 // This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
-type ProducerService_RouteChatClient = grpc.BidiStreamingClient[OBUData, OBUData]
+type Route_RouteChatClient = grpc.BidiStreamingClient[OBUData, OBUData]
 
-// ProducerServiceServer is the server API for ProducerService service.
-// All implementations must embed UnimplementedProducerServiceServer
+// RouteServer is the server API for Route service.
+// All implementations must embed UnimplementedRouteServer
 // for forward compatibility.
-//
-// Bidirectional streaming service for real-time location updates
-type ProducerServiceServer interface {
+type RouteServer interface {
 	RouteChat(grpc.BidiStreamingServer[OBUData, OBUData]) error
-	mustEmbedUnimplementedProducerServiceServer()
+	mustEmbedUnimplementedRouteServer()
 }
 
-// UnimplementedProducerServiceServer must be embedded to have
+// UnimplementedRouteServer must be embedded to have
 // forward compatible implementations.
 //
 // NOTE: this should be embedded by value instead of pointer to avoid a nil
 // pointer dereference when methods are called.
-type UnimplementedProducerServiceServer struct{}
+type UnimplementedRouteServer struct{}
 
-func (UnimplementedProducerServiceServer) RouteChat(grpc.BidiStreamingServer[OBUData, OBUData]) error {
+func (UnimplementedRouteServer) RouteChat(grpc.BidiStreamingServer[OBUData, OBUData]) error {
 	return status.Errorf(codes.Unimplemented, "method RouteChat not implemented")
 }
-func (UnimplementedProducerServiceServer) mustEmbedUnimplementedProducerServiceServer() {}
-func (UnimplementedProducerServiceServer) testEmbeddedByValue()                         {}
+func (UnimplementedRouteServer) mustEmbedUnimplementedRouteServer() {}
+func (UnimplementedRouteServer) testEmbeddedByValue()               {}
 
-// UnsafeProducerServiceServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to ProducerServiceServer will
+// UnsafeRouteServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to RouteServer will
 // result in compilation errors.
-type UnsafeProducerServiceServer interface {
-	mustEmbedUnimplementedProducerServiceServer()
+type UnsafeRouteServer interface {
+	mustEmbedUnimplementedRouteServer()
 }
 
-func RegisterProducerServiceServer(s grpc.ServiceRegistrar, srv ProducerServiceServer) {
-	// If the following call pancis, it indicates UnimplementedProducerServiceServer was
+func RegisterRouteServer(s grpc.ServiceRegistrar, srv RouteServer) {
+	// If the following call pancis, it indicates UnimplementedRouteServer was
 	// embedded by pointer and is nil.  This will cause panics if an
 	// unimplemented method is ever invoked, so we test this at initialization
 	// time to prevent it from happening at runtime later due to I/O.
 	if t, ok := srv.(interface{ testEmbeddedByValue() }); ok {
 		t.testEmbeddedByValue()
 	}
-	s.RegisterService(&ProducerService_ServiceDesc, srv)
+	s.RegisterService(&Route_ServiceDesc, srv)
 }
 
-func _ProducerService_RouteChat_Handler(srv interface{}, stream grpc.ServerStream) error {
-	return srv.(ProducerServiceServer).RouteChat(&grpc.GenericServerStream[OBUData, OBUData]{ServerStream: stream})
+func _Route_RouteChat_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(RouteServer).RouteChat(&grpc.GenericServerStream[OBUData, OBUData]{ServerStream: stream})
 }
 
 // This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
-type ProducerService_RouteChatServer = grpc.BidiStreamingServer[OBUData, OBUData]
+type Route_RouteChatServer = grpc.BidiStreamingServer[OBUData, OBUData]
 
-// ProducerService_ServiceDesc is the grpc.ServiceDesc for ProducerService service.
+// Route_ServiceDesc is the grpc.ServiceDesc for Route service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
-var ProducerService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "location.ProducerService",
-	HandlerType: (*ProducerServiceServer)(nil),
+var Route_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "location.Route",
+	HandlerType: (*RouteServer)(nil),
 	Methods:     []grpc.MethodDesc{},
 	Streams: []grpc.StreamDesc{
 		{
 			StreamName:    "RouteChat",
-			Handler:       _ProducerService_RouteChat_Handler,
+			Handler:       _Route_RouteChat_Handler,
 			ServerStreams: true,
 			ClientStreams: true,
 		},

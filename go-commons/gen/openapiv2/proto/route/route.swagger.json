@@ -6,7 +6,7 @@
   },
   "tags": [
     {
-      "name": "ProducerService"
+      "name": "Route"
     }
   ],
   "consumes": [
@@ -18,7 +18,7 @@
   "paths": {
     "/v1/location/send": {
       "post": {
-        "operationId": "ProducerService_RouteChat",
+        "operationId": "Route_RouteChat",
         "responses": {
           "200": {
             "description": "A successful response.(streaming responses)",
@@ -54,7 +54,7 @@
           }
         ],
         "tags": [
-          "ProducerService"
+          "Route"
         ]
       }
     }
@@ -75,8 +75,7 @@
           "type": "string",
           "format": "date-time"
         }
-      },
-      "title": "Location data sent by OBU (On-Board Unit)"
+      }
     },
     "protobufAny": {
       "type": "object",

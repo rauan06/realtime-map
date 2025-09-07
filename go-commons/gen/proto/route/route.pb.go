@@ -23,7 +23,6 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// Location data sent by OBU (On-Board Unit)
 type OBUData struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Latitude      float64                `protobuf:"fixed64,2,opt,name=latitude,proto3" json:"latitude,omitempty"`
@@ -92,8 +91,8 @@ const file_proto_route_route_proto_rawDesc = "" +
 	"\aOBUData\x12\x1a\n" +
 	"\blatitude\x18\x02 \x01(\x01R\blatitude\x12\x1c\n" +
 	"\tlongitude\x18\x03 \x01(\x01R\tlongitude\x128\n" +
-	"\ttimestamp\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\ttimestampJ\x04\b\x01\x10\x022f\n" +
-	"\x0fProducerService\x12S\n" +
+	"\ttimestamp\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\ttimestampJ\x04\b\x01\x10\x022\\\n" +
+	"\x05Route\x12S\n" +
 	"\tRouteChat\x12\x11.location.OBUData\x1a\x11.location.OBUData\"\x1c\x82\xd3\xe4\x93\x02\x16:\x01*\"\x11/v1/location/send(\x010\x01BBZ@github.com/rauan06/realtime-map/go-commons/gen/proto/route;routeb\x06proto3"
 
 var (
@@ -115,8 +114,8 @@ var file_proto_route_route_proto_goTypes = []any{
 }
 var file_proto_route_route_proto_depIdxs = []int32{
 	1, // 0: location.OBUData.timestamp:type_name -> google.protobuf.Timestamp
-	0, // 1: location.ProducerService.RouteChat:input_type -> location.OBUData
-	0, // 2: location.ProducerService.RouteChat:output_type -> location.OBUData
+	0, // 1: location.Route.RouteChat:input_type -> location.OBUData
+	0, // 2: location.Route.RouteChat:output_type -> location.OBUData
 	2, // [2:3] is the sub-list for method output_type
 	1, // [1:2] is the sub-list for method input_type
 	1, // [1:1] is the sub-list for extension type_name

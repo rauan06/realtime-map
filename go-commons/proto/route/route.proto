@@ -6,9 +6,8 @@ option go_package = "github.com/rauan06/realtime-map/go-commons/gen/proto/route;
 import "google/api/annotations.proto";
 import "google/protobuf/timestamp.proto";
 
-// Location data sent by OBU (On-Board Unit)
 message OBUData {
-  // Reserved field 1 for future use (e.g., uuid)
+  // Reserved field 1 for future use (e.g., user_id)
   reserved 1;
 
   double latitude = 2;
@@ -16,8 +15,7 @@ message OBUData {
   google.protobuf.Timestamp timestamp = 4;
 }
 
-// Bidirectional streaming service for real-time location updates
-service ProducerService {
+service Route {
   rpc RouteChat (stream OBUData) returns (stream OBUData) {
     option (google.api.http) = {
       post: "/v1/location/send"
