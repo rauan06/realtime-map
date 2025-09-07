@@ -63,6 +63,11 @@
     "locationOBUData": {
       "type": "object",
       "properties": {
+        "deviceId": {
+          "type": "string",
+          "format": "byte",
+          "title": "16-byte uuid"
+        },
         "latitude": {
           "type": "number",
           "format": "double"

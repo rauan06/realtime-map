@@ -25,6 +25,7 @@ const (
 
 type OBUData struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
+	DeviceId      []byte                 `protobuf:"bytes,1,opt,name=device_id,json=deviceId,proto3" json:"device_id,omitempty"` // 16-byte uuid
 	Latitude      float64                `protobuf:"fixed64,2,opt,name=latitude,proto3" json:"latitude,omitempty"`
 	Longitude     float64                `protobuf:"fixed64,3,opt,name=longitude,proto3" json:"longitude,omitempty"`
 	Timestamp     *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
@@ -62,6 +63,13 @@ func (*OBUData) Descriptor() ([]byte, []int) {
 	return file_proto_route_route_proto_rawDescGZIP(), []int{0}
 }
 
+func (x *OBUData) GetDeviceId() []byte {
+	if x != nil {
+		return x.DeviceId
+	}
+	return nil
+}
+
 func (x *OBUData) GetLatitude() float64 {
 	if x != nil {
 		return x.Latitude
@@ -87,11 +95,12 @@ var File_proto_route_route_proto protoreflect.FileDescriptor
 
 const file_proto_route_route_proto_rawDesc = "" +
 	"\n" +
-	"\x17proto/route/route.proto\x12\blocation\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x83\x01\n" +
-	"\aOBUData\x12\x1a\n" +
+	"\x17proto/route/route.proto\x12\blocation\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x9a\x01\n" +
+	"\aOBUData\x12\x1b\n" +
+	"\tdevice_id\x18\x01 \x01(\fR\bdeviceId\x12\x1a\n" +
 	"\blatitude\x18\x02 \x01(\x01R\blatitude\x12\x1c\n" +
 	"\tlongitude\x18\x03 \x01(\x01R\tlongitude\x128\n" +
-	"\ttimestamp\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\ttimestampJ\x04\b\x01\x10\x022\\\n" +
+	"\ttimestamp\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\ttimestamp2\\\n" +
 	"\x05Route\x12S\n" +
 	"\tRouteChat\x12\x11.location.OBUData\x1a\x11.location.OBUData\"\x1c\x82\xd3\xe4\x93\x02\x16:\x01*\"\x11/v1/location/send(\x010\x01BBZ@github.com/rauan06/realtime-map/go-commons/gen/proto/route;routeb\x06proto3"
 

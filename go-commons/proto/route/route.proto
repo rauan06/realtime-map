@@ -7,9 +7,7 @@ import "google/api/annotations.proto";
 import "google/protobuf/timestamp.proto";
 
 message OBUData {
-  // Reserved field 1 for future use (e.g., user_id)
-  reserved 1;
-
+  bytes device_id = 1; // 16-byte uuid
   double latitude = 2;
   double longitude = 3;
   google.protobuf.Timestamp timestamp = 4;
