@@ -2,7 +2,7 @@
 // versions:
 // 	protoc-gen-go v1.36.8
 // 	protoc        (unknown)
-// source: proto/producer/producer.proto
+// source: proto/route/route.proto
 
 package route
 
@@ -35,7 +35,7 @@ type OBUData struct {
 
 func (x *OBUData) Reset() {
 	*x = OBUData{}
-	mi := &file_proto_producer_producer_proto_msgTypes[0]
+	mi := &file_proto_route_route_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -47,7 +47,7 @@ func (x *OBUData) String() string {
 func (*OBUData) ProtoMessage() {}
 
 func (x *OBUData) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_producer_producer_proto_msgTypes[0]
+	mi := &file_proto_route_route_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -60,7 +60,7 @@ func (x *OBUData) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use OBUData.ProtoReflect.Descriptor instead.
 func (*OBUData) Descriptor() ([]byte, []int) {
-	return file_proto_producer_producer_proto_rawDescGZIP(), []int{0}
+	return file_proto_route_route_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *OBUData) GetLatitude() float64 {
@@ -84,11 +84,11 @@ func (x *OBUData) GetTimestamp() *timestamppb.Timestamp {
 	return nil
 }
 
-var File_proto_producer_producer_proto protoreflect.FileDescriptor
+var File_proto_route_route_proto protoreflect.FileDescriptor
 
-const file_proto_producer_producer_proto_rawDesc = "" +
+const file_proto_route_route_proto_rawDesc = "" +
 	"\n" +
-	"\x1dproto/producer/producer.proto\x12\blocation\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x83\x01\n" +
+	"\x17proto/route/route.proto\x12\blocation\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x83\x01\n" +
 	"\aOBUData\x12\x1a\n" +
 	"\blatitude\x18\x02 \x01(\x01R\blatitude\x12\x1c\n" +
 	"\tlongitude\x18\x03 \x01(\x01R\tlongitude\x128\n" +
@@ -97,23 +97,23 @@ const file_proto_producer_producer_proto_rawDesc = "" +
 	"\tRouteChat\x12\x11.location.OBUData\x1a\x11.location.OBUData\"\x1c\x82\xd3\xe4\x93\x02\x16:\x01*\"\x11/v1/location/send(\x010\x01BBZ@github.com/rauan06/realtime-map/go-commons/gen/proto/route;routeb\x06proto3"
 
 var (
-	file_proto_producer_producer_proto_rawDescOnce sync.Once
-	file_proto_producer_producer_proto_rawDescData []byte
+	file_proto_route_route_proto_rawDescOnce sync.Once
+	file_proto_route_route_proto_rawDescData []byte
 )
 
-func file_proto_producer_producer_proto_rawDescGZIP() []byte {
-	file_proto_producer_producer_proto_rawDescOnce.Do(func() {
-		file_proto_producer_producer_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_proto_producer_producer_proto_rawDesc), len(file_proto_producer_producer_proto_rawDesc)))
+func file_proto_route_route_proto_rawDescGZIP() []byte {
+	file_proto_route_route_proto_rawDescOnce.Do(func() {
+		file_proto_route_route_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_proto_route_route_proto_rawDesc), len(file_proto_route_route_proto_rawDesc)))
 	})
-	return file_proto_producer_producer_proto_rawDescData
+	return file_proto_route_route_proto_rawDescData
 }
 
-var file_proto_producer_producer_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
-var file_proto_producer_producer_proto_goTypes = []any{
+var file_proto_route_route_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
+var file_proto_route_route_proto_goTypes = []any{
 	(*OBUData)(nil),               // 0: location.OBUData
 	(*timestamppb.Timestamp)(nil), // 1: google.protobuf.Timestamp
 }
-var file_proto_producer_producer_proto_depIdxs = []int32{
+var file_proto_route_route_proto_depIdxs = []int32{
 	1, // 0: location.OBUData.timestamp:type_name -> google.protobuf.Timestamp
 	0, // 1: location.ProducerService.RouteChat:input_type -> location.OBUData
 	0, // 2: location.ProducerService.RouteChat:output_type -> location.OBUData
@@ -124,26 +124,26 @@ var file_proto_producer_producer_proto_depIdxs = []int32{
 	0, // [0:1] is the sub-list for field type_name
 }
 
-func init() { file_proto_producer_producer_proto_init() }
-func file_proto_producer_producer_proto_init() {
-	if File_proto_producer_producer_proto != nil {
+func init() { file_proto_route_route_proto_init() }
+func file_proto_route_route_proto_init() {
+	if File_proto_route_route_proto != nil {
 		return
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_producer_producer_proto_rawDesc), len(file_proto_producer_producer_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_route_route_proto_rawDesc), len(file_proto_route_route_proto_rawDesc)),
 			NumEnums:      0,
 			NumMessages:   1,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
-		GoTypes:           file_proto_producer_producer_proto_goTypes,
-		DependencyIndexes: file_proto_producer_producer_proto_depIdxs,
-		MessageInfos:      file_proto_producer_producer_proto_msgTypes,
+		GoTypes:           file_proto_route_route_proto_goTypes,
+		DependencyIndexes: file_proto_route_route_proto_depIdxs,
+		MessageInfos:      file_proto_route_route_proto_msgTypes,
 	}.Build()
-	File_proto_producer_producer_proto = out.File
-	file_proto_producer_producer_proto_goTypes = nil
-	file_proto_producer_producer_proto_depIdxs = nil
+	File_proto_route_route_proto = out.File
+	file_proto_route_route_proto_goTypes = nil
+	file_proto_route_route_proto_depIdxs = nil
 }

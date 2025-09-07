@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.5.1
 // - protoc             (unknown)
-// source: proto/producer/producer.proto
+// source: proto/route/route.proto
 
 package route
 
@@ -115,5 +115,5 @@ var ProducerService_ServiceDesc = grpc.ServiceDesc{
 			ClientStreams: true,
 		},
 	},
-	Metadata: "proto/producer/producer.proto",
+	Metadata: "proto/route/route.proto",
 }
