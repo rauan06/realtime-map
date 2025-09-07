@@ -1,12 +1,15 @@
 package v1
 
 import (
+	"context"
 	"fmt"
 	"io"
 
 	"github.com/go-playground/validator/v10"
+	"github.com/google/uuid"
 	routepb "github.com/rauan06/realtime-map/go-commons/gen/proto/route"
 	"github.com/rauan06/realtime-map/go-commons/pkg/logger"
+	"github.com/rauan06/realtime-map/producer/internal/domain"
 	"github.com/rauan06/realtime-map/producer/internal/usecase"
 	"google.golang.org/grpc"
 )
@@ -30,6 +33,17 @@ func (r *V1) RouteChat(stream grpc.BidiStreamingServer[routepb.OBUData, routepb.
 		}
 
 		r.l.Info(fmt.Sprintf("recieved: %+v/n", in))
-		r.uc.ProcessOBUData()
+
+		err = r.uc.ProcessOBUData(context.Background(),
+			domain.OBUData{
+				ID:        uuid.UUID(in.DeviceId),
+				Long:      in.Longitude,
+				Lat:       in.Latitude,
+				Timestamp: in.Timestamp.AsTime(),
+			})
+		if err != nil {
+			stream.Send(in)
+			return err
+		}
 	}
 }

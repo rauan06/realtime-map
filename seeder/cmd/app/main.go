@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"io"
 	"log"
 	"math/rand/v2"
 	"os"
@@ -10,9 +11,10 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	producerpb "github.com/rauan06/realtime-map/go-commons/gen/proto/producer"
+	"github.com/rauan06/realtime-map/go-commons/gen/proto/route"
 	"github.com/rauan06/realtime-map/seeder/internal/domain"
 	"github.com/rauan06/realtime-map/seeder/internal/repo/grpcclient"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func genCord() float64 {
@@ -29,7 +31,7 @@ func genOBUData() domain.OBUData {
 
 func main() {
 	client := grpcclient.New()
-	stream, err := client.SendLocation(context.Background())
+	stream, err := client.RouteChat(context.Background())
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -46,21 +48,17 @@ loop:
 			break loop
 		default:
 			time.Sleep(500 * time.Millisecond)
-			err = stream.Send(&producerpb.OBUData{
+			err = stream.Send(&route.OBUData{
+				DeviceId:  []byte("33f04b11-a6ac-4a43-bae3-3cdbd1d2dcd8"),
 				Latitude:  genCord(),
 				Longitude: genCord(),
-				Timestamp: time.Now().Unix(),
+				Timestamp: timestamppb.New(time.Now()),
 			})
 			if err != nil {
-				log.Fatal(err)
+				if err != io.EOF {
+					log.Fatal(err)
+				}
 			}
 		}
 	}
-
-	// End stream properly
-	resp, err := stream.CloseAndRecv()
-	if err != nil {
-		log.Fatal("Failed to close stream:", err)
-	}
-	log.Printf("Stream finished. Server response: %+v\n", resp)
 }

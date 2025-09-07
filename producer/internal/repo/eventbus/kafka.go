@@ -18,32 +18,27 @@ type EventBus struct {
 	Topic string
 }
 
-func New(cfg *config.Config) (*EventBus, error) {
-	p, err := kafka.NewProducer(&kafka.ConfigMap{"bootstrap.servers": cfg.Kafka.BootstrapServers})
-	if err != nil {
-		return nil,err
-	}
-
+func New(p *kafka.Producer, cfg *config.Config) (repo.IEventBus, error) {
 	return &EventBus{p, cfg.Kafka.Topic}, nil
 }
 
 func (eb *EventBus) Run(l *logger.Logger) {
 	// Delivery report handler for produced messages
 	go func() {
-	for e := range eb.Events() {
-		switch ev := e.(type) {
-		case *kafka.Message:
-			if ev.TopicPartition.Error != nil {
-				l.Error("Delivery failed: %v\n", ev.TopicPartition)
-			} else {
-				l.Info("Delivered message to %v\n", ev.TopicPartition)
+		for e := range eb.Events() {
+			switch ev := e.(type) {
+			case *kafka.Message:
+				if ev.TopicPartition.Error != nil {
+					l.Error("Delivery failed: %v\n", ev.TopicPartition)
+				} else {
+					l.Info("Delivered message to %v\n", ev.TopicPartition)
+				}
 			}
 		}
-	}
 	}()
 }
 
-func (eb *EventBus) ProduceEvent(ctx context.Context, data domain.OBUData) error {
+func (eb *EventBus) ProduceEvent(ctx context.Context, data domain.KafkaMessage) error {
 	parsedData, err := json.Marshal(data)
 	if err != nil {
 		return err

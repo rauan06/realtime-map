@@ -9,7 +9,7 @@ import (
 
 type (
 	IEventBus interface {
-		ProduceEvent(context.Context, domain.OBUData) error
+		ProduceEvent(context.Context, domain.KafkaMessage) error
 		// GetHistory(context.Context) ([]domain.OBUData, error)
 	}
 	ICache interface {

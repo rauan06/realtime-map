@@ -6,13 +6,15 @@ require (
 	github.com/caarlos0/env/v11 v11.3.1
 	github.com/confluentinc/confluent-kafka-go/v2 v2.11.1
 	github.com/go-playground/validator/v10 v10.27.0
+	github.com/google/uuid v1.6.0
 	github.com/joho/godotenv v1.5.1
 	github.com/rauan06/realtime-map/go-commons v0.0.0-20250907081040-a5c8e58aca28
-	github.com/redis/go-redis v6.15.9+incompatible
+	github.com/redis/go-redis/v9 v9.13.0
 	google.golang.org/grpc v1.75.0
 )
 
 require (
+	github.com/Masterminds/semver/v3 v3.4.0 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 	github.com/gabriel-vasile/mimetype v1.4.9 // indirect
@@ -21,17 +23,13 @@ require (
 	github.com/go-openapi/swag v0.23.1 // indirect
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect
-	github.com/go-redis/redis v6.15.9+incompatible // indirect
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.27.2 // indirect
 	github.com/klauspost/compress v1.18.0 // indirect
 	github.com/leodido/go-urn v1.4.0 // indirect
 	github.com/mattn/go-colorable v0.1.14 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
-	github.com/onsi/ginkgo v1.16.5 // indirect
-	github.com/onsi/gomega v1.38.2 // indirect
 	github.com/prometheus/client_golang v1.23.0 // indirect
 	github.com/prometheus/procfs v0.17.0 // indirect
-	github.com/redis/go-redis/v9 v9.13.0 // indirect
 	github.com/rs/zerolog v1.34.0 // indirect
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.61.0 // indirect
 	go.uber.org/mock v0.6.0 // indirect

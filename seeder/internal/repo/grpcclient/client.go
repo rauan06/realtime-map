@@ -3,13 +3,13 @@ package grpcclient
 import (
 	"log"
 
-	producerpb "github.com/rauan06/realtime-map/go-commons/gen/proto/producer"
+	routepb "github.com/rauan06/realtime-map/go-commons/gen/proto/route"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
 
 type Client struct {
-	producerpb.ProducerServiceClient
+	routepb.RouteClient
 }
 
 func New() *Client {
@@ -18,6 +18,6 @@ func New() *Client {
 		log.Fatal(err)
 	}
 
-	prodcuerClient := producerpb.NewProducerServiceClient(client)
+	prodcuerClient := routepb.NewRouteClient(client)
 	return &Client{prodcuerClient}
 }
