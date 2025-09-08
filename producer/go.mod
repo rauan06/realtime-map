@@ -6,9 +6,10 @@ require (
 	github.com/caarlos0/env/v11 v11.3.1
 	github.com/confluentinc/confluent-kafka-go/v2 v2.11.1
 	github.com/go-playground/validator/v10 v10.27.0
+	github.com/golang/protobuf v1.5.4
 	github.com/google/uuid v1.6.0
 	github.com/joho/godotenv v1.5.1
-	github.com/rauan06/realtime-map/go-commons v0.0.0-20250907081040-a5c8e58aca28
+	github.com/rauan06/realtime-map/go-commons v0.0.0-20250908083811-0eb4692381ad
 	github.com/redis/go-redis/v9 v9.13.0
 	google.golang.org/grpc v1.75.0
 )

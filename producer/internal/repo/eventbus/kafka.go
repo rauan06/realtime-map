@@ -19,7 +19,7 @@ type EventBus struct {
 }
 
 func New(p *kafka.Producer, cfg *config.Config) (repo.IEventBus, error) {
-	return &EventBus{p, cfg.Kafka.Topic}, nil
+	return &EventBus{Producer: p, Topic: cfg.Kafka.Topic}, nil
 }
 
 func (eb *EventBus) Run(l *logger.Logger) {
@@ -44,9 +44,13 @@ func (eb *EventBus) ProduceEvent(ctx context.Context, data domain.KafkaMessage) 
 		return err
 	}
 
-	eb.Produce(&kafka.Message{
+	err = eb.Produce(&kafka.Message{
 		TopicPartition: kafka.TopicPartition{Topic: &eb.Topic, Partition: kafka.PartitionAny},
 		Value:          parsedData,
 	}, nil)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }

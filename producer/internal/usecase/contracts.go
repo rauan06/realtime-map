@@ -7,7 +7,7 @@ import (
 )
 
 type IProducerUseCase interface {
-	StartSession(context.Context, string) (string, error)
+	StartSession(context.Context, []byte) ([]byte, error)
 	EndSession(context.Context, string) error
 	ProcessOBUData(context.Context, domain.OBUData) error
 }

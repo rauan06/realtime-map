@@ -22,19 +22,19 @@ func New(eb repo.IEventBus, c repo.ICache) usecase.IProducerUseCase {
 	return &UseCase{eb, c}
 }
 
-func (uc *UseCase) StartSession(ctx context.Context, ID string) (string, error) {
-	session, _ := uc.cache.Get(ctx, ID)
+func (uc *UseCase) StartSession(ctx context.Context, ID []byte) ([]byte, error) {
+	session, _ := uc.cache.Get(ctx, string(ID))
 	if len(session) != 0 {
-		return string(session), nil
+		return session, nil
 	}
 
 	session = []byte(uuid.NewString())
-	err := uc.cache.Set(ctx, ID, session, 2*time.Minute)
+	err := uc.cache.Set(ctx, string(ID), session, 2*time.Minute)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
-	return string(session), nil
+	return session, nil
 }
 
 func (uc *UseCase) EndSession(ctx context.Context, ID string) error {
@@ -52,7 +52,7 @@ func (uc *UseCase) EndSession(ctx context.Context, ID string) error {
 }
 
 func (uc *UseCase) ProcessOBUData(ctx context.Context, data domain.OBUData) error {
-	session, err := uc.cache.Get(ctx, data.ID.String())
+	session, err := uc.cache.Get(ctx, string(data.ID))
 	if err != nil {
 		return errors.New("no session found")
 	}

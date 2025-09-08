@@ -267,8 +267,8 @@ github.com/prometheus/procfs v0.17.0 h1:FuLQ+05u4ZI+SS/w9+BWEM2TXiHKsUQ9TADiRH7D
 github.com/prometheus/procfs v0.17.0/go.mod h1:oPQLaDAMRbA+u8H5Pbfq+dl3VDAvHxMUOVhe0wYB2zw=
 github.com/r3labs/sse v0.0.0-20210224172625-26fe804710bc h1:zAsgcP8MhzAbhMnB1QQ2O7ZhWYVGYSR2iVcjzQuPV+o=
 github.com/r3labs/sse v0.0.0-20210224172625-26fe804710bc/go.mod h1:S8xSOnV3CgpNrWd0GQ/OoQfMtlg2uPRSuTzcSGrzwK8=
-github.com/rauan06/realtime-map/go-commons v0.0.0-20250907081040-a5c8e58aca28 h1:EU7voXMw5QYh3UTRiatQwdTY3GxQg5kgaKpltJvJr2A=
-github.com/rauan06/realtime-map/go-commons v0.0.0-20250907081040-a5c8e58aca28/go.mod h1:vB2Xv5ra83SneQjg0BruxCzTPf45Ry4F7htHXlQiJfE=
+github.com/rauan06/realtime-map/go-commons v0.0.0-20250908083811-0eb4692381ad h1:GYnzMBH+/9KREBCS5k/tfvZQi0heaMUpIta8CMaCF20=
+github.com/rauan06/realtime-map/go-commons v0.0.0-20250908083811-0eb4692381ad/go.mod h1:vB2Xv5ra83SneQjg0BruxCzTPf45Ry4F7htHXlQiJfE=
 github.com/redis/go-redis/v9 v9.13.0 h1:PpmlVykE0ODh8P43U0HqC+2NXHXwG+GUtQyz+MPKGRg=
 github.com/redis/go-redis/v9 v9.13.0/go.mod h1:huWgSWd8mW6+m0VPhJjSSQ+d6Nh1VICQ6Q5lHuCH/Iw=
 github.com/rivo/uniseg v0.2.0 h1:S1pD9weZBuJdFmowNwbpi7BJ8TNftyUImj/0WQi72jY=

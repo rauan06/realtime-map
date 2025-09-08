@@ -13,11 +13,11 @@ type Client struct {
 }
 
 func New() *Client {
-	client, err := grpc.NewClient("localhost:8081", grpc.WithTransportCredentials(insecure.NewCredentials()))
+	client, err := grpc.NewClient("localhost:5081", grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	prodcuerClient := routepb.NewRouteClient(client)
-	return &Client{prodcuerClient}
+	routeClient := routepb.NewRouteClient(client)
+	return &Client{routeClient}
 }
