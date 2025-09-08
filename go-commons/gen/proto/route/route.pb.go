@@ -10,6 +10,7 @@ import (
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	reflect "reflect"
 	sync "sync"
@@ -91,18 +92,114 @@ func (x *OBUData) GetTimestamp() *timestamppb.Timestamp {
 	return nil
 }
 
+type DeviceID struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	DeviceId      []byte                 `protobuf:"bytes,1,opt,name=device_id,json=deviceId,proto3" json:"device_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DeviceID) Reset() {
+	*x = DeviceID{}
+	mi := &file_proto_route_route_proto_msgTypes[1]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeviceID) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeviceID) ProtoMessage() {}
+
+func (x *DeviceID) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_route_route_proto_msgTypes[1]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeviceID.ProtoReflect.Descriptor instead.
+func (*DeviceID) Descriptor() ([]byte, []int) {
+	return file_proto_route_route_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *DeviceID) GetDeviceId() []byte {
+	if x != nil {
+		return x.DeviceId
+	}
+	return nil
+}
+
+type InitResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	SessionId     []byte                 `protobuf:"bytes,1,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *InitResponse) Reset() {
+	*x = InitResponse{}
+	mi := &file_proto_route_route_proto_msgTypes[2]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *InitResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*InitResponse) ProtoMessage() {}
+
+func (x *InitResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_route_route_proto_msgTypes[2]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use InitResponse.ProtoReflect.Descriptor instead.
+func (*InitResponse) Descriptor() ([]byte, []int) {
+	return file_proto_route_route_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *InitResponse) GetSessionId() []byte {
+	if x != nil {
+		return x.SessionId
+	}
+	return nil
+}
+
 var File_proto_route_route_proto protoreflect.FileDescriptor
 
 const file_proto_route_route_proto_rawDesc = "" +
 	"\n" +
-	"\x17proto/route/route.proto\x12\blocation\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x9a\x01\n" +
+	"\x17proto/route/route.proto\x12\blocation\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1bgoogle/protobuf/empty.proto\"\x9a\x01\n" +
 	"\aOBUData\x12\x1b\n" +
 	"\tdevice_id\x18\x01 \x01(\fR\bdeviceId\x12\x1a\n" +
 	"\blatitude\x18\x02 \x01(\x01R\blatitude\x12\x1c\n" +
 	"\tlongitude\x18\x03 \x01(\x01R\tlongitude\x128\n" +
-	"\ttimestamp\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\ttimestamp2\\\n" +
-	"\x05Route\x12S\n" +
-	"\tRouteChat\x12\x11.location.OBUData\x1a\x11.location.OBUData\"\x1c\x82\xd3\xe4\x93\x02\x16:\x01*\"\x11/v1/location/send(\x010\x01BBZ@github.com/rauan06/realtime-map/go-commons/gen/proto/route;routeb\x06proto3"
+	"\ttimestamp\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\ttimestamp\"'\n" +
+	"\bDeviceID\x12\x1b\n" +
+	"\tdevice_id\x18\x01 \x01(\fR\bdeviceId\"-\n" +
+	"\fInitResponse\x12\x1d\n" +
+	"\n" +
+	"session_id\x18\x01 \x01(\fR\tsessionId2\x89\x02\n" +
+	"\x05Route\x12V\n" +
+	"\fStartSession\x12\x12.location.DeviceID\x1a\x16.location.InitResponse\"\x1a\x82\xd3\xe4\x93\x02\x14:\x01*\"\x0f/v1/route/start\x12R\n" +
+	"\n" +
+	"EndSession\x12\x12.location.DeviceID\x1a\x16.google.protobuf.Empty\"\x18\x82\xd3\xe4\x93\x02\x12:\x01*\"\r/v1/route/end\x12T\n" +
+	"\tRouteChat\x12\x11.location.OBUData\x1a\x11.location.OBUData\"\x1d\x82\xd3\xe4\x93\x02\x17:\x01*\"\x12/v1/route/location(\x010\x01BBZ@github.com/rauan06/realtime-map/go-commons/gen/proto/route;routeb\x06proto3"
 
 var (
 	file_proto_route_route_proto_rawDescOnce sync.Once
@@ -116,17 +213,24 @@ func file_proto_route_route_proto_rawDescGZIP() []byte {
 	return file_proto_route_route_proto_rawDescData
 }
 
-var file_proto_route_route_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
+var file_proto_route_route_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
 var file_proto_route_route_proto_goTypes = []any{
 	(*OBUData)(nil),               // 0: location.OBUData
-	(*timestamppb.Timestamp)(nil), // 1: google.protobuf.Timestamp
+	(*DeviceID)(nil),              // 1: location.DeviceID
+	(*InitResponse)(nil),          // 2: location.InitResponse
+	(*timestamppb.Timestamp)(nil), // 3: google.protobuf.Timestamp
+	(*emptypb.Empty)(nil),         // 4: google.protobuf.Empty
 }
 var file_proto_route_route_proto_depIdxs = []int32{
-	1, // 0: location.OBUData.timestamp:type_name -> google.protobuf.Timestamp
-	0, // 1: location.Route.RouteChat:input_type -> location.OBUData
-	0, // 2: location.Route.RouteChat:output_type -> location.OBUData
-	2, // [2:3] is the sub-list for method output_type
-	1, // [1:2] is the sub-list for method input_type
+	3, // 0: location.OBUData.timestamp:type_name -> google.protobuf.Timestamp
+	1, // 1: location.Route.StartSession:input_type -> location.DeviceID
+	1, // 2: location.Route.EndSession:input_type -> location.DeviceID
+	0, // 3: location.Route.RouteChat:input_type -> location.OBUData
+	2, // 4: location.Route.StartSession:output_type -> location.InitResponse
+	4, // 5: location.Route.EndSession:output_type -> google.protobuf.Empty
+	0, // 6: location.Route.RouteChat:output_type -> location.OBUData
+	4, // [4:7] is the sub-list for method output_type
+	1, // [1:4] is the sub-list for method input_type
 	1, // [1:1] is the sub-list for extension type_name
 	1, // [1:1] is the sub-list for extension extendee
 	0, // [0:1] is the sub-list for field type_name
@@ -143,7 +247,7 @@ func file_proto_route_route_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_route_route_proto_rawDesc), len(file_proto_route_route_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   1,
+			NumMessages:   3,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

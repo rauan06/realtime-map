@@ -3,8 +3,10 @@ syntax = "proto3";
 package location;
 
 option go_package = "github.com/rauan06/realtime-map/go-commons/gen/proto/route;route";
+
 import "google/api/annotations.proto";
 import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
 
 message OBUData {
   bytes device_id = 1; // 16-byte uuid
@@ -23,18 +25,18 @@ message InitResponse {
 
 service Route {
   rpc StartSession (DeviceID) returns (InitResponse) {
-  option (google.api.http) = {
+    option (google.api.http) = {
       post: "/v1/route/start"
       body: "*"
     };
   }
-  
-  rpc EndSession (DeviceID) returns () {
-  option (google.api.http) = {
+
+  rpc EndSession (DeviceID) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
       post: "/v1/route/end"
       body: "*"
     };
-  }  
+  }
 
   rpc RouteChat (stream OBUData) returns (stream OBUData) {
     option (google.api.http) = {

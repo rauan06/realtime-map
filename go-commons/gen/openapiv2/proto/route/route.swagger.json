@@ -16,7 +16,40 @@
     "application/json"
   ],
   "paths": {
-    "/v1/location/send": {
+    "/v1/route/end": {
+      "post": {
+        "operationId": "Route_EndSession",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/locationDeviceID"
+            }
+          }
+        ],
+        "tags": [
+          "Route"
+        ]
+      }
+    },
+    "/v1/route/location": {
       "post": {
         "operationId": "Route_RouteChat",
         "responses": {
@@ -57,9 +90,59 @@
           "Route"
         ]
       }
+    },
+    "/v1/route/start": {
+      "post": {
+        "operationId": "Route_StartSession",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/locationInitResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/locationDeviceID"
+            }
+          }
+        ],
+        "tags": [
+          "Route"
+        ]
+      }
     }
   },
   "definitions": {
+    "locationDeviceID": {
+      "type": "object",
+      "properties": {
+        "deviceId": {
+          "type": "string",
+          "format": "byte"
+        }
+      }
+    },
+    "locationInitResponse": {
+      "type": "object",
+      "properties": {
+        "sessionId": {
+          "type": "string",
+          "format": "byte"
+        }
+      }
+    },
     "locationOBUData": {
       "type": "object",
       "properties": {

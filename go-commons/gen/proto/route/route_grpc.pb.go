@@ -11,6 +11,7 @@ import (
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -19,13 +20,17 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	Route_RouteChat_FullMethodName = "/location.Route/RouteChat"
+	Route_StartSession_FullMethodName = "/location.Route/StartSession"
+	Route_EndSession_FullMethodName   = "/location.Route/EndSession"
+	Route_RouteChat_FullMethodName    = "/location.Route/RouteChat"
 )
 
 // RouteClient is the client API for Route service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type RouteClient interface {
+	StartSession(ctx context.Context, in *DeviceID, opts ...grpc.CallOption) (*InitResponse, error)
+	EndSession(ctx context.Context, in *DeviceID, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	RouteChat(ctx context.Context, opts ...grpc.CallOption) (grpc.BidiStreamingClient[OBUData, OBUData], error)
 }
 
@@ -35,6 +40,26 @@ type routeClient struct {
 
 func NewRouteClient(cc grpc.ClientConnInterface) RouteClient {
 	return &routeClient{cc}
+}
+
+func (c *routeClient) StartSession(ctx context.Context, in *DeviceID, opts ...grpc.CallOption) (*InitResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(InitResponse)
+	err := c.cc.Invoke(ctx, Route_StartSession_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *routeClient) EndSession(ctx context.Context, in *DeviceID, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, Route_EndSession_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 func (c *routeClient) RouteChat(ctx context.Context, opts ...grpc.CallOption) (grpc.BidiStreamingClient[OBUData, OBUData], error) {
@@ -54,6 +79,8 @@ type Route_RouteChatClient = grpc.BidiStreamingClient[OBUData, OBUData]
 // All implementations must embed UnimplementedRouteServer
 // for forward compatibility.
 type RouteServer interface {
+	StartSession(context.Context, *DeviceID) (*InitResponse, error)
+	EndSession(context.Context, *DeviceID) (*emptypb.Empty, error)
 	RouteChat(grpc.BidiStreamingServer[OBUData, OBUData]) error
 	mustEmbedUnimplementedRouteServer()
 }
@@ -65,6 +92,12 @@ type RouteServer interface {
 // pointer dereference when methods are called.
 type UnimplementedRouteServer struct{}
 
+func (UnimplementedRouteServer) StartSession(context.Context, *DeviceID) (*InitResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method StartSession not implemented")
+}
+func (UnimplementedRouteServer) EndSession(context.Context, *DeviceID) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method EndSession not implemented")
+}
 func (UnimplementedRouteServer) RouteChat(grpc.BidiStreamingServer[OBUData, OBUData]) error {
 	return status.Errorf(codes.Unimplemented, "method RouteChat not implemented")
 }
@@ -89,6 +122,42 @@ func RegisterRouteServer(s grpc.ServiceRegistrar, srv RouteServer) {
 	s.RegisterService(&Route_ServiceDesc, srv)
 }
 
+func _Route_StartSession_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeviceID)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RouteServer).StartSession(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Route_StartSession_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RouteServer).StartSession(ctx, req.(*DeviceID))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Route_EndSession_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeviceID)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RouteServer).EndSession(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Route_EndSession_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RouteServer).EndSession(ctx, req.(*DeviceID))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Route_RouteChat_Handler(srv interface{}, stream grpc.ServerStream) error {
 	return srv.(RouteServer).RouteChat(&grpc.GenericServerStream[OBUData, OBUData]{ServerStream: stream})
 }
@@ -102,7 +171,16 @@ type Route_RouteChatServer = grpc.BidiStreamingServer[OBUData, OBUData]
 var Route_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "location.Route",
 	HandlerType: (*RouteServer)(nil),
-	Methods:     []grpc.MethodDesc{},
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "StartSession",
+			Handler:    _Route_StartSession_Handler,
+		},
+		{
+			MethodName: "EndSession",
+			Handler:    _Route_EndSession_Handler,
+		},
+	},
 	Streams: []grpc.StreamDesc{
 		{
 			StreamName:    "RouteChat",
