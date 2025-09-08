@@ -159,7 +159,7 @@ Run the test suite using the following command:
 - [X] **`Task 1`**: <strike>Implement kafka producer and data seeder.</strike>
 - [ ] **`Task 2`**: Implement kafka consumer.
 - [ ] **`Task 3`**: Integrate WebSocket protocol and Grafana.
-
+- [ ] **`Task 4`**: Write HTML templates, integration with Leaflet.js.
 ---
 
 ##  Contributing
