@@ -47,7 +47,7 @@ func (r *V1) RouteChat(stream grpc.BidiStreamingServer[routepb.OBUData, routepb.
 			return err
 		}
 
-		r.l.Info(fmt.Sprintf("recieved device id: %s/n", string(in.DeviceId)))
+		r.l.Info(fmt.Sprintf("recieved: %+v/n", in))
 
 		if err != nil {
 			return status.Error(codes.InvalidArgument, err.Error())
