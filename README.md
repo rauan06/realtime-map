@@ -47,39 +47,24 @@
 
 ##  Project Structure
 
-```sh
-└── realtime-map/
-    ├── Dockerfile
-    ├── Makefile
-    ├── api-gateway
-    │   ├── cmd
-    │   ├── config
-    │   ├── go.mod
-    │   ├── go.sum
-    │   ├── internal
-    │   └── template
-    ├── docker-compose.yml
-    ├── go-commons
-    │   ├── buf.gen.yaml
-    │   ├── buf.lock
-    │   ├── buf.yaml
-    │   ├── gen
-    │   ├── go.mod
-    │   ├── go.sum
-    │   ├── pkg
-    │   └── proto
-    ├── producer
-    │   ├── README.md
-    │   ├── cmd
-    │   ├── config
-    │   ├── go.mod
-    │   ├── go.sum
-    │   └── internal
-    └── seeder
-        ├── cmd
-        ├── go.mod
-        ├── go.sum
-        └── internal
+```scharp
+Devices -> Kafka Topic (obu_positions)  ──┐
+                                         │
+                                 ┌───────▼────────┐
+                                 │  Consumer Pool │  (group of Go workers)
+                                 └───────┬────────┘
+                                         │
+         ┌───────────────────────────────┼──────────────────────────────┐
+         │                               │                              │
+   Update Redis shard A             Update Redis shard B           Publish to Fan-out
+   key: obu:{device_id}              key: obu:{device_id}            (optional)
+   (Redis Cluster)                   (Redis Cluster)                 └─> internal pubsub (Redis/ NATS)
+                                                                   ┌─> gRPC/WebSocket Servers (stateless, horizontal)
+                                                                   └─> Optional: Kafka topic for derived events
+Clients connect:
+  1) On connect: gRPC server reads snapshot from Redis (get keys / mget / scan by hash tag)
+  2) After snapshot: client subscribes to live updates (server pushes) or connects to stream
+
 ```
 
 ##  Getting Started

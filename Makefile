@@ -1,4 +1,4 @@
-.PHONY: all buf-install deps generate clean seeder
+.PHONY: all buf-install deps generate clean seeder up
 
 # Directories
 COMMONS_DIR = go-commons
@@ -32,3 +32,6 @@ generate:
 # Clean generated files 
 clean:
 	@cd $(COMMONS_DIR) && rm -rf gen && clear
+
+up:
+	@docker compose up -d
