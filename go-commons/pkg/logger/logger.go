@@ -44,7 +44,19 @@ func New(level string) *Logger {
 	zerolog.SetGlobalLevel(l)
 
 	skipFrameCount := 3
-	logger := zerolog.New(os.Stdout).With().Timestamp().CallerWithSkipFrameCount(zerolog.CallerSkipFrameCount + skipFrameCount).Logger()
+	// Use ConsoleWriter for pretty console output
+	consoleWriter := zerolog.ConsoleWriter{Out: os.Stdout, TimeFormat: "2006-01-02T15:04:05Z07:00"} // Customize time format if needed
+	consoleWriter.PartsOrder = []string{                                                            // Optional: Customize the order of fields (timestamp, level, caller, message, etc.)
+		zerolog.TimestampFieldName,
+		zerolog.LevelFieldName,
+		zerolog.CallerFieldName,
+		zerolog.MessageFieldName,
+	}
+	logger := zerolog.New(consoleWriter).
+		With().
+		Timestamp().
+		CallerWithSkipFrameCount(zerolog.CallerSkipFrameCount + skipFrameCount).
+		Logger()
 
 	return &Logger{
 		logger: &logger,
