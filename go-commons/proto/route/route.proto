@@ -38,7 +38,7 @@ service Route {
     };
   }
 
-  rpc RouteChat (stream OBUData) returns (stream OBUData) {
+  rpc RouteChat (stream OBUData) returns (google.protobuf.Empty) {
     option (google.api.http) = {
       post: "/v1/route/location"
       body: "*"

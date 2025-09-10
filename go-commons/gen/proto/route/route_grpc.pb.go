@@ -31,7 +31,7 @@ const (
 type RouteClient interface {
 	StartSession(ctx context.Context, in *DeviceID, opts ...grpc.CallOption) (*InitResponse, error)
 	EndSession(ctx context.Context, in *DeviceID, opts ...grpc.CallOption) (*emptypb.Empty, error)
-	RouteChat(ctx context.Context, opts ...grpc.CallOption) (grpc.BidiStreamingClient[OBUData, OBUData], error)
+	RouteChat(ctx context.Context, opts ...grpc.CallOption) (grpc.ClientStreamingClient[OBUData, emptypb.Empty], error)
 }
 
 type routeClient struct {
@@ -62,18 +62,18 @@ func (c *routeClient) EndSession(ctx context.Context, in *DeviceID, opts ...grpc
 	return out, nil
 }
 
-func (c *routeClient) RouteChat(ctx context.Context, opts ...grpc.CallOption) (grpc.BidiStreamingClient[OBUData, OBUData], error) {
+func (c *routeClient) RouteChat(ctx context.Context, opts ...grpc.CallOption) (grpc.ClientStreamingClient[OBUData, emptypb.Empty], error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	stream, err := c.cc.NewStream(ctx, &Route_ServiceDesc.Streams[0], Route_RouteChat_FullMethodName, cOpts...)
 	if err != nil {
 		return nil, err
 	}
-	x := &grpc.GenericClientStream[OBUData, OBUData]{ClientStream: stream}
+	x := &grpc.GenericClientStream[OBUData, emptypb.Empty]{ClientStream: stream}
 	return x, nil
 }
 
 // This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
-type Route_RouteChatClient = grpc.BidiStreamingClient[OBUData, OBUData]
+type Route_RouteChatClient = grpc.ClientStreamingClient[OBUData, emptypb.Empty]
 
 // RouteServer is the server API for Route service.
 // All implementations must embed UnimplementedRouteServer
@@ -81,7 +81,7 @@ type Route_RouteChatClient = grpc.BidiStreamingClient[OBUData, OBUData]
 type RouteServer interface {
 	StartSession(context.Context, *DeviceID) (*InitResponse, error)
 	EndSession(context.Context, *DeviceID) (*emptypb.Empty, error)
-	RouteChat(grpc.BidiStreamingServer[OBUData, OBUData]) error
+	RouteChat(grpc.ClientStreamingServer[OBUData, emptypb.Empty]) error
 	mustEmbedUnimplementedRouteServer()
 }
 
@@ -98,7 +98,7 @@ func (UnimplementedRouteServer) StartSession(context.Context, *DeviceID) (*InitR
 func (UnimplementedRouteServer) EndSession(context.Context, *DeviceID) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method EndSession not implemented")
 }
-func (UnimplementedRouteServer) RouteChat(grpc.BidiStreamingServer[OBUData, OBUData]) error {
+func (UnimplementedRouteServer) RouteChat(grpc.ClientStreamingServer[OBUData, emptypb.Empty]) error {
 	return status.Errorf(codes.Unimplemented, "method RouteChat not implemented")
 }
 func (UnimplementedRouteServer) mustEmbedUnimplementedRouteServer() {}
@@ -159,11 +159,11 @@ func _Route_EndSession_Handler(srv interface{}, ctx context.Context, dec func(in
 }
 
 func _Route_RouteChat_Handler(srv interface{}, stream grpc.ServerStream) error {
-	return srv.(RouteServer).RouteChat(&grpc.GenericServerStream[OBUData, OBUData]{ServerStream: stream})
+	return srv.(RouteServer).RouteChat(&grpc.GenericServerStream[OBUData, emptypb.Empty]{ServerStream: stream})
 }
 
 // This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
-type Route_RouteChatServer = grpc.BidiStreamingServer[OBUData, OBUData]
+type Route_RouteChatServer = grpc.ClientStreamingServer[OBUData, emptypb.Empty]
 
 // Route_ServiceDesc is the grpc.ServiceDesc for Route service.
 // It's only intended for direct use with grpc.RegisterService,
@@ -185,7 +185,6 @@ var Route_ServiceDesc = grpc.ServiceDesc{
 		{
 			StreamName:    "RouteChat",
 			Handler:       _Route_RouteChat_Handler,
-			ServerStreams: true,
 			ClientStreams: true,
 		},
 	},

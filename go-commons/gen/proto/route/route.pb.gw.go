@@ -89,7 +89,7 @@ func local_request_Route_EndSession_0(ctx context.Context, marshaler runtime.Mar
 	return msg, metadata, err
 }
 
-func request_Route_RouteChat_0(ctx context.Context, marshaler runtime.Marshaler, client RouteClient, req *http.Request, pathParams map[string]string) (Route_RouteChatClient, runtime.ServerMetadata, error) {
+func request_Route_RouteChat_0(ctx context.Context, marshaler runtime.Marshaler, client RouteClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var metadata runtime.ServerMetadata
 	stream, err := client.RouteChat(ctx)
 	if err != nil {
@@ -97,39 +97,37 @@ func request_Route_RouteChat_0(ctx context.Context, marshaler runtime.Marshaler,
 		return nil, metadata, err
 	}
 	dec := marshaler.NewDecoder(req.Body)
-	handleSend := func() error {
+	for {
 		var protoReq OBUData
-		err := dec.Decode(&protoReq)
+		err = dec.Decode(&protoReq)
 		if errors.Is(err, io.EOF) {
-			return err
+			break
 		}
 		if err != nil {
 			grpclog.Errorf("Failed to decode request: %v", err)
-			return status.Errorf(codes.InvalidArgument, "Failed to decode request: %v", err)
+			return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 		}
-		if err := stream.Send(&protoReq); err != nil {
-			grpclog.Errorf("Failed to send request: %v", err)
-			return err
-		}
-		return nil
-	}
-	go func() {
-		for {
-			if err := handleSend(); err != nil {
+		if err = stream.Send(&protoReq); err != nil {
+			if errors.Is(err, io.EOF) {
 				break
 			}
+			grpclog.Errorf("Failed to send request: %v", err)
+			return nil, metadata, err
 		}
-		if err := stream.CloseSend(); err != nil {
-			grpclog.Errorf("Failed to terminate client stream: %v", err)
-		}
-	}()
+	}
+	if err := stream.CloseSend(); err != nil {
+		grpclog.Errorf("Failed to terminate client stream: %v", err)
+		return nil, metadata, err
+	}
 	header, err := stream.Header()
 	if err != nil {
 		grpclog.Errorf("Failed to get header from client: %v", err)
 		return nil, metadata, err
 	}
 	metadata.HeaderMD = header
-	return stream, metadata, nil
+	msg, err := stream.CloseAndRecv()
+	metadata.TrailerMD = stream.Trailer()
+	return msg, metadata, err
 }
 
 // RegisterRouteHandlerServer registers the http handlers for service Route to "mux".
@@ -274,7 +272,7 @@ func RegisterRouteHandlerClient(ctx context.Context, mux *runtime.ServeMux, clie
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		forward_Route_RouteChat_0(annotatedContext, mux, outboundMarshaler, w, req, func() (proto.Message, error) { return resp.Recv() }, mux.GetForwardResponseOptions()...)
+		forward_Route_RouteChat_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 	})
 	return nil
 }
@@ -288,5 +286,5 @@ var (
 var (
 	forward_Route_StartSession_0 = runtime.ForwardResponseMessage
 	forward_Route_EndSession_0   = runtime.ForwardResponseMessage
-	forward_Route_RouteChat_0    = runtime.ForwardResponseStream
+	forward_Route_RouteChat_0    = runtime.ForwardResponseMessage
 )

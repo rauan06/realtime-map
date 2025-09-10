@@ -54,18 +54,10 @@
         "operationId": "Route_RouteChat",
         "responses": {
           "200": {
-            "description": "A successful response.(streaming responses)",
+            "description": "A successful response.",
             "schema": {
               "type": "object",
-              "properties": {
-                "result": {
-                  "$ref": "#/definitions/locationOBUData"
-                },
-                "error": {
-                  "$ref": "#/definitions/rpcStatus"
-                }
-              },
-              "title": "Stream result of locationOBUData"
+              "properties": {}
             }
           },
           "default": {

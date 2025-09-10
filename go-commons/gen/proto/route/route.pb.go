@@ -194,12 +194,12 @@ const file_proto_route_route_proto_rawDesc = "" +
 	"\tdevice_id\x18\x01 \x01(\fR\bdeviceId\"-\n" +
 	"\fInitResponse\x12\x1d\n" +
 	"\n" +
-	"session_id\x18\x01 \x01(\fR\tsessionId2\x89\x02\n" +
+	"session_id\x18\x01 \x01(\fR\tsessionId2\x8c\x02\n" +
 	"\x05Route\x12V\n" +
 	"\fStartSession\x12\x12.location.DeviceID\x1a\x16.location.InitResponse\"\x1a\x82\xd3\xe4\x93\x02\x14:\x01*\"\x0f/v1/route/start\x12R\n" +
 	"\n" +
-	"EndSession\x12\x12.location.DeviceID\x1a\x16.google.protobuf.Empty\"\x18\x82\xd3\xe4\x93\x02\x12:\x01*\"\r/v1/route/end\x12T\n" +
-	"\tRouteChat\x12\x11.location.OBUData\x1a\x11.location.OBUData\"\x1d\x82\xd3\xe4\x93\x02\x17:\x01*\"\x12/v1/route/location(\x010\x01BBZ@github.com/rauan06/realtime-map/go-commons/gen/proto/route;routeb\x06proto3"
+	"EndSession\x12\x12.location.DeviceID\x1a\x16.google.protobuf.Empty\"\x18\x82\xd3\xe4\x93\x02\x12:\x01*\"\r/v1/route/end\x12W\n" +
+	"\tRouteChat\x12\x11.location.OBUData\x1a\x16.google.protobuf.Empty\"\x1d\x82\xd3\xe4\x93\x02\x17:\x01*\"\x12/v1/route/location(\x01BBZ@github.com/rauan06/realtime-map/go-commons/gen/proto/route;routeb\x06proto3"
 
 var (
 	file_proto_route_route_proto_rawDescOnce sync.Once
@@ -228,7 +228,7 @@ var file_proto_route_route_proto_depIdxs = []int32{
 	0, // 3: location.Route.RouteChat:input_type -> location.OBUData
 	2, // 4: location.Route.StartSession:output_type -> location.InitResponse
 	4, // 5: location.Route.EndSession:output_type -> google.protobuf.Empty
-	0, // 6: location.Route.RouteChat:output_type -> location.OBUData
+	4, // 6: location.Route.RouteChat:output_type -> google.protobuf.Empty
 	4, // [4:7] is the sub-list for method output_type
 	1, // [1:4] is the sub-list for method input_type
 	1, // [1:1] is the sub-list for extension type_name
