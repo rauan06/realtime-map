@@ -29,7 +29,7 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type RouteClient interface {
-	StartSession(ctx context.Context, in *DeviceID, opts ...grpc.CallOption) (*InitResponse, error)
+	StartSession(ctx context.Context, in *DeviceID, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	EndSession(ctx context.Context, in *DeviceID, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	RouteChat(ctx context.Context, opts ...grpc.CallOption) (grpc.ClientStreamingClient[OBUData, emptypb.Empty], error)
 }
@@ -42,9 +42,9 @@ func NewRouteClient(cc grpc.ClientConnInterface) RouteClient {
 	return &routeClient{cc}
 }
 
-func (c *routeClient) StartSession(ctx context.Context, in *DeviceID, opts ...grpc.CallOption) (*InitResponse, error) {
+func (c *routeClient) StartSession(ctx context.Context, in *DeviceID, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(InitResponse)
+	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, Route_StartSession_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -79,7 +79,7 @@ type Route_RouteChatClient = grpc.ClientStreamingClient[OBUData, emptypb.Empty]
 // All implementations must embed UnimplementedRouteServer
 // for forward compatibility.
 type RouteServer interface {
-	StartSession(context.Context, *DeviceID) (*InitResponse, error)
+	StartSession(context.Context, *DeviceID) (*emptypb.Empty, error)
 	EndSession(context.Context, *DeviceID) (*emptypb.Empty, error)
 	RouteChat(grpc.ClientStreamingServer[OBUData, emptypb.Empty]) error
 	mustEmbedUnimplementedRouteServer()
@@ -92,7 +92,7 @@ type RouteServer interface {
 // pointer dereference when methods are called.
 type UnimplementedRouteServer struct{}
 
-func (UnimplementedRouteServer) StartSession(context.Context, *DeviceID) (*InitResponse, error) {
+func (UnimplementedRouteServer) StartSession(context.Context, *DeviceID) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method StartSession not implemented")
 }
 func (UnimplementedRouteServer) EndSession(context.Context, *DeviceID) (*emptypb.Empty, error) {

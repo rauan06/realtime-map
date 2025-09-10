@@ -19,12 +19,8 @@ message DeviceID {
   bytes device_id = 1;
 }
 
-message InitResponse {
-  bytes session_id = 1;
-}
-
 service Route {
-  rpc StartSession (DeviceID) returns (InitResponse) {
+  rpc StartSession (DeviceID) returns (google.protobuf.Empty) {
     option (google.api.http) = {
       post: "/v1/route/start"
       body: "*"
