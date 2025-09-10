@@ -21,14 +21,13 @@ func genCord() float64 {
 
 func runDevice(ctx context.Context, client *grpcclient.Client, deviceID uuid.UUID) {
 	// Start session for this device
-	resp, err := client.StartSession(ctx, &route.DeviceID{
+	_, err := client.StartSession(ctx, &route.DeviceID{
 		DeviceId: deviceID[:],
 	})
 	if err != nil {
 		log.Printf("[Device %s] failed to start session: %v", deviceID, err)
 		return
 	}
-	log.Printf("[Device %s] Started session: %s", deviceID, string(resp.SessionId))
 
 	// Open streaming connection
 	stream, err := client.RouteChat(ctx)
@@ -59,18 +58,6 @@ func runDevice(ctx context.Context, client *grpcclient.Client, deviceID uuid.UUI
 				}
 				log.Printf("[Device %s] sent OBUData: %+v", deviceID, msg)
 			}
-		}
-	}()
-
-	// Receiver goroutine
-	go func() {
-		for {
-			resp, err := stream.Recv()
-			if err != nil {
-				log.Printf("[Device %s] stream receive error: %v", deviceID, err)
-				return
-			}
-			log.Printf("[Device %s] received: %+v", deviceID, resp)
 		}
 	}()
 }

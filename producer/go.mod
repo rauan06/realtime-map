@@ -9,7 +9,7 @@ require (
 	github.com/golang/protobuf v1.5.4
 	github.com/google/uuid v1.6.0
 	github.com/joho/godotenv v1.5.1
-	github.com/rauan06/realtime-map/go-commons v0.0.0-20250909080506-e62e38847a37
+	github.com/rauan06/realtime-map/go-commons v0.0.0-20250910085858-aa0aac091b79
 	github.com/redis/go-redis/v9 v9.13.0
 	google.golang.org/grpc v1.75.0
 )

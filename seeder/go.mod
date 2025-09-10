@@ -4,7 +4,7 @@ go 1.24.6
 
 require (
 	github.com/google/uuid v1.6.0
-	github.com/rauan06/realtime-map/go-commons v0.0.0-20250908083811-0eb4692381ad
+	github.com/rauan06/realtime-map/go-commons v0.0.0-20250910085858-aa0aac091b79
 	google.golang.org/grpc v1.75.0
 )
 

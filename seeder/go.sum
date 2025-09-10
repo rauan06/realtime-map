@@ -18,6 +18,10 @@ github.com/rauan06/realtime-map/go-commons v0.0.0-20250907173356-c4c87c284144 h1
 github.com/rauan06/realtime-map/go-commons v0.0.0-20250907173356-c4c87c284144/go.mod h1:vB2Xv5ra83SneQjg0BruxCzTPf45Ry4F7htHXlQiJfE=
 github.com/rauan06/realtime-map/go-commons v0.0.0-20250908083811-0eb4692381ad h1:GYnzMBH+/9KREBCS5k/tfvZQi0heaMUpIta8CMaCF20=
 github.com/rauan06/realtime-map/go-commons v0.0.0-20250908083811-0eb4692381ad/go.mod h1:vB2Xv5ra83SneQjg0BruxCzTPf45Ry4F7htHXlQiJfE=
+github.com/rauan06/realtime-map/go-commons v0.0.0-20250910082730-fa49c38667ea h1:JAJaHQsNnmFEKHKkKpcIft/54sCMhOagGOCg79giORo=
+github.com/rauan06/realtime-map/go-commons v0.0.0-20250910082730-fa49c38667ea/go.mod h1:vB2Xv5ra83SneQjg0BruxCzTPf45Ry4F7htHXlQiJfE=
+github.com/rauan06/realtime-map/go-commons v0.0.0-20250910085858-aa0aac091b79 h1:3zKgVRT8qCoFDYoLQVgV2cu0/51adVFFRwbRUoYVzAs=
+github.com/rauan06/realtime-map/go-commons v0.0.0-20250910085858-aa0aac091b79/go.mod h1:vB2Xv5ra83SneQjg0BruxCzTPf45Ry4F7htHXlQiJfE=
 go.opentelemetry.io/auto/sdk v1.1.0 h1:cH53jehLUN6UFLY71z+NDOiNJqDdPRaXzTel0sJySYA=
 go.opentelemetry.io/auto/sdk v1.1.0/go.mod h1:3wSPjt5PWp2RhlCcmmOial7AvC4DQqZb7a7wCow3W8A=
 go.opentelemetry.io/otel v1.37.0 h1:9zhNfelUvx0KBfu/gb+ZgeAfAgtWrfHJZcAqFC228wQ=

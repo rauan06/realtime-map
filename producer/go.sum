@@ -273,6 +273,10 @@ github.com/rauan06/realtime-map/go-commons v0.0.0-20250909080143-0af968373cb3 h1
 github.com/rauan06/realtime-map/go-commons v0.0.0-20250909080143-0af968373cb3/go.mod h1:vB2Xv5ra83SneQjg0BruxCzTPf45Ry4F7htHXlQiJfE=
 github.com/rauan06/realtime-map/go-commons v0.0.0-20250909080506-e62e38847a37 h1:bWhGgfRlVoBE3Mbrj95Y945uamiWpcUc7Jb1WfySoxk=
 github.com/rauan06/realtime-map/go-commons v0.0.0-20250909080506-e62e38847a37/go.mod h1:vB2Xv5ra83SneQjg0BruxCzTPf45Ry4F7htHXlQiJfE=
+github.com/rauan06/realtime-map/go-commons v0.0.0-20250910082730-fa49c38667ea h1:JAJaHQsNnmFEKHKkKpcIft/54sCMhOagGOCg79giORo=
+github.com/rauan06/realtime-map/go-commons v0.0.0-20250910082730-fa49c38667ea/go.mod h1:vB2Xv5ra83SneQjg0BruxCzTPf45Ry4F7htHXlQiJfE=
+github.com/rauan06/realtime-map/go-commons v0.0.0-20250910085858-aa0aac091b79 h1:3zKgVRT8qCoFDYoLQVgV2cu0/51adVFFRwbRUoYVzAs=
+github.com/rauan06/realtime-map/go-commons v0.0.0-20250910085858-aa0aac091b79/go.mod h1:vB2Xv5ra83SneQjg0BruxCzTPf45Ry4F7htHXlQiJfE=
 github.com/redis/go-redis/v9 v9.13.0 h1:PpmlVykE0ODh8P43U0HqC+2NXHXwG+GUtQyz+MPKGRg=
 github.com/redis/go-redis/v9 v9.13.0/go.mod h1:huWgSWd8mW6+m0VPhJjSSQ+d6Nh1VICQ6Q5lHuCH/Iw=
 github.com/rivo/uniseg v0.2.0 h1:S1pD9weZBuJdFmowNwbpi7BJ8TNftyUImj/0WQi72jY=

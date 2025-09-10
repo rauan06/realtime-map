@@ -11,10 +11,8 @@ import (
 	"github.com/rauan06/realtime-map/go-commons/pkg/logger"
 	"github.com/rauan06/realtime-map/producer/config"
 	"github.com/rauan06/realtime-map/producer/internal/controller/grpcrouter"
-	"github.com/rauan06/realtime-map/producer/internal/repo/cache"
 	"github.com/rauan06/realtime-map/producer/internal/repo/eventbus"
 	"github.com/rauan06/realtime-map/producer/internal/usecase/producer"
-	"github.com/redis/go-redis/v9"
 )
 
 func Run(cfg *config.Config) {
@@ -30,17 +28,7 @@ func Run(cfg *config.Config) {
 	}
 	defer kafkaProducer.Close()
 
-	redisClient := redis.NewClient(&redis.Options{
-		Addr:     cfg.Redis.RedisURI,
-		Password: cfg.Redis.RedisPassword,
-		DB:       0,
-	})
-	redis, err := cache.New(redisClient, *cfg)
-	if err != nil {
-		l.Fatal(err)
-	}
-
-	uc := producer.New(eb, redis)
+	uc := producer.New(eb)
 
 	grpcServer := grpcserver.New(grpcserver.Port(cfg.GRPC.Port))
 	grpcrouter.NewRoutes(grpcServer.App, grpcrouter.RouteConfig{
@@ -65,10 +53,5 @@ func Run(cfg *config.Config) {
 	err = grpcServer.Shutdown()
 	if err != nil {
 		l.Error(fmt.Errorf("app - Run - grpcServer.Shutdown: %w", err))
-	}
-
-	err = redisClient.Close()
-	if err != nil {
-		l.Error(fmt.Errorf("app - Run - redisClient.Shutdown: %w", err))
 	}
 }

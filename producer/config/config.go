@@ -10,13 +10,10 @@ import (
 type (
 	// Config -.
 	Config struct {
-		App     App
-		Log     Log
-		GRPC    GRPC
-		Redis   Redis
-		Kafka   Kafka
-		Metrics Metrics
-		Swagger Swagger
+		App   App
+		Log   Log
+		GRPC  GRPC
+		Kafka Kafka
 	}
 
 	// App -.
@@ -36,26 +33,10 @@ type (
 		Topic            string `env:"KAFKA_TOPIC,required"`
 	}
 
-	// Redis -.
-	Redis struct {
-		RedisURI      string `env:"REDIS_URL" envDefault:"localhost:6379"`
-		RedisPassword string `env:"REDIS_PASSWORD" envDefault:""`
-	}
-
 	// GRPC -.
 	GRPC struct {
 		Port              string `env:"GRPC_PORT,required"`
 		ReflectionEnabled bool   `env:"GRPC_REFLECTION_ENABLED" envDefault:"true"`
-	}
-
-	// Metrics -.
-	Metrics struct {
-		Enabled bool `env:"METRICS_ENABLED" envDefault:"true"`
-	}
-
-	// Swagger -.
-	Swagger struct {
-		Enabled bool `env:"SWAGGER_ENABLED" envDefault:"false"`
 	}
 )
 

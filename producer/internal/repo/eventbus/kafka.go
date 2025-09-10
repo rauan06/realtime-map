@@ -7,19 +7,19 @@ import (
 	"github.com/confluentinc/confluent-kafka-go/v2/kafka"
 	"github.com/rauan06/realtime-map/go-commons/pkg/logger"
 	"github.com/rauan06/realtime-map/producer/config"
-	"github.com/rauan06/realtime-map/producer/internal/domain"
 	"github.com/rauan06/realtime-map/producer/internal/repo"
 )
 
-var _ (repo.IEventBus) = &EventBus{}
-
 type EventBus struct {
 	*kafka.Producer
-	Topic string
+	TopicPartition kafka.TopicPartition
 }
 
 func New(p *kafka.Producer, cfg *config.Config) (repo.IEventBus, error) {
-	return &EventBus{Producer: p, Topic: cfg.Kafka.Topic}, nil
+	return &EventBus{
+		Producer:  p,
+		TopicPartition: kafka.TopicPartition{Topic: &cfg.Kafka.Topic, Partition: kafka.PartitionAny},
+	}, nil
 }
 
 func (eb *EventBus) Run(l *logger.Logger) {
@@ -38,14 +38,15 @@ func (eb *EventBus) Run(l *logger.Logger) {
 	}()
 }
 
-func (eb *EventBus) ProduceEvent(ctx context.Context, data domain.KafkaMessage) error {
+func (eb *EventBus) ProduceEvent(ctx context.Context, key string, data interface{}) error {
 	parsedData, err := json.Marshal(data)
 	if err != nil {
 		return err
 	}
 
 	err = eb.Produce(&kafka.Message{
-		TopicPartition: kafka.TopicPartition{Topic: &eb.Topic, Partition: kafka.PartitionAny},
+		Key:            []byte(key),
+		TopicPartition: eb.TopicPartition,
 		Value:          parsedData,
 	}, nil)
 	if err != nil {

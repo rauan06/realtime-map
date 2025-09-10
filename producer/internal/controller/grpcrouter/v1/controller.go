@@ -24,34 +24,30 @@ type V1 struct {
 	v  *validator.Validate
 }
 
-func (r *V1) StartSession(ctx context.Context, in *routepb.DeviceID) (*routepb.InitResponse, error) {
-	session, err := r.uc.StartSession(ctx, in.DeviceId)
+func (r *V1) StartSession(ctx context.Context, in *routepb.DeviceID) (*empty.Empty, error) {
+	err := r.uc.StartSession(ctx, in.DeviceId)
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	return &routepb.InitResponse{SessionId: session}, nil
+	return nil, nil
 }
 
 func (r *V1) EndSession(context.Context, *routepb.DeviceID) (*empty.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method EndSession not implemented")
 }
 
-func (r *V1) RouteChat(stream grpc.BidiStreamingServer[routepb.OBUData, routepb.OBUData]) error {
+func (r *V1) RouteChat(stream grpc.ClientStreamingServer[routepb.OBUData, empty.Empty]) error {
 	for {
 		in, err := stream.Recv()
 		if err == io.EOF {
 			return nil
 		}
 		if err != nil {
-			return err
+			return status.Error(codes.InvalidArgument, err.Error())
 		}
 
 		r.l.Info(fmt.Sprintf("recieved: %+v/n", in))
-
-		if err != nil {
-			return status.Error(codes.InvalidArgument, err.Error())
-		}
 
 		err = r.uc.ProcessOBUData(context.Background(),
 			domain.OBUData{

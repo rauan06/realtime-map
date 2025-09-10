@@ -3,13 +3,11 @@ package repo
 import (
 	"context"
 	"time"
-
-	"github.com/rauan06/realtime-map/producer/internal/domain"
 )
 
 type (
 	IEventBus interface {
-		ProduceEvent(context.Context, domain.KafkaMessage) error
+		ProduceEvent(ctx context.Context, key string, data interface{}) error
 		// GetHistory(context.Context) ([]domain.OBUData, error)
 	}
 	ICache interface {
