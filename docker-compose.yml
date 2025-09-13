@@ -25,8 +25,14 @@ services:
     image: redis:latest
     container_name: my-redis-instance
     ports:
-      - "6379:6379"
+      - "6378:6379"
     volumes:
       - redis_data:/data
+  db:
+    image: postgres:latest
+    restart: always
+    shm_size: 128mb
+    environment:
+      POSTGRES_PASSWORD: example
 volumes:
   redis_data:
