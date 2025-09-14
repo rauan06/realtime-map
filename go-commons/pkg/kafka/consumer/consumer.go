@@ -40,7 +40,7 @@ func New(c *kafka.Consumer, usecase uc, l logger.Logger, topic string) (*KafkaCo
 }
 
 func (kc *KafkaConsumer) Run() error {
-	limit := make(chan struct{})
+	limit := make(chan struct{}, workers)
 
 	err := kc.SubscribeTopics([]string{*kc.TopicPartition.Topic}, nil)
 	if err != nil {
