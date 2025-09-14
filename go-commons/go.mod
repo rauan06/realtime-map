@@ -4,6 +4,7 @@ go 1.24.6
 
 require (
 	github.com/Masterminds/squirrel v1.5.4
+	github.com/confluentinc/confluent-kafka-go/v2 v2.11.1
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.27.2
 	github.com/jackc/pgx/v5 v5.7.5
 	github.com/rs/zerolog v1.34.0
