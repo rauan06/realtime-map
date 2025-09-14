@@ -261,8 +261,8 @@ github.com/prometheus/procfs v0.17.0 h1:FuLQ+05u4ZI+SS/w9+BWEM2TXiHKsUQ9TADiRH7D
 github.com/prometheus/procfs v0.17.0/go.mod h1:oPQLaDAMRbA+u8H5Pbfq+dl3VDAvHxMUOVhe0wYB2zw=
 github.com/r3labs/sse v0.0.0-20210224172625-26fe804710bc h1:zAsgcP8MhzAbhMnB1QQ2O7ZhWYVGYSR2iVcjzQuPV+o=
 github.com/r3labs/sse v0.0.0-20210224172625-26fe804710bc/go.mod h1:S8xSOnV3CgpNrWd0GQ/OoQfMtlg2uPRSuTzcSGrzwK8=
-github.com/rauan06/realtime-map/go-commons v0.0.0-20250910085858-aa0aac091b79 h1:3zKgVRT8qCoFDYoLQVgV2cu0/51adVFFRwbRUoYVzAs=
-github.com/rauan06/realtime-map/go-commons v0.0.0-20250910085858-aa0aac091b79/go.mod h1:vB2Xv5ra83SneQjg0BruxCzTPf45Ry4F7htHXlQiJfE=
+github.com/rauan06/realtime-map/go-commons v0.0.0-20250914094610-d91e447cfdc8 h1:HUBAMJfgAmkChZEbpjpkwS0hTAedPJJ74j9Y/idJgI0=
+github.com/rauan06/realtime-map/go-commons v0.0.0-20250914094610-d91e447cfdc8/go.mod h1:wSTqr2O+ipW8TyU8Cb7XpW8PACQBHAYrTsSSq263ezc=
 github.com/rivo/uniseg v0.2.0 h1:S1pD9weZBuJdFmowNwbpi7BJ8TNftyUImj/0WQi72jY=
 github.com/rivo/uniseg v0.2.0/go.mod h1:J6wj4VEh+S6ZtnVlnTBMWIodfgj8LQOQFoIToxlJtxc=
 github.com/rs/xid v1.6.0/go.mod h1:7XoLgs4eV+QndskICGsho+ADou8ySMSjJKDIan90Nz0=

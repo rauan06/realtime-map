@@ -8,10 +8,10 @@ import (
 
 	"github.com/confluentinc/confluent-kafka-go/v2/kafka"
 	"github.com/rauan06/realtime-map/go-commons/pkg/grpcserver"
+	kafka_producer "github.com/rauan06/realtime-map/go-commons/pkg/kafka/producer"
 	"github.com/rauan06/realtime-map/go-commons/pkg/logger"
 	"github.com/rauan06/realtime-map/producer/config"
 	"github.com/rauan06/realtime-map/producer/internal/controller/grpcrouter"
-	"github.com/rauan06/realtime-map/producer/internal/repo/eventbus"
 	"github.com/rauan06/realtime-map/producer/internal/usecase/producer"
 )
 
@@ -22,7 +22,7 @@ func Run(cfg *config.Config) {
 	if err != nil {
 		l.Fatal(err)
 	}
-	eb, err := eventbus.New(kafkaProducer, cfg)
+	eb, err := kafka_producer.New(kafkaProducer, cfg.Kafka.Topic)
 	if err != nil {
 		l.Fatal(err)
 	}

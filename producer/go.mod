@@ -8,7 +8,7 @@ require (
 	github.com/go-playground/validator/v10 v10.27.0
 	github.com/golang/protobuf v1.5.4
 	github.com/joho/godotenv v1.5.1
-	github.com/rauan06/realtime-map/go-commons v0.0.0-20250910085858-aa0aac091b79
+	github.com/rauan06/realtime-map/go-commons v0.0.0-20250914094610-d91e447cfdc8
 	google.golang.org/grpc v1.75.0
 )
 
