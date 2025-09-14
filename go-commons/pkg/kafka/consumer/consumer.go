@@ -34,12 +34,13 @@ func New(c *kafka.Consumer, usecase uc, l logger.Logger, topic string) (*KafkaCo
 		Errors:         make(chan error),
 
 		l:   l,
+		uc:  usecase,
 		ctx: ctx,
 	}, nil
 }
 
-func (kc *KafkaConsumer) Run(l *logger.Logger) error {
-	limit := make(chan struct{}, workers)
+func (kc *KafkaConsumer) Run() error {
+	limit := make(chan struct{})
 
 	err := kc.SubscribeTopics([]string{*kc.TopicPartition.Topic}, nil)
 	if err != nil {
@@ -57,15 +58,16 @@ func (kc *KafkaConsumer) Run(l *logger.Logger) error {
 		default:
 			msg, err := kc.ReadMessage(time.Second)
 			if err == nil {
-				go kc.uc.ProcessMessage(msg)
+				go func() {
+					defer func() { <-limit }()
+					kc.uc.ProcessMessage(msg)
+				}()
 			} else if !err.(kafka.Error).IsTimeout() {
-				// The client will automatically try to recover from all errors.
-				// Timeout is not considered an error because it is raised by
-				// ReadMessage in absence of messages.
 				kc.l.Error("consumer error: %v (%v)\n", err, msg)
+				<-limit
+			} else {
+				<-limit
 			}
 		}
-
-		<-limit
 	}
 }
