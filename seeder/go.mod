@@ -6,7 +6,6 @@ require (
 	github.com/google/uuid v1.6.0
 	github.com/rauan06/realtime-map/go-commons v0.0.0-20250910085858-aa0aac091b79
 	google.golang.org/grpc v1.75.0
-	google.golang.org/protobuf v1.36.8
 )
 
 require (
@@ -16,4 +15,5 @@ require (
 	golang.org/x/text v0.28.0 // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20250826171959-ef028d996bc1 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20250818200422-3122310a409c // indirect
+	google.golang.org/protobuf v1.36.8 // indirect
 )

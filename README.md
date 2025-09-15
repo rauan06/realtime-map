@@ -22,14 +22,11 @@
 
 - [ Overview](#-overview)
 - [ Features](#-features)
-- [ Project Structure](#-project-structure)
-- [ Architecture](#-architecture)
 - [ Getting Started](#-getting-started)
   - [ Prerequisites](#-prerequisites)
   - [ Installation](#-installation)
   - [ Usage](#-usage)
   - [ Testing](#-testing)
-- [ API Documentation](#-api-documentation)
 - [ Project Roadmap](#-project-roadmap)
 - [ Contributing](#-contributing)
 - [ License](#-license)
@@ -38,24 +35,13 @@
 
 ##  Overview
 
-**Realtime Map** is a scalable, distributed system for real-time location tracking and visualization. The system processes location data from IoT devices (OBU - On-Board Units) through a Kafka-based streaming pipeline, stores it in Redis for fast retrieval, and provides real-time visualization through WebSocket connections.
-
-The architecture leverages microservices pattern with separate components for data ingestion, processing, storage, and presentation. Built with Go, it provides high-performance real-time location tracking suitable for fleet management, logistics, and IoT applications.
+<code>❯ REPLACE-ME</code>
 
 ---
 
 ##  Features
 
-- **Real-time Location Tracking**: Process GPS coordinates from multiple devices simultaneously
-- **Scalable Architecture**: Microservices-based design with horizontal scaling capabilities
-- **High-Performance Data Processing**: Kafka-based streaming for handling high-throughput location data
-- **Fast Data Retrieval**: Redis clustering for sub-millisecond location lookups
-- **Real-time Visualization**: WebSocket-powered live map updates using Leaflet.js
-- **gRPC API**: High-performance API for device communication and data exchange
-- **RESTful Gateway**: HTTP/REST API gateway for easy integration
-- **Multi-Device Support**: Handle thousands of concurrent device connections
-- **Data Persistence**: PostgreSQL for historical data storage and analytics
-- **Containerized Deployment**: Docker Compose setup for easy development and deployment
+<code>❯ REPLACE-ME</code>
 
 ---
 
@@ -81,221 +67,84 @@ Clients connect:
 
 ```
 
-##  Architecture
-
-### System Components
-
-- **Seeder Service**: Generates simulated GPS data from multiple devices for testing
-- **Producer Service**: Consumes location data from Kafka, processes it, and stores in Redis
-- **API Gateway**: Provides gRPC, REST, and WebSocket APIs with web interface
-- **Go Commons**: Shared protocol buffers, database utilities, and common libraries
-
-### Data Flow
-
-1. **Data Ingestion**: Devices send GPS coordinates via gRPC to API Gateway
-2. **Message Queuing**: Location data is published to Kafka topic `obu_positions`
-3. **Stream Processing**: Producer service consumes from Kafka and processes location updates
-4. **Caching**: Current device positions are stored in Redis for fast retrieval
-5. **Real-time Updates**: WebSocket connections push live updates to web clients
-6. **Persistence**: Historical data is stored in PostgreSQL for analytics
-
-### Technology Stack
-
-- **Backend**: Go 1.21+, gRPC, Protocol Buffers
-- **Message Broker**: Apache Kafka for event streaming
-- **Caching**: Redis cluster for high-performance data access  
-- **Database**: PostgreSQL for persistent storage
-- **Frontend**: HTML5, JavaScript, Leaflet.js for map visualization
-- **Infrastructure**: Docker, Docker Compose for containerization
-
 ##  Getting Started
 
 ###  Prerequisites
 
 Before getting started with realtime-map, ensure your runtime environment meets the following requirements:
 
-- **Programming Language:** Go 1.21 or higher
-- **Container Runtime:** Docker and Docker Compose
-- **Protocol Buffers:** Protocol Buffers compiler (protoc)
-- **Build Tools:** Make utility
-- **Message Broker:** Apache Kafka (provided via Docker)
-- **Database:** PostgreSQL (provided via Docker)
-- **Cache:** Redis (provided via Docker)
+- **Programming Language:** Go version 1.24.6
+- **Package Manager:** Go modules
+- **Container Runtime:** Docker
 
 
 ###  Installation
 
-Install realtime-map using the following steps:
+Install realtime-map using one of the following methods:
 
-**1. Clone the Repository:**
+**Build from source:**
+
+1. Clone the realtime-map repository:
 ```sh
 ❯ git clone https://github.com/rauan06/realtime-map
+```
+
+2. Navigate to the project directory:
+```sh
 ❯ cd realtime-map
 ```
 
-**2. Install Development Dependencies:**
+3. Install the project dependencies:
+
+
+**Using `go modules`** &nbsp; [<img align="center" src="https://img.shields.io/badge/Go-00ADD8.svg?style={badge_style}&logo=go&logoColor=white" />](https://golang.org/)
+
 ```sh
-❯ make deps
-❯ make buf-install
+❯ go build
 ```
 
-**3. Generate Protocol Buffer Files:**
-```sh
-❯ make generate
-```
 
-**4. Start Infrastructure Services:**
-```sh
-❯ make up
-# or manually: docker compose up -d
-```
+**Using `docker`** &nbsp; [<img align="center" src="https://img.shields.io/badge/Docker-2CA5E0.svg?style={badge_style}&logo=docker&logoColor=white" />](https://www.docker.com/)
 
-This will start:
-- Apache Kafka broker on port 9092
-- Redis cache on port 6378
-- PostgreSQL database on port 5431
-
-**5. Build Services (Optional):**
 ```sh
-❯ go build ./api-gateway/cmd/app
-❯ go build ./producer/cmd/app  
-❯ go build ./seeder/cmd/app
+❯ docker build -t rauan06/realtime-map .
 ```
 
 
 
 
 ###  Usage
+Run realtime-map using the following command:
+**Using `go modules`** &nbsp; [<img align="center" src="https://img.shields.io/badge/Go-00ADD8.svg?style={badge_style}&logo=go&logoColor=white" />](https://golang.org/)
 
-The realtime-map system consists of multiple microservices that work together:
-
-**1. Start the Infrastructure:**
 ```sh
-❯ make up
+❯ go run {entrypoint}
 ```
 
-**2. Run the API Gateway:**
-```sh
-❯ cd api-gateway && go run cmd/app/main.go
-```
-The API gateway provides:
-- gRPC server for device communication
-- HTTP gateway for REST API access  
-- WebSocket endpoints for real-time map updates
-- Web interface at http://localhost:8080
 
-**3. Run the Producer Service:**
-```sh
-❯ cd producer && go run cmd/app/main.go
-```
-The producer consumes location data from Kafka and processes it for storage and real-time distribution.
+**Using `docker`** &nbsp; [<img align="center" src="https://img.shields.io/badge/Docker-2CA5E0.svg?style={badge_style}&logo=docker&logoColor=white" />](https://www.docker.com/)
 
-**4. Run the Data Seeder (for testing):**
 ```sh
-❯ cd seeder && go run cmd/app/main.go
+❯ docker run -it {image_name}
 ```
-The seeder generates simulated device location data for testing and demonstration.
-
-**Service Endpoints:**
-- **Web Interface:** http://localhost:8080
-- **gRPC API:** localhost:50051 (default)
-- **REST API Gateway:** http://localhost:8080/api
-- **Kafka Broker:** localhost:9092
-- **Redis Cache:** localhost:6378
-- **PostgreSQL:** localhost:5431
 
 
 ###  Testing
+Run the test suite using the following command:
+**Using `go modules`** &nbsp; [<img align="center" src="https://img.shields.io/badge/Go-00ADD8.svg?style={badge_style}&logo=go&logoColor=white" />](https://golang.org/)
 
-Run the test suite using the following commands:
-
-**Run All Tests:**
 ```sh
 ❯ go test ./...
 ```
 
-**Run Tests for Specific Service:**
-```sh
-❯ cd api-gateway && go test ./...
-❯ cd producer && go test ./...
-❯ cd seeder && go test ./...
-```
-
-**Generate Test Coverage:**
-```sh
-❯ go test -coverprofile=coverage.out ./...
-❯ go tool cover -html=coverage.out
-```
-
-**Integration Testing:**
-1. Start the infrastructure services: `make up`
-2. Run the seeder to generate test data: `cd seeder && go run cmd/app/main.go`
-3. Start the producer to process data: `cd producer && go run cmd/app/main.go`
-4. Start the API gateway: `cd api-gateway && go run cmd/app/main.go`
-5. Open http://localhost:8080 to see real-time location updates on the map
-
 
 ---
-
-##  API Documentation
-
-### gRPC Service
-
-The system provides a gRPC service for high-performance device communication:
-
-**Service Definition:**
-```protobuf
-service LocationService {
-  rpc StartSession(DeviceID) returns (google.protobuf.Empty);
-  rpc SendLocation(OBUData) returns (google.protobuf.Empty);
-  rpc GetDeviceLocations(google.protobuf.Empty) returns (stream OBUData);
-}
-```
-
-**Message Types:**
-```protobuf
-message OBUData {
-  bytes device_id = 1;       // 16-byte UUID
-  double latitude = 2;       // GPS latitude
-  double longitude = 3;      // GPS longitude  
-  google.protobuf.Timestamp timestamp = 4;
-}
-
-message DeviceID {
-  bytes device_id = 1;       // 16-byte UUID
-}
-```
-
-### REST API Gateway
-
-The HTTP gateway provides RESTful access to the gRPC services:
-
-- **POST /api/v1/devices/{device_id}/session** - Start device session
-- **POST /api/v1/locations** - Send location data
-- **GET /api/v1/locations/stream** - Stream location updates
-- **GET /api/v1/health** - Health check endpoint
-
-### WebSocket API
-
-Real-time location updates via WebSocket:
-
-- **Endpoint:** `ws://localhost:8080/ws`
-- **Message Format:** JSON-encoded OBUData
-- **Connection:** Automatic reconnection with exponential backoff
-
----
-
 ##  Project Roadmap
 
-- [X] **`Task 1`**: <strike>Implement Kafka producer and data seeder.</strike>
-- [X] **`Task 2`**: <strike>Implement Kafka consumer for location data processing.</strike>
-- [X] **`Task 3`**: <strike>Basic WebSocket implementation and HTML templates.</strike>
-- [X] **`Task 4`**: <strike>Integration with Leaflet.js for map visualization.</strike>
-- [ ] **`Task 5`**: Add Grafana dashboards for analytics and monitoring.
-- [ ] **`Task 6`**: Implement device authentication and authorization.
-- [ ] **`Task 7`**: Add geofencing and location-based alerts.
-- [ ] **`Task 8`**: Performance optimization and horizontal scaling.
-- [ ] **`Task 9`**: Comprehensive test coverage and CI/CD pipeline.
+- [X] **`Task 1`**: <strike>Implement kafka producer and data seeder.</strike>
+- [ ] **`Task 2`**: Implement kafka consumer.
+- [ ] **`Task 3`**: Integrate WebSocket protocol and Grafana.
+- [ ] **`Task 4`**: Write HTML templates, integration with Leaflet.js.
 ---
 
 ##  Contributing
@@ -333,7 +182,7 @@ Real-time location updates via WebSocket:
 <summary>Contributor Graph</summary>
 <br>
 <p align="left">
-   <a href="https://github.com/rauan06/realtime-map/graphs/contributors">
+   <a href="https://github.com{/rauan06/realtime-map/}graphs/contributors">
       <img src="https://contrib.rocks/image?repo=rauan06/realtime-map">
    </a>
 </p>
@@ -343,4 +192,4 @@ Real-time location updates via WebSocket:
 
 ##  License
 
-This project is protected under the MIT License. For more details, refer to the [LICENSE](https://github.com/rauan06/realtime-map/blob/main/LICENSE) file.
+This project is protected under the MIT License. For more details, refer to the [LICENSE](https://choosealicense.com/licenses/) file.
