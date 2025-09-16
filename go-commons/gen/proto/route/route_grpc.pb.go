@@ -29,8 +29,8 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type RouteClient interface {
-	StartSession(ctx context.Context, in *DeviceID, opts ...grpc.CallOption) (*emptypb.Empty, error)
-	EndSession(ctx context.Context, in *DeviceID, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	StartSession(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*Session, error)
+	EndSession(ctx context.Context, in *Session, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	RouteChat(ctx context.Context, opts ...grpc.CallOption) (grpc.ClientStreamingClient[OBUData, emptypb.Empty], error)
 }
 
@@ -42,9 +42,9 @@ func NewRouteClient(cc grpc.ClientConnInterface) RouteClient {
 	return &routeClient{cc}
 }
 
-func (c *routeClient) StartSession(ctx context.Context, in *DeviceID, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+func (c *routeClient) StartSession(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*Session, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(emptypb.Empty)
+	out := new(Session)
 	err := c.cc.Invoke(ctx, Route_StartSession_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -52,7 +52,7 @@ func (c *routeClient) StartSession(ctx context.Context, in *DeviceID, opts ...gr
 	return out, nil
 }
 
-func (c *routeClient) EndSession(ctx context.Context, in *DeviceID, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+func (c *routeClient) EndSession(ctx context.Context, in *Session, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, Route_EndSession_FullMethodName, in, out, cOpts...)
@@ -79,8 +79,8 @@ type Route_RouteChatClient = grpc.ClientStreamingClient[OBUData, emptypb.Empty]
 // All implementations must embed UnimplementedRouteServer
 // for forward compatibility.
 type RouteServer interface {
-	StartSession(context.Context, *DeviceID) (*emptypb.Empty, error)
-	EndSession(context.Context, *DeviceID) (*emptypb.Empty, error)
+	StartSession(context.Context, *emptypb.Empty) (*Session, error)
+	EndSession(context.Context, *Session) (*emptypb.Empty, error)
 	RouteChat(grpc.ClientStreamingServer[OBUData, emptypb.Empty]) error
 	mustEmbedUnimplementedRouteServer()
 }
@@ -92,10 +92,10 @@ type RouteServer interface {
 // pointer dereference when methods are called.
 type UnimplementedRouteServer struct{}
 
-func (UnimplementedRouteServer) StartSession(context.Context, *DeviceID) (*emptypb.Empty, error) {
+func (UnimplementedRouteServer) StartSession(context.Context, *emptypb.Empty) (*Session, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method StartSession not implemented")
 }
-func (UnimplementedRouteServer) EndSession(context.Context, *DeviceID) (*emptypb.Empty, error) {
+func (UnimplementedRouteServer) EndSession(context.Context, *Session) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method EndSession not implemented")
 }
 func (UnimplementedRouteServer) RouteChat(grpc.ClientStreamingServer[OBUData, emptypb.Empty]) error {
@@ -123,7 +123,7 @@ func RegisterRouteServer(s grpc.ServiceRegistrar, srv RouteServer) {
 }
 
 func _Route_StartSession_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(DeviceID)
+	in := new(emptypb.Empty)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -135,13 +135,13 @@ func _Route_StartSession_Handler(srv interface{}, ctx context.Context, dec func(
 		FullMethod: Route_StartSession_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RouteServer).StartSession(ctx, req.(*DeviceID))
+		return srv.(RouteServer).StartSession(ctx, req.(*emptypb.Empty))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _Route_EndSession_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(DeviceID)
+	in := new(Session)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -153,7 +153,7 @@ func _Route_EndSession_Handler(srv interface{}, ctx context.Context, dec func(in
 		FullMethod: Route_EndSession_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RouteServer).EndSession(ctx, req.(*DeviceID))
+		return srv.(RouteServer).EndSession(ctx, req.(*Session))
 	}
 	return interceptor(ctx, in, info, handler)
 }

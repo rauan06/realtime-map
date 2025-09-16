@@ -40,7 +40,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/locationDeviceID"
+              "$ref": "#/definitions/locationSession"
             }
           }
         ],
@@ -90,8 +90,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "type": "object",
-              "properties": {}
+              "$ref": "#/definitions/locationSession"
             }
           },
           "default": {
@@ -107,7 +106,8 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/locationDeviceID"
+              "type": "object",
+              "properties": {}
             }
           }
         ],
@@ -118,19 +118,10 @@
     }
   },
   "definitions": {
-    "locationDeviceID": {
-      "type": "object",
-      "properties": {
-        "deviceId": {
-          "type": "string",
-          "format": "byte"
-        }
-      }
-    },
     "locationOBUData": {
       "type": "object",
       "properties": {
-        "deviceId": {
+        "sessionId": {
           "type": "string",
           "format": "byte",
           "title": "16-byte uuid"
@@ -146,6 +137,15 @@
         "timestamp": {
           "type": "string",
           "format": "date-time"
+        }
+      }
+    },
+    "locationSession": {
+      "type": "object",
+      "properties": {
+        "sessionId": {
+          "type": "string",
+          "format": "byte"
         }
       }
     },

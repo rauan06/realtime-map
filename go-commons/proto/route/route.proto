@@ -9,25 +9,26 @@ import "google/protobuf/timestamp.proto";
 import "google/protobuf/empty.proto";
 
 message OBUData {
-  bytes device_id = 1; // 16-byte uuid
-  double latitude = 2;
-  double longitude = 3;
-  google.protobuf.Timestamp timestamp = 4;
+  reserved 1; 
+  bytes session_id = 2; // 16-byte uuid
+  double latitude = 3;
+  double longitude = 4;
+  google.protobuf.Timestamp timestamp = 5;
 }
 
-message DeviceID {
-  bytes device_id = 1;
+message Session {
+  bytes session_id = 1;
 }
 
 service Route {
-  rpc StartSession (DeviceID) returns (google.protobuf.Empty) {
+  rpc StartSession (google.protobuf.Empty) returns (Session) {
     option (google.api.http) = {
       post: "/v1/route/start"
       body: "*"
     };
   }
 
-  rpc EndSession (DeviceID) returns (google.protobuf.Empty) {
+  rpc EndSession (Session) returns (google.protobuf.Empty) {
     option (google.api.http) = {
       post: "/v1/route/end"
       body: "*"

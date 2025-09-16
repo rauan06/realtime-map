@@ -22,6 +22,7 @@ import (
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 // Suppress "imported and not used" errors
@@ -37,7 +38,7 @@ var (
 
 func request_Route_StartSession_0(ctx context.Context, marshaler runtime.Marshaler, client RouteClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var (
-		protoReq DeviceID
+		protoReq emptypb.Empty
 		metadata runtime.ServerMetadata
 	)
 	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil && !errors.Is(err, io.EOF) {
@@ -52,7 +53,7 @@ func request_Route_StartSession_0(ctx context.Context, marshaler runtime.Marshal
 
 func local_request_Route_StartSession_0(ctx context.Context, marshaler runtime.Marshaler, server RouteServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var (
-		protoReq DeviceID
+		protoReq emptypb.Empty
 		metadata runtime.ServerMetadata
 	)
 	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil && !errors.Is(err, io.EOF) {
@@ -64,7 +65,7 @@ func local_request_Route_StartSession_0(ctx context.Context, marshaler runtime.M
 
 func request_Route_EndSession_0(ctx context.Context, marshaler runtime.Marshaler, client RouteClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var (
-		protoReq DeviceID
+		protoReq Session
 		metadata runtime.ServerMetadata
 	)
 	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil && !errors.Is(err, io.EOF) {
@@ -79,7 +80,7 @@ func request_Route_EndSession_0(ctx context.Context, marshaler runtime.Marshaler
 
 func local_request_Route_EndSession_0(ctx context.Context, marshaler runtime.Marshaler, server RouteServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var (
-		protoReq DeviceID
+		protoReq Session
 		metadata runtime.ServerMetadata
 	)
 	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil && !errors.Is(err, io.EOF) {
