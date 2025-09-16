@@ -10,14 +10,14 @@ import "google/protobuf/empty.proto";
 
 message OBUData {
   reserved 1; 
-  bytes session_id = 2; // 16-byte uuid
+  string session_id = 2;
   double latitude = 3;
   double longitude = 4;
   google.protobuf.Timestamp timestamp = 5;
 }
 
 message Session {
-  bytes session_id = 1;
+  string session_id = 1;
 }
 
 service Route {
