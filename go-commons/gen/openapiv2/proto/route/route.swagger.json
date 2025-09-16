@@ -122,9 +122,7 @@
       "type": "object",
       "properties": {
         "sessionId": {
-          "type": "string",
-          "format": "byte",
-          "title": "16-byte uuid"
+          "type": "string"
         },
         "latitude": {
           "type": "number",
@@ -144,8 +142,7 @@
       "type": "object",
       "properties": {
         "sessionId": {
-          "type": "string",
-          "format": "byte"
+          "type": "string"
         }
       }
     },
