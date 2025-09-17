@@ -2,11 +2,13 @@ package domain
 
 import (
 	"time"
+
+	"github.com/google/uuid"
 )
 
 type OBUData struct {
-	ID        []byte
-	Long      float64
-	Lat       float64
-	Timestamp time.Time
+	SessionID uuid.UUID `json:"session_id"`
+	Long      float64   `json:"long"`
+	Lat       float64   `json:"lat"`
+	CreatedAt time.Time `json:"created_at"`
 }

@@ -7,6 +7,7 @@ import (
 
 	"github.com/go-playground/validator/v10"
 	"github.com/golang/protobuf/ptypes/empty"
+	"github.com/google/uuid"
 	routepb "github.com/rauan06/realtime-map/go-commons/gen/proto/route"
 	"github.com/rauan06/realtime-map/go-commons/pkg/logger"
 	"github.com/rauan06/realtime-map/producer/internal/domain"
@@ -24,16 +25,15 @@ type V1 struct {
 	v  *validator.Validate
 }
 
-func (r *V1) StartSession(ctx context.Context, in *routepb.DeviceID) (*empty.Empty, error) {
-	err := r.uc.StartSession(ctx, in.DeviceId)
-	if err != nil {
-		return nil, status.Error(codes.Internal, err.Error())
-	}
+func (r *V1) StartSession(ctx context.Context, in *empty.Empty) (*routepb.Session, error) {
+	id := uuid.NewString()
 
-	return nil, nil
+	return &routepb.Session{
+		SessionId: id,
+	}, nil
 }
 
-func (r *V1) EndSession(context.Context, *routepb.DeviceID) (*empty.Empty, error) {
+func (r *V1) EndSession(context.Context, *routepb.Session) (*empty.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method EndSession not implemented")
 }
 
@@ -49,12 +49,19 @@ func (r *V1) RouteChat(stream grpc.ClientStreamingServer[routepb.OBUData, empty.
 
 		r.l.Info(fmt.Sprintf("recieved: %+v/n", in))
 
+		parsedUUID, err := uuid.Parse(in.SessionId)
+		if err != nil {
+			r.l.Error("error parsing uuid: %v", err)
+
+			return status.Error(codes.InvalidArgument, err.Error())
+		}
+
 		err = r.uc.ProcessOBUData(context.Background(),
 			domain.OBUData{
-				ID:        in.DeviceId,
+				SessionID: parsedUUID,
 				Long:      in.Longitude,
 				Lat:       in.Latitude,
-				Timestamp: in.Timestamp.AsTime(),
+				CreatedAt: in.Timestamp.AsTime(),
 			})
 		if err != nil {
 			r.l.Error(err)

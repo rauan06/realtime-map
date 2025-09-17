@@ -7,8 +7,9 @@ require (
 	github.com/confluentinc/confluent-kafka-go/v2 v2.11.1
 	github.com/go-playground/validator/v10 v10.27.0
 	github.com/golang/protobuf v1.5.4
+	github.com/google/uuid v1.6.0
 	github.com/joho/godotenv v1.5.1
-	github.com/rauan06/realtime-map/go-commons v0.0.0-20250914094610-d91e447cfdc8
+	github.com/rauan06/realtime-map/go-commons v0.0.0-20250916154931-9060f24cfffb
 	google.golang.org/grpc v1.75.0
 )
 

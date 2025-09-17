@@ -1,0 +1,3 @@
+DROP TABLE IF EXISTS obu_data;
+
+DROP TABLE IF EXISTS sessions;

@@ -9,7 +9,6 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/google/uuid"
 	"github.com/rauan06/realtime-map/go-commons/gen/proto/route"
 	"github.com/rauan06/realtime-map/seeder/internal/repo/grpcclient"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -19,20 +18,18 @@ func genCord() float64 {
 	return rand.Float64() * 100
 }
 
-func runDevice(ctx context.Context, client *grpcclient.Client, deviceID uuid.UUID) {
+func runDevice(ctx context.Context, client *grpcclient.Client) {
 	// Start session for this device
-	_, err := client.StartSession(ctx, &route.DeviceID{
-		DeviceId: deviceID[:],
-	})
+	session, err := client.StartSession(ctx, nil)
 	if err != nil {
-		log.Printf("[Device %s] failed to start session: %v", deviceID, err)
+		log.Printf("Failed to start session: %v", err)
 		return
 	}
 
 	// Open streaming connection
 	stream, err := client.RouteChat(ctx)
 	if err != nil {
-		log.Printf("[Device %s] failed to open RouteChat: %v", deviceID, err)
+		log.Printf("[Session %s] failed to open RouteChat: %v", session.SessionId, err)
 		return
 	}
 
@@ -47,16 +44,16 @@ func runDevice(ctx context.Context, client *grpcclient.Client, deviceID uuid.UUI
 				return
 			case <-ticker.C:
 				msg := &route.OBUData{
-					DeviceId:  deviceID[:],
+					SessionId: session.SessionId,
 					Latitude:  genCord(),
 					Longitude: genCord(),
 					Timestamp: timestamppb.New(time.Now()),
 				}
 				if err := stream.Send(msg); err != nil {
-					log.Printf("[Device %s] failed to send data: %v", deviceID, err)
+					log.Printf("[Session %s] failed to send data: %v", session.SessionId, err)
 					return
 				}
-				log.Printf("[Device %s] sent OBUData: %+v", deviceID, msg)
+				log.Printf("[Session %s] sent OBUData: %+v", session.SessionId, msg)
 			}
 		}
 	}()
@@ -75,8 +72,7 @@ func main() {
 	signal.Notify(sigCh, syscall.SIGINT, syscall.SIGTERM)
 
 	for i := 0; i < 10; i++ {
-		deviceID := uuid.New()
-		go runDevice(ctx, client, deviceID)
+		go runDevice(ctx, client)
 	}
 
 	// Wait for interrupt signal

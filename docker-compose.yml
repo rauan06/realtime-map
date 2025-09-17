@@ -29,7 +29,7 @@ services:
     volumes:
       - redis_data:/data
   db:
-    image: postgres:latest
+    image: postgis/postgis:latest
     restart: always
     shm_size: 128mb
     environment:
