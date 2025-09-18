@@ -24,14 +24,6 @@ type (
 	Log struct {
 		Level string `env:"LOG_LEVEL,required"`
 	}
-
-	// Redis -.
-	Redis struct {
-		RedisURI      string `env:"REDIS_URL" envDefault:"localhost:6379"`
-		RedisPassword string `env:"REDIS_PASSWORD" envDefault:""`
-	}
-	
-	// Postgres -.
 )
 
 // NewConfig returns app config.

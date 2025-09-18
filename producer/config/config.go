@@ -14,6 +14,7 @@ type (
 		Log   Log
 		GRPC  GRPC
 		Kafka Kafka
+		Metrics Metrics
 	}
 
 	// App -.
@@ -37,6 +38,11 @@ type (
 	GRPC struct {
 		Port              string `env:"GRPC_PORT,required"`
 		ReflectionEnabled bool   `env:"GRPC_REFLECTION_ENABLED" envDefault:"true"`
+	}
+
+	// Metrics -.
+	Metrics struct {
+		Enabled bool `env:"METRICS_ENABLED" envDefault:"true"`
 	}
 )
 

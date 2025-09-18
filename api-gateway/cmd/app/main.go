@@ -1,7 +1,17 @@
 package main
 
-import "github.com/rauan06/realtime-map/api-gateway/internal/app"
+import (
+	"log"
+
+	"github.com/rauan06/realtime-map/api-gateway/config"
+	"github.com/rauan06/realtime-map/api-gateway/internal/app"
+)
 
 func main() {
-	app.Run()
+	cfg, err := config.NewConfig()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	app.Run(cfg)
 }

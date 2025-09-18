@@ -21,13 +21,6 @@ services:
       KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
       KAFKA_LOG_DIRS: /tmp/kraft-combined-logs
       CLUSTER_ID: MkU3OEVBNTcwNTJENDM2Qk
-  redis:
-    image: redis:latest
-    container_name: my-redis-instance
-    ports:
-      - "6378:6379"
-    volumes:
-      - redis_data:/data
   db:
     image: postgis/postgis:latest
     restart: always
@@ -38,5 +31,3 @@ services:
       POSTGRES_DB: realtimedb
     ports:
       - "5431:5432"
-volumes:
-  redis_data:
