@@ -10,8 +10,9 @@ import (
 type (
 	// Config -.
 	Config struct {
-		App App
-		Log Log
+		App  App
+		HTTP HTTP
+		Log  Log
 		GRPC
 		Kafka
 		Metrics Metrics
@@ -22,6 +23,12 @@ type (
 	App struct {
 		Name    string `env:"APP_NAME,required"`
 		Version string `env:"APP_VERSION,required"`
+	}
+
+	// HTTP -.
+	HTTP struct {
+		Port           string `env:"HTTP_PORT,required"`
+		UsePreforkMode bool   `env:"HTTP_USE_PREFORK_MODE" envDefault:"false"`
 	}
 
 	// Log -.
