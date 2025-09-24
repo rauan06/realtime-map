@@ -9,7 +9,7 @@ require (
 	github.com/golang-migrate/migrate/v4 v4.19.0
 	github.com/google/uuid v1.6.0
 	github.com/joho/godotenv v1.5.1
-	github.com/rauan06/realtime-map/go-commons v0.0.0-20250918140210-7e290bd676b2
+	github.com/rauan06/realtime-map/go-commons v0.0.0-20250923120212-de7786bb809a
 	github.com/redis/go-redis/v9 v9.14.0
 	gorm.io/driver/postgres v1.6.0
 	gorm.io/gorm v1.31.0
