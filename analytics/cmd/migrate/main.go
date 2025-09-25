@@ -19,7 +19,7 @@ func main() {
 
 	m, err := migrate.New(
 		"file://migrations",
-		"postgres://postgres:example@localhost:5431/realtimedb?sslmode=disable",
+		"postgres://postgres:example@db:5432/realtimedb?sslmode=disable",
 	)
 	if err != nil {
 		log.Fatal(err)

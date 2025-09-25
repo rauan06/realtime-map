@@ -4,16 +4,15 @@ import (
 	"fmt"
 
 	"github.com/caarlos0/env/v11"
-	"github.com/joho/godotenv"
 )
 
 type (
 	// Config -.
 	Config struct {
-		App   App
-		Log   Log
-		GRPC  GRPC
-		Kafka Kafka
+		App     App
+		Log     Log
+		GRPC    GRPC
+		Kafka   Kafka
 		Metrics Metrics
 	}
 
@@ -48,10 +47,10 @@ type (
 
 // NewConfig returns app config.
 func NewConfig() (*Config, error) {
-	err := godotenv.Load()
-	if err != nil {
-		return nil, fmt.Errorf("loading .env %s", err)
-	}
+	// err := godotenv.Load()
+	// if err != nil {
+	// 	return nil, fmt.Errorf("loading .env %s", err)
+	// }
 
 	cfg := &Config{}
 	if err := env.Parse(cfg); err != nil {

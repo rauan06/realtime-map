@@ -1,28 +1,82 @@
 services:
+  go-commons:
+    build:
+      context: ./go-commons
+      dockerfile: Dockerfile
+    image: go-commons:latest
+    entrypoint: ["true"]
+
+  producer:
+    build:
+      context: ./producer
+      dockerfile: Dockerfile
+    image: map-producer:latest
+    env_file:
+      - ./producer/.env
+    container_name: map-producer
+    ports:
+      - "5081:5081"
+    depends_on:
+      broker:
+        condition: service_healthy
+      db:
+        condition: service_healthy
+      go-commons:
+        condition: service_completed_successfully
+      
+  analytics:
+    build:
+      context: ./analytics
+      dockerfile: Dockerfile
+    image: map-analytics:latest
+    # env_file:
+    #  - ./analytics/.env
+    container_name: map-analytics
+    depends_on:
+      broker:
+        condition: service_healthy
+      db:
+        condition: service_healthy
+      go-commons:
+        condition: service_completed_successfully
+
   broker:
     image: apache/kafka:latest
-    hostname: broker
     container_name: broker
+    hostname: broker
     ports:
       - 9092:9092
     environment:
-      KAFKA_BROKER_ID: 1
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT,CONTROLLER:PLAINTEXT
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://broker:29092,PLAINTEXT_HOST://localhost:9092
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
-      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
-      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      # Required for KRaft mode
       KAFKA_PROCESS_ROLES: broker,controller
       KAFKA_NODE_ID: 1
       KAFKA_CONTROLLER_QUORUM_VOTERS: 1@broker:29093
-      KAFKA_LISTENERS: PLAINTEXT://broker:29092,CONTROLLER://broker:29093,PLAINTEXT_HOST://0.0.0.0:9092
-      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
       KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+
+      # Listeners
+      KAFKA_LISTENERS: PLAINTEXT://broker:29092,CONTROLLER://broker:29093,PLAINTEXT_HOST://0.0.0.0:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://broker:29092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT,CONTROLLER:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+
+      # Required for internal topics
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+
+      # Storage directory & cluster id
       KAFKA_LOG_DIRS: /tmp/kraft-combined-logs
       CLUSTER_ID: MkU3OEVBNTcwNTJENDM2Qk
+    healthcheck:
+      test: ["CMD", "bash", "-c", "nc -z localhost 9092 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+
   db:
     image: postgis/postgis:latest
+    container_name: db
     restart: always
     shm_size: 128mb
     environment:
@@ -31,3 +85,9 @@ services:
       POSTGRES_DB: realtimedb
     ports:
       - "5431:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d realtimedb"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s

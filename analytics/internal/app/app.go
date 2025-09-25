@@ -15,7 +15,7 @@ func Run() {
 	l := logger.New("DEBUG")
 
 	c, err := kafka.NewConsumer(&kafka.ConfigMap{
-		"bootstrap.servers": "localhost",
+		"bootstrap.servers": "broker:29092",
 		"group.id":          "myGroup",
 		"auto.offset.reset": "earliest",
 	})
@@ -23,7 +23,7 @@ func Run() {
 		l.Fatal(err)
 	}
 
-	dsn := "host=localhost user=postgres password=example dbname=realtimedb port=5431 sslmode=disable TimeZone=Asia/Almaty"
+	dsn := "host=db user=postgres password=example dbname=realtimedb port=5432 sslmode=disable TimeZone=Asia/Almaty"
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	obu_repo := repo_postgres.New[domain.OBUData](db)
 	session_repo := repo_postgres.New[domain.Session](db)
