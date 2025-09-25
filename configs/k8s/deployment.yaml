@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: map-analytics
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: map-analytics
+  template:
+    metadata:
+      labels:
+        app: map-analytics
+    spec:
+      containers:
+        - name: map-analytics
+          image: map-analytics:latest
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8080
