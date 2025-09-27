@@ -6,7 +6,7 @@ import (
 
 type (
 	IEventBus interface {
-		ProduceEvent(ctx context.Context, key string, data interface{}) error
+		ProduceEvent(ctx context.Context, key string, data any) error
 		// GetHistory(context.Context) ([]domain.OBUData, error)
 	}
 )
