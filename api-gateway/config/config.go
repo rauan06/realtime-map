@@ -14,7 +14,6 @@ type (
 		HTTP HTTP
 		Log  Log
 		GRPC
-		Kafka
 		Metrics Metrics
 		Swagger Swagger
 	}
@@ -34,11 +33,6 @@ type (
 	// Log -.
 	Log struct {
 		Level string `env:"LOG_LEVEL,required"`
-	}
-
-	Kafka struct {
-		BootstrapServers string `env:"KAFKA_BOOTSTRAP_SERVERS" envDefault:"localhost"`
-		Topic            string `env:"KAFKA_TOPIC,required"`
 	}
 
 	// GRPC -.
