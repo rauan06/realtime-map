@@ -2,24 +2,55 @@ package app
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/rauan06/realtime-map/api-gateway/config"
-	"github.com/rauan06/realtime-map/go-commons/pkg/httpserver"
+	"github.com/rauan06/realtime-map/api-gateway/internal/controller"
+	routepb "github.com/rauan06/realtime-map/go-commons/gen/proto/route"
 	"github.com/rauan06/realtime-map/go-commons/pkg/logger"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
 func Run(cfg *config.Config) {
 	l := logger.New(cfg.Log.Level)
 
-	if cfg.Metrics.Enabled {
-		http.Handle("/metrics", promhttp.Handler())
-		http.ListenAndServe(":2112", nil)
+	mux := http.NewServeMux()
+
+	// gRPC route client to producer
+	grpcConn, err := grpc.NewClient("localhost:"+cfg.GRPC.Port, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		l.Fatal(err)
+	}
+	routeClient := routepb.NewRouteClient(grpcConn)
+
+	controller.Register(mux, routeClient)
+
+	srv := &http.Server{
+		Addr:              ":" + cfg.HTTP.Port,
+		Handler:           mux,
+		ReadHeaderTimeout: 5 * time.Second,
 	}
 
-	httpServer := httpserver.New(httpserver.Port(cfg.HTTP.Port), httpserver.Prefork(cfg.HTTP.UsePreforkMode))
+	// Metrics server
+	if cfg.Metrics.Enabled {
+		go func() {
+			mMux := http.NewServeMux()
+			mMux.Handle("/metrics", promhttp.Handler())
+			if err := http.ListenAndServe(":2112", mMux); err != nil && err != http.ErrServerClosed {
+				l.Error(err)
+			}
+		}()
+	}
 
-	httpServer.Start()
+	// Start main server
+	go func() {
+		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			l.Fatal(err)
+		}
+	}()
 
-	l.Fatal("123")
+	// Block forever (or you can add context cancellation/shutdown hooks later)
+	select {}
 }

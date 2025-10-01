@@ -29,4 +29,4 @@ COPY --from=builder /app/map-analytics .
 COPY migrations ./migrations
 
 # Default command: run migrate up then start app
-CMD ["sh", "-c", "./migrate drop && ./migrate up && ./map-analytics"]
+CMD ["sh", "-c", "./migrate force 1 && ./migrate up && ./map-analytics"]
