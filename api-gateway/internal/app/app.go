@@ -44,13 +44,11 @@ func Run(cfg *config.Config) {
 		}()
 	}
 
-	// Start main server
 	go func() {
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			l.Fatal(err)
 		}
 	}()
 
-	// Block forever (or you can add context cancellation/shutdown hooks later)
 	select {}
 }
