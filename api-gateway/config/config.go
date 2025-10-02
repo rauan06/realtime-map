@@ -10,10 +10,10 @@ import (
 type (
 	// Config -.
 	Config struct {
-		App  App
-		HTTP HTTP
-		Log  Log
-		GRPC
+		App     App
+		HTTP    HTTP
+		Log     Log
+		GRPC    GRPC
 		Metrics Metrics
 		Swagger Swagger
 	}
