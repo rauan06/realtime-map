@@ -40,7 +40,7 @@
 
 **Realtime Map** is a scalable, distributed system for real-time location tracking and visualization. The system processes location data from IoT devices (OBU - On-Board Units) through a Kafka-based streaming pipeline, stores it in Redis for fast retrieval, and provides real-time visualization through WebSocket connections.
 
-The architecture leverages microservices pattern with separate components for data ingestion, processing, storage, and presentation. Built with Go, it provides high-performance real-time location tracking suitable for fleet management, logistics, and IoT applications.
+The architecture leverages microservices pattern with separate components for data ingestion, processing, storage, analytics, and presentation. Built with Go, it provides high-performance real-time location tracking suitable for fleet management, logistics, and IoT applications. The analytics service persistently stores location history in PostgreSQL with PostGIS support for geospatial queries and analysis.
 
 ---
 
@@ -54,7 +54,8 @@ The architecture leverages microservices pattern with separate components for da
 - **gRPC API**: High-performance API for device communication and data exchange
 - **RESTful Gateway**: HTTP/REST API gateway for easy integration
 - **Multi-Device Support**: Handle thousands of concurrent device connections
-- **Data Persistence**: PostgreSQL for historical data storage and analytics
+- **Data Persistence**: PostgreSQL with PostGIS for historical data storage and geospatial analytics
+- **Analytics Service**: Dedicated microservice for consuming, processing, and storing location data with database migrations
 - **Containerized Deployment**: Docker Compose setup for easy development and deployment
 
 ---
@@ -87,6 +88,7 @@ Clients connect:
 
 - **Seeder Service**: Generates simulated GPS data from multiple devices for testing
 - **Producer Service**: Consumes location data from Kafka, processes it, and stores in Redis
+- **Analytics Service**: Consumes location data from Kafka, processes it, and stores in PostgreSQL with PostGIS for historical analytics and geospatial queries
 - **API Gateway**: Provides gRPC, REST, and WebSocket APIs with web interface
 - **Go Commons**: Shared protocol buffers, database utilities, and common libraries
 
@@ -97,14 +99,16 @@ Clients connect:
 3. **Stream Processing**: Producer service consumes from Kafka and processes location updates
 4. **Caching**: Current device positions are stored in Redis for fast retrieval
 5. **Real-time Updates**: WebSocket connections push live updates to web clients
-6. **Persistence**: Historical data is stored in PostgreSQL for analytics
+6. **Analytics Pipeline**: Analytics service consumes from Kafka and stores historical data in PostgreSQL with PostGIS
+7. **Persistence**: Historical data with geospatial indexing enables complex queries and analytics
 
 ### Technology Stack
 
 - **Backend**: Go 1.21+, gRPC, Protocol Buffers
 - **Message Broker**: Apache Kafka for event streaming
 - **Caching**: Redis cluster for high-performance data access  
-- **Database**: PostgreSQL for persistent storage
+- **Database**: PostgreSQL with PostGIS extension for persistent storage and geospatial queries
+- **ORM**: GORM for database operations and migrations
 - **Frontend**: HTML5, JavaScript, Leaflet.js for map visualization
 - **Infrastructure**: Docker, Docker Compose for containerization
 
@@ -119,7 +123,7 @@ Before getting started with realtime-map, ensure your runtime environment meets 
 - **Protocol Buffers:** Protocol Buffers compiler (protoc)
 - **Build Tools:** Make utility
 - **Message Broker:** Apache Kafka (provided via Docker)
-- **Database:** PostgreSQL (provided via Docker)
+- **Database:** PostgreSQL with PostGIS (provided via Docker)
 - **Cache:** Redis (provided via Docker)
 
 
@@ -152,14 +156,15 @@ Install realtime-map using the following steps:
 
 This will start:
 - Apache Kafka broker on port 9092
-- Redis cache on port 6378
-- PostgreSQL database on port 5431
+- PostgreSQL with PostGIS on port 5430
+- Analytics service (with automatic database migrations)
 
 **5. Build Services (Optional):**
 ```sh
 ❯ go build ./api-gateway/cmd/app
 ❯ go build ./producer/cmd/app  
 ❯ go build ./seeder/cmd/app
+❯ go build ./analytics/cmd/app
 ```
 
 
@@ -190,7 +195,20 @@ The API gateway provides:
 ```
 The producer consumes location data from Kafka and processes it for storage and real-time distribution.
 
-**4. Run the Data Seeder (for testing):**
+**4. Run the Analytics Service (runs automatically in Docker):**
+
+The analytics service is automatically started via Docker Compose and handles:
+- Consuming location data from Kafka
+- Running database migrations automatically
+- Storing historical location data in PostgreSQL with PostGIS
+- Enabling geospatial queries and analytics
+
+To run manually (for development):
+```sh
+❯ cd analytics && go run cmd/app/main.go
+```
+
+**5. Run the Data Seeder (for testing):**
 ```sh
 ❯ cd seeder && go run cmd/app/main.go
 ```
@@ -201,8 +219,7 @@ The seeder generates simulated device location data for testing and demonstratio
 - **gRPC API:** localhost:50051 (default)
 - **REST API Gateway:** http://localhost:8080/api
 - **Kafka Broker:** localhost:9092
-- **Redis Cache:** localhost:6378
-- **PostgreSQL:** localhost:5431
+- **PostgreSQL with PostGIS:** localhost:5430
 
 
 ###  Testing
@@ -219,6 +236,7 @@ Run the test suite using the following commands:
 ❯ cd api-gateway && go test ./...
 ❯ cd producer && go test ./...
 ❯ cd seeder && go test ./...
+❯ cd analytics && go test ./...
 ```
 
 **Generate Test Coverage:**
@@ -231,8 +249,9 @@ Run the test suite using the following commands:
 1. Start the infrastructure services: `make up`
 2. Run the seeder to generate test data: `cd seeder && go run cmd/app/main.go`
 3. Start the producer to process data: `cd producer && go run cmd/app/main.go`
-4. Start the API gateway: `cd api-gateway && go run cmd/app/main.go`
-5. Open http://localhost:8080 to see real-time location updates on the map
+4. The analytics service runs automatically and processes location data
+5. Start the API gateway: `cd api-gateway && go run cmd/app/main.go`
+6. Open http://localhost:8080 to see real-time location updates on the map
 
 
 ---
@@ -291,11 +310,12 @@ Real-time location updates via WebSocket:
 - [X] **`Task 2`**: <strike>Implement Kafka consumer for location data processing.</strike>
 - [X] **`Task 3`**: <strike>Basic WebSocket implementation and HTML templates.</strike>
 - [X] **`Task 4`**: <strike>Integration with Leaflet.js for map visualization.</strike>
-- [ ] **`Task 5`**: Add Grafana dashboards for analytics and monitoring.
-- [ ] **`Task 6`**: Implement device authentication and authorization.
-- [ ] **`Task 7`**: Add geofencing and location-based alerts.
-- [ ] **`Task 8`**: Performance optimization and horizontal scaling.
-- [ ] **`Task 9`**: Comprehensive test coverage and CI/CD pipeline.
+- [X] **`Task 5`**: <strike>Analytics service with PostgreSQL and PostGIS for historical data storage.</strike>
+- [ ] **`Task 6`**: Add Grafana dashboards for analytics and monitoring.
+- [ ] **`Task 7`**: Implement device authentication and authorization.
+- [ ] **`Task 8`**: Add geofencing and location-based alerts.
+- [ ] **`Task 9`**: Performance optimization and horizontal scaling.
+- [ ] **`Task 10`**: Comprehensive test coverage and CI/CD pipeline.
 ---
 
 ##  Contributing
