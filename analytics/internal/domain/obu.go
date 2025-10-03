@@ -119,3 +119,5 @@ type OBUData struct {
 	Point     GeoPoint  `gorm:"type:geometry(Point,4326)" json:"point"`
 	CreatedAt time.Time `gorm:"type:timestamptz" json:"created_at"`
 }
+
+func (OBUData) TableName() string { return "obu_data" }

@@ -1,6 +1,6 @@
 package domain
 
-import "github.com/docker/distribution/uuid"
+import "github.com/google/uuid"
 
 type Session struct {
 	ID     uuid.UUID
@@ -8,3 +8,5 @@ type Session struct {
 
 	OBUData []OBUData
 }
+
+func (Session) TableName() string { return "sessions" }

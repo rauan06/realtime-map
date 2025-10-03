@@ -15,7 +15,7 @@ func Run() {
 	l := logger.New("DEBUG")
 
 	c, err := kafka.NewConsumer(&kafka.ConfigMap{
-		"bootstrap.servers": "localhost",
+		"bootstrap.servers": "broker:29092",
 		"group.id":          "myGroup",
 		"auto.offset.reset": "earliest",
 	})

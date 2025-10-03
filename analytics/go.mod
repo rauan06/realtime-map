@@ -5,11 +5,10 @@ go 1.24.6
 require (
 	github.com/caarlos0/env/v11 v11.3.1
 	github.com/confluentinc/confluent-kafka-go/v2 v2.11.1
-	github.com/docker/distribution v2.8.3+incompatible
 	github.com/golang-migrate/migrate/v4 v4.19.0
 	github.com/google/uuid v1.6.0
 	github.com/joho/godotenv v1.5.1
-	github.com/rauan06/realtime-map/go-commons v0.0.0-20250923120212-de7786bb809a
+	github.com/rauan06/realtime-map/go-commons v0.0.0-20251003071503-fdf38c3e1600
 	github.com/redis/go-redis/v9 v9.14.0
 	gorm.io/driver/postgres v1.6.0
 	gorm.io/gorm v1.31.0
