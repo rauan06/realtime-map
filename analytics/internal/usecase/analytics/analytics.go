@@ -5,33 +5,34 @@ import (
 
 	"github.com/confluentinc/confluent-kafka-go/v2/kafka"
 	"github.com/google/uuid"
+
 	"github.com/rauan06/realtime-map/analytics/internal/domain"
 	"github.com/rauan06/realtime-map/analytics/internal/repo"
 	"github.com/rauan06/realtime-map/analytics/internal/usecase"
 	"github.com/rauan06/realtime-map/go-commons/pkg/logger"
 )
 
-type AnalyticsUseCase struct {
-	obu_db     repo.IDatabase[domain.OBUData]
-	session_db repo.IDatabase[domain.Session]
+type UseCase struct {
+	obuDB     repo.IDatabase[domain.OBUData]
+	sessionDB repo.IDatabase[domain.Session]
 
 	l logger.Logger
 }
 
-func New(l logger.Logger, odu_db repo.IDatabase[domain.OBUData], session_db repo.IDatabase[domain.Session]) usecase.IAnalyticsUseCase {
-	return &AnalyticsUseCase{
-		obu_db:     odu_db,
-		session_db: session_db,
-		l:          l,
+func New(l logger.Logger, oduDB repo.IDatabase[domain.OBUData], sessionDB repo.IDatabase[domain.Session]) usecase.IAnalyticsUseCase {
+	return &UseCase{
+		obuDB:     oduDB,
+		sessionDB: sessionDB,
+		l:         l,
 	}
 }
 
-func (uc *AnalyticsUseCase) ProcessMessage(msg *kafka.Message) {
-	uc.l.Info("recieved msg: %+v, key: %s, value: %s\n", msg, msg.Key, msg.Value)
+func (uc *UseCase) ProcessMessage(msg *kafka.Message) {
+	uc.l.Info("received msg: %+v, key: %s, value: %s\n", msg, msg.Key, msg.Value)
 
-	var dto domain.OBU_dto
+	var dto domain.ObuDTO
 	if err := json.Unmarshal(msg.Value, &dto); err != nil {
-		uc.l.Error("error marshalling obu data: %v", err)
+		uc.l.Error("error marshaling obu data: %v", err)
 
 		return
 	}
@@ -45,10 +46,10 @@ func (uc *AnalyticsUseCase) ProcessMessage(msg *kafka.Message) {
 
 	data := &domain.OBUData{
 		SessionID: sessionID,
-		Point: *domain.NewGeoPoint(dto.Long, dto.Lat),
+		Point:     *domain.NewGeoPoint(dto.Long, dto.Lat),
 	}
 
-	if err := uc.obu_db.Create(data); err != nil {
+	if err := uc.obuDB.Create(data); err != nil {
 		uc.l.Error("error inserting obu data: %v", err)
 
 		return

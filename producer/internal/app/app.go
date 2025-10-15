@@ -7,6 +7,7 @@ import (
 	"syscall"
 
 	"github.com/confluentinc/confluent-kafka-go/v2/kafka"
+
 	"github.com/rauan06/realtime-map/go-commons/pkg/grpcserver"
 	kafka_producer "github.com/rauan06/realtime-map/go-commons/pkg/kafka/producer"
 	"github.com/rauan06/realtime-map/go-commons/pkg/logger"
@@ -22,6 +23,7 @@ func Run(cfg *config.Config) {
 	if err != nil {
 		l.Fatal(err)
 	}
+
 	eb, err := kafka_producer.New(kafkaProducer, cfg.Kafka.Topic)
 	if err != nil {
 		l.Fatal(err)
@@ -34,7 +36,7 @@ func Run(cfg *config.Config) {
 	grpcrouter.NewRoutes(grpcServer.App, grpcrouter.RouteConfig{
 		UseCase:           uc,
 		Logger:            l,
-		ReflectinoEnabled: cfg.GRPC.ReflectionEnabled,
+		ReflectionEnabled: cfg.GRPC.ReflectionEnabled,
 	})
 
 	grpcServer.Start()

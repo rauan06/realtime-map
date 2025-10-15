@@ -1,7 +1,7 @@
 package main
 
 import (
-	"fmt"
+	"errors"
 	"log"
 	"os"
 	"strconv"
@@ -9,11 +9,21 @@ import (
 	"github.com/golang-migrate/migrate/v4"
 	_ "github.com/golang-migrate/migrate/v4/database/postgres"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
+
+	"github.com/rauan06/realtime-map/go-commons/pkg/logger"
 )
 
+const (
+	forceArgCount = 3
+	mainArgCount  = 2
+)
+
+//nolint:cyclop // Scan method requires multiple type checks for SQL driver compatibility
 func main() {
-	if len(os.Args) < 2 {
-		fmt.Println("Usage: migrator [up|down|drop|force <version>|version]")
+	l := logger.New("DEBUG")
+
+	if len(os.Args) < mainArgCount {
+		l.Info("Usage: migrator [up|down|drop|force <version>|version]")
 		os.Exit(1)
 	}
 
@@ -29,46 +39,53 @@ func main() {
 
 	switch cmd {
 	case "up":
-		if err := m.Up(); err != nil && err != migrate.ErrNoChange {
+		if err := m.Up(); err != nil && !errors.Is(err, migrate.ErrNoChange) {
 			log.Fatal(err)
 		}
-		fmt.Println("Migrations applied successfully")
+
+		l.Info("Migrations applied successfully")
 
 	case "down":
 		if err := m.Steps(-1); err != nil {
 			log.Fatal(err)
 		}
-		fmt.Println("Rolled back one migration")
+
+		l.Info("Rolled back one migration")
 
 	case "drop":
 		if err := m.Drop(); err != nil {
 			log.Fatal(err)
 		}
-		fmt.Println("Database dropped")
+
+		l.Info("Database dropped")
 
 	case "force":
-		if len(os.Args) < 3 {
+		if len(os.Args) < forceArgCount {
 			log.Fatal("force requires version number")
 		}
+
 		version, err := strconv.Atoi(os.Args[2])
 		if err != nil {
 			log.Fatal("invalid version number")
 		}
+
 		if err := m.Force(version); err != nil {
 			log.Fatal(err)
 		}
-		fmt.Printf("Forced to version %d\n", version)
+
+		l.Info("Forced to version %d\n", version)
 
 	case "version":
 		v, dirty, err := m.Version()
 		if err != nil {
 			log.Fatal(err)
 		}
-		fmt.Printf("Current version: %d (dirty: %t)\n", v, dirty)
+
+		l.Info("Current version: %d (dirty: %t)\n", v, dirty)
 
 	default:
-		fmt.Println("Unknown command:", cmd)
-		fmt.Println("Usage: migrator [up|down|drop|force <version>|version]")
+		l.Info("Unknown command: %s", cmd)
+		l.Info("Usage: migrator [up|down|drop|force <version>|version]")
 		os.Exit(1)
 	}
 }

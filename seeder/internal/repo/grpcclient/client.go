@@ -3,9 +3,10 @@ package grpcclient
 import (
 	"log"
 
-	routepb "github.com/rauan06/realtime-map/go-commons/gen/proto/route"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+
+	routepb "github.com/rauan06/realtime-map/go-commons/gen/proto/route"
 )
 
 type Client struct {
@@ -19,5 +20,6 @@ func New() *Client {
 	}
 
 	routeClient := routepb.NewRouteClient(client)
+
 	return &Client{routeClient}
 }

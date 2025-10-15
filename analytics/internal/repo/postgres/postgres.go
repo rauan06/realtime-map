@@ -1,8 +1,9 @@
 package postgres
 
 import (
-	"github.com/rauan06/realtime-map/analytics/internal/domain"
 	"gorm.io/gorm"
+
+	"github.com/rauan06/realtime-map/analytics/internal/domain"
 )
 
 type Repository[T domain.Entity] struct {
@@ -19,6 +20,7 @@ func (r *Repository[T]) Create(entity *T) error {
 
 func (r *Repository[T]) GetByID(id string, preload ...string) (*T, error) {
 	var entity T
+
 	query := r.db
 	for _, p := range preload {
 		query = query.Preload(p)
@@ -37,5 +39,6 @@ func (r *Repository[T]) Update(entity *T) error {
 
 func (r *Repository[T]) Delete(id string) error {
 	var entity T
+
 	return r.db.Delete(&entity, "id = ?", id).Error
 }

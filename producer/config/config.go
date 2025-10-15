@@ -47,11 +47,6 @@ type (
 
 // NewConfig returns app config.
 func NewConfig() (*Config, error) {
-	// err := godotenv.Load()
-	// if err != nil {
-	// 	return nil, fmt.Errorf("loading .env %s", err)
-	// }
-
 	cfg := &Config{}
 	if err := env.Parse(cfg); err != nil {
 		return nil, fmt.Errorf("config error: %w", err)

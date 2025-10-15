@@ -13,6 +13,10 @@ import (
 	"github.com/google/uuid"
 )
 
+const (
+	SRID = 4326
+)
+
 type GeoPointDB struct {
 	Lng float64 `json:"lng"`
 	Lat float64 `json:"lat"`
@@ -25,6 +29,7 @@ type GeoPoint struct {
 
 func (p *GeoPoint) SetSRID(srid int) *GeoPoint {
 	p.SRID = srid
+
 	return p
 }
 
@@ -34,7 +39,7 @@ func NewGeoPoint(lng, lat float64) *GeoPoint {
 			Lng: lng,
 			Lat: lat,
 		},
-		SRID: 4326,
+		SRID: SRID,
 	}
 }
 
@@ -58,6 +63,7 @@ func (p *GeoPoint) String() string {
 	builder.WriteByte(' ')
 	builder.WriteString(strconv.FormatFloat(p.Lat, 'g', -1, 64))
 	builder.WriteByte(')')
+
 	return builder.String()
 }
 
@@ -67,6 +73,7 @@ func (p *GeoPointDB) Scan(val interface{}) error {
 	}
 
 	var b []byte
+
 	var err error
 
 	switch v := val.(type) {
@@ -83,12 +90,14 @@ func (p *GeoPointDB) Scan(val interface{}) error {
 	}
 
 	r := bytes.NewReader(b)
+
 	var wkbByteOrder uint8
 	if err := binary.Read(r, binary.LittleEndian, &wkbByteOrder); err != nil {
 		return err
 	}
 
 	var byteOrder binary.ByteOrder
+
 	switch wkbByteOrder {
 	case 0:
 		byteOrder = binary.BigEndian
