@@ -2,75 +2,65 @@
 package httpserver
 
 import (
+	"context"
+	"net/http"
 	"time"
-
-	"github.com/goccy/go-json"
-	"github.com/gofiber/fiber/v2"
 )
 
 const (
-	_defaultAddr            = ":80"
-	_defaultReadTimeout     = 5 * time.Second
-	_defaultWriteTimeout    = 5 * time.Second
-	_defaultShutdownTimeout = 3 * time.Second
+	_defaultAddr         = ":80"
+	_defaultReadTimeout  = 5 * time.Second
+	_defaultWriteTimeout = 5 * time.Second
 )
 
-// Server -.
 type Server struct {
-	App    *fiber.App
-	notify chan error
+	App *http.Server
 
-	address         string
-	prefork         bool
-	readTimeout     time.Duration
-	writeTimeout    time.Duration
-	shutdownTimeout time.Duration
+	mux          *http.ServeMux
+	notify       chan error
+	address      string
+	writeTimeout time.Duration
+	readTimeout  time.Duration
 }
 
-// New -.
 func New(opts ...Option) *Server {
-	s := &Server{
-		App:             nil,
-		notify:          make(chan error, 1),
-		address:         _defaultAddr,
-		readTimeout:     _defaultReadTimeout,
-		writeTimeout:    _defaultWriteTimeout,
-		shutdownTimeout: _defaultShutdownTimeout,
+	server := &Server{
+		App: nil,
+
+		mux:     http.NewServeMux(),
+		notify:  make(chan error, 1),
+		address: _defaultAddr,
 	}
 
-	// Custom options
 	for _, opt := range opts {
-		opt(s)
+		opt(server)
 	}
 
-	app := fiber.New(fiber.Config{
-		Prefork:      s.prefork,
-		ReadTimeout:  s.readTimeout,
-		WriteTimeout: s.writeTimeout,
-		JSONDecoder:  json.Unmarshal,
-		JSONEncoder:  json.Marshal,
-	})
+	app := &http.Server{
+		Addr:    server.address,
+		Handler: server.mux,
 
-	s.App = app
+		ReadTimeout:  _defaultReadTimeout,
+		WriteTimeout: _defaultWriteTimeout,
+	}
 
-	return s
+	server.App = app
+
+	return server
 }
 
-// Start -.
 func (s *Server) Start() {
 	go func() {
-		s.notify <- s.App.Listen(s.address)
+		s.notify <- s.App.ListenAndServe()
 
 		close(s.notify)
 	}()
 }
 
-// Notify -.
 func (s *Server) Notify() <-chan error {
 	return s.notify
 }
 
-// Shutdown -.
 func (s *Server) Shutdown() error {
-	return s.App.ShutdownWithTimeout(s.shutdownTimeout)
+	return s.App.Shutdown(context.Background())
 }
