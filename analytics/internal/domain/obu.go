@@ -5,7 +5,6 @@ import (
 	"database/sql/driver"
 	"encoding/binary"
 	"encoding/hex"
-	"errors"
 	"strconv"
 	"strings"
 	"time"
@@ -82,7 +81,7 @@ func (p *GeoPointDB) Scan(val interface{}) error {
 	case string:
 		b, err = hex.DecodeString(v)
 	default:
-		return errors.New("invalid type")
+		return ErrInvalidType
 	}
 
 	if err != nil {
@@ -104,7 +103,7 @@ func (p *GeoPointDB) Scan(val interface{}) error {
 	case 1:
 		byteOrder = binary.LittleEndian
 	default:
-		return errors.New("invalid byte order")
+		return ErrInvalidByteOrder
 	}
 
 	var wkbGeometryType uint64
