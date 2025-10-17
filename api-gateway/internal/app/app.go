@@ -19,7 +19,7 @@ func Run(cfg *config.Config) {
 
 	mux := http.NewServeMux()
 
-	server := httpserver.New()
+	_ = httpserver.New()
 
 	// gRPC route client to producer
 	grpcConn, err := grpc.NewClient("localhost:"+cfg.GRPC.Port, grpc.WithTransportCredentials(insecure.NewCredentials()))

@@ -28,3 +28,9 @@ jobs:
       - name: Test ${{ matrix.service }}
         working-directory: ${{ matrix.service }}
         run: go test -v ./...
+
+      - name: Run golangci-lint on ${{ matrix.service }}
+        working-directory: ${{ matrix.service }}
+        run: |
+          curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin
+          golangci-lint run
