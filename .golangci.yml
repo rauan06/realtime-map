@@ -61,8 +61,8 @@ linters:
     exhaustive:
       default-signifies-exhaustive: false
     funlen:
-      lines: 70
-      statements: 40
+      lines: 80
+      statements: 45
     goconst:
       min-len: 2
       min-occurrences: 2

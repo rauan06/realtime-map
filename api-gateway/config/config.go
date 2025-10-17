@@ -1,10 +1,13 @@
 package config
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/caarlos0/env/v11"
 	"github.com/joho/godotenv"
+
+	"github.com/rauan06/realtime-map/api-gateway/internal/domain"
 )
 
 type (
@@ -55,7 +58,7 @@ type (
 func NewConfig() (*Config, error) {
 	err := godotenv.Load()
 	if err != nil {
-		return nil, fmt.Errorf("loading .env %s", err)
+		return nil, errors.Join(err, domain.ErrConfigFileLode)
 	}
 
 	cfg := &Config{}

@@ -2,19 +2,19 @@ package controller
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 	"time"
 
 	"github.com/gorilla/websocket"
-	routepb "github.com/rauan06/realtime-map/go-commons/gen/proto/route"
 	"google.golang.org/protobuf/types/known/timestamppb"
+
+	routepb "github.com/rauan06/realtime-map/go-commons/gen/proto/route"
 )
 
-var upgrader = websocket.Upgrader{
-	ReadBufferSize:  1024,
-	WriteBufferSize: 1024,
-	CheckOrigin:     func(r *http.Request) bool { return true },
-}
+const (
+	bufferSize = 1024
+)
 
 type wsOBU struct {
 	Latitude  float64 `json:"latitude"`
@@ -29,33 +29,47 @@ func Register(mux *http.ServeMux, routeClient routepb.RouteClient) {
 	})
 }
 
-func wsHandler(w http.ResponseWriter, r *http.Request, routeClient routepb.RouteClient) {
-	conn, err := upgrader.Upgrade(w, r, nil)
+func wsHandler(w http.ResponseWriter, r *http.Request, client routepb.RouteClient) {
+	conn, err := websocketConn(w, r)
 	if err != nil {
-		http.Error(w, "websocket upgrade failed", http.StatusBadRequest)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+
 		return
 	}
-	defer conn.Close()
 
 	ctx := r.Context()
 
-	// Start session with producer
-	session, err := routeClient.StartSession(ctx, nil)
+	session, err := client.StartSession(ctx, nil)
 	if err != nil {
-		_ = conn.WriteMessage(websocket.TextMessage, []byte(`{"error":"start session failed"}`))
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+
 		return
 	}
 
-	// Send session id to client
-	_ = conn.WriteMessage(websocket.TextMessage, []byte("{\"session_id\":\""+session.SessionId+"\"}"))
-
-	// Open client-streaming RPC
-	stream, err := routeClient.RouteChat(ctx)
+	err = conn.WriteMessage(websocket.TextMessage, []byte("{\"session_id\":\""+session.SessionId+"\"}"))
 	if err != nil {
-		_ = conn.WriteMessage(websocket.TextMessage, []byte(`{"error":"stream open failed"}`))
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+
 		return
 	}
-	defer func() { _, _ = stream.CloseAndRecv() }()
+
+	stream, err := client.RouteChat(ctx)
+	if err != nil {
+		err = conn.WriteMessage(websocket.TextMessage, []byte(`{"error":"stream open failed"}`))
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+
+			return
+		}
+
+		return
+	}
+
+	defer func() {
+		if _, err := stream.CloseAndRecv(); err != nil {
+			log.Println(err)
+		}
+	}()
 
 	for {
 		_, data, err := conn.ReadMessage()
@@ -65,7 +79,13 @@ func wsHandler(w http.ResponseWriter, r *http.Request, routeClient routepb.Route
 
 		var in wsOBU
 		if err := json.Unmarshal(data, &in); err != nil {
-			_ = conn.WriteMessage(websocket.TextMessage, []byte(`{"error":"invalid payload"}`))
+			err = conn.WriteMessage(websocket.TextMessage, []byte(`{"error":"invalid payload"}`))
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+
+				return
+			}
+
 			continue
 		}
 
@@ -82,8 +102,27 @@ func wsHandler(w http.ResponseWriter, r *http.Request, routeClient routepb.Route
 		}
 
 		if err := stream.Send(msg); err != nil {
-			_ = conn.WriteMessage(websocket.TextMessage, []byte(`{"error":"send failed"}`))
+			err = conn.WriteMessage(websocket.TextMessage, []byte(`{"error":"send failed"}`))
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+			}
+
 			return
 		}
 	}
+}
+
+func websocketConn(w http.ResponseWriter, r *http.Request) (*websocket.Conn, error) {
+	upgrader := websocket.Upgrader{
+		ReadBufferSize:  bufferSize,
+		WriteBufferSize: bufferSize,
+	}
+
+	conn, err := upgrader.Upgrade(w, r, nil)
+	if err != nil {
+		return nil, err
+	}
+	defer conn.Close()
+
+	return conn, nil
 }

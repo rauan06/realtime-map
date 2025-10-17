@@ -1,17 +1,23 @@
 package app
 
 import (
+	"errors"
 	"net/http"
 	"time"
 
 	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
+
 	"github.com/rauan06/realtime-map/api-gateway/config"
 	"github.com/rauan06/realtime-map/api-gateway/internal/controller"
 	routepb "github.com/rauan06/realtime-map/go-commons/gen/proto/route"
 	"github.com/rauan06/realtime-map/go-commons/pkg/httpserver"
 	"github.com/rauan06/realtime-map/go-commons/pkg/logger"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
+)
+
+const (
+	readTimeout = 5 * time.Second
 )
 
 func Run(cfg *config.Config) {
@@ -26,6 +32,7 @@ func Run(cfg *config.Config) {
 	if err != nil {
 		l.Fatal(err)
 	}
+
 	routeClient := routepb.NewRouteClient(grpcConn)
 
 	controller.Register(mux, routeClient)
@@ -33,7 +40,7 @@ func Run(cfg *config.Config) {
 	srv := &http.Server{
 		Addr:              ":" + cfg.HTTP.Port,
 		Handler:           mux,
-		ReadHeaderTimeout: 5 * time.Second,
+		ReadHeaderTimeout: readTimeout,
 	}
 
 	// Metrics server
@@ -41,14 +48,23 @@ func Run(cfg *config.Config) {
 		go func() {
 			mMux := http.NewServeMux()
 			mMux.Handle("/metrics", promhttp.Handler())
-			if err := http.ListenAndServe(":2112", mMux); err != nil && err != http.ErrServerClosed {
+
+			server := &http.Server{
+				Addr:         ":2112",
+				Handler:      mMux,
+				ReadTimeout:  readTimeout,
+				WriteTimeout: readTimeout,
+				IdleTimeout:  readTimeout,
+			}
+
+			if err := server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 				l.Error(err)
 			}
 		}()
 	}
 
 	go func() {
-		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+		if errors.Is(err, srv.ListenAndServe()); err != nil && !errors.Is(err, http.ErrServerClosed) {
 			l.Fatal(err)
 		}
 	}()
