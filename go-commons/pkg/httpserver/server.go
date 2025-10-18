@@ -27,9 +27,11 @@ func New(opts ...Option) *Server {
 	server := &Server{
 		App: nil,
 
-		mux:     http.NewServeMux(),
-		notify:  make(chan error, 1),
-		address: _defaultAddr,
+		mux:          http.NewServeMux(),
+		notify:       make(chan error, 1),
+		address:      _defaultAddr,
+		readTimeout:  _defaultReadTimeout,
+		writeTimeout: _defaultWriteTimeout,
 	}
 
 	for _, opt := range opts {
@@ -40,8 +42,8 @@ func New(opts ...Option) *Server {
 		Addr:    server.address,
 		Handler: server.mux,
 
-		ReadTimeout:  _defaultReadTimeout,
-		WriteTimeout: _defaultWriteTimeout,
+		ReadTimeout:  server.readTimeout,
+		WriteTimeout: server.writeTimeout,
 	}
 
 	server.App = app

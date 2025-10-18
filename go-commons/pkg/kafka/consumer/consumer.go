@@ -2,16 +2,16 @@ package consumer
 
 import (
 	"context"
+	"errors"
 	"runtime"
 	"time"
 
 	"github.com/confluentinc/confluent-kafka-go/v2/kafka"
+
 	"github.com/rauan06/realtime-map/go-commons/pkg/logger"
 )
 
-var (
-	workers = 3 * runtime.GOMAXPROCS(-1)
-)
+const workersPerThread = 3
 
 type KafkaConsumer struct {
 	*kafka.Consumer
@@ -40,6 +40,8 @@ func New(c *kafka.Consumer, usecase uc, l logger.Logger, topic string) (*KafkaCo
 }
 
 func (kc *KafkaConsumer) Run() error {
+	workers := workersPerThread * runtime.GOMAXPROCS(-1)
+
 	limit := make(chan struct{}, workers)
 
 	err := kc.SubscribeTopics([]string{*kc.TopicPartition.Topic}, nil)
@@ -60,14 +62,17 @@ func (kc *KafkaConsumer) Run() error {
 			if err == nil {
 				go func() {
 					defer func() { <-limit }()
+
 					kc.uc.ProcessMessage(msg)
 				}()
-			} else if !err.(kafka.Error).IsTimeout() {
-				kc.l.Error("consumer error: %v (%v)\n", err, msg)
-				<-limit
-			} else {
-				<-limit
 			}
+
+			var kafkaErr kafka.Error
+			if errors.As(err, &kafkaErr) && !kafkaErr.IsTimeout() {
+				kc.l.Error("consumer error: %v (%v)\n", err, msg)
+			}
+
+			<-limit
 		}
 	}
 }

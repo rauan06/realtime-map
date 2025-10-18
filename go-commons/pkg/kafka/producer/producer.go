@@ -19,7 +19,7 @@ func New(p *kafka.Producer, topic string) (*KafkaProducer, error) {
 	}, nil
 }
 
-func (kp *KafkaProducer) ProduceEvent(ctx context.Context, key string, data interface{}) error {
+func (kp *KafkaProducer) ProduceEvent(_ context.Context, key string, data interface{}) error {
 	parsedData, err := json.Marshal(data)
 	if err != nil {
 		return err
