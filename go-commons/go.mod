@@ -6,7 +6,7 @@ require (
 	github.com/Masterminds/squirrel v1.5.4
 	github.com/confluentinc/confluent-kafka-go/v2 v2.12.0
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.27.3
-	github.com/jackc/pgx/v5 v5.7.6
+	github.com/jackc/pgx/v5 v5.8.0
 	github.com/rs/zerolog v1.34.0
 	google.golang.org/genproto/googleapis/api v0.0.0-20251014184007-4626949a642f
 	google.golang.org/grpc v1.76.0
