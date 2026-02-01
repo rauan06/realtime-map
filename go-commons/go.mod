@@ -5,11 +5,11 @@ go 1.24.6
 require (
 	github.com/Masterminds/squirrel v1.5.4
 	github.com/confluentinc/confluent-kafka-go/v2 v2.12.0
-	github.com/grpc-ecosystem/grpc-gateway/v2 v2.27.4
-	github.com/jackc/pgx/v5 v5.7.6
+	github.com/grpc-ecosystem/grpc-gateway/v2 v2.27.3
+	github.com/jackc/pgx/v5 v5.8.0
 	github.com/rs/zerolog v1.34.0
-	google.golang.org/genproto/googleapis/api v0.0.0-20251222181119-0a764e51fe1b
-	google.golang.org/grpc v1.78.0
+	google.golang.org/genproto/googleapis/api v0.0.0-20251014184007-4626949a642f
+	google.golang.org/grpc v1.76.0
 	google.golang.org/protobuf v1.36.11
 )
 
@@ -29,8 +29,8 @@ require (
 	github.com/stretchr/testify v1.11.1 // indirect
 	golang.org/x/crypto v0.44.0 // indirect
 	golang.org/x/net v0.47.0 // indirect
-	golang.org/x/sync v0.19.0 // indirect
+	golang.org/x/sync v0.18.0 // indirect
 	golang.org/x/sys v0.38.0 // indirect
-	golang.org/x/text v0.32.0 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20251222181119-0a764e51fe1b // indirect
+	golang.org/x/text v0.31.0 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20251029180050-ab9386a59fda // indirect
 )

@@ -16,12 +16,12 @@ const workersPerThread = 3
 type KafkaConsumer struct {
 	*kafka.Consumer
 	TopicPartition kafka.TopicPartition
-	Cancel         context.CancelFunc
 	Errors         chan error
 
-	l   logger.Logger
-	uc  uc
-	ctx context.Context
+	l      logger.Logger
+	uc     uc // usecase
+	ctx    context.Context
+	cancel context.CancelFunc
 }
 
 func New(c *kafka.Consumer, usecase uc, l logger.Logger, topic string) (*KafkaConsumer, error) {
@@ -30,7 +30,7 @@ func New(c *kafka.Consumer, usecase uc, l logger.Logger, topic string) (*KafkaCo
 	return &KafkaConsumer{
 		Consumer:       c,
 		TopicPartition: kafka.TopicPartition{Topic: &topic, Partition: kafka.PartitionAny},
-		Cancel:         cancel,
+		cancel:         cancel,
 		Errors:         make(chan error),
 
 		l:   l,
