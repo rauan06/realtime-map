@@ -3,7 +3,7 @@ module github.com/rauan06/realtime-map/producer
 go 1.24.6
 
 require (
-	github.com/caarlos0/env/v11 v11.3.1
+	github.com/caarlos0/env/v11 v11.4.0
 	github.com/confluentinc/confluent-kafka-go/v2 v2.12.0
 	github.com/go-playground/validator/v10 v10.30.1
 	github.com/golang/protobuf v1.5.4
