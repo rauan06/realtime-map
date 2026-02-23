@@ -3,7 +3,7 @@ module github.com/rauan06/realtime-map/analytics
 go 1.24.6
 
 require (
-	github.com/caarlos0/env/v11 v11.3.1
+	github.com/caarlos0/env/v11 v11.4.0
 	github.com/confluentinc/confluent-kafka-go/v2 v2.13.0
 	github.com/golang-migrate/migrate/v4 v4.19.1
 	github.com/google/uuid v1.6.0
