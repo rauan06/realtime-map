@@ -1,12 +1,12 @@
 module github.com/rauan06/realtime-map/go-commons
 
-go 1.24.6
+go 1.25.0
 
 require (
 	github.com/Masterminds/squirrel v1.5.4
 	github.com/confluentinc/confluent-kafka-go/v2 v2.12.0
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.27.7
-	github.com/jackc/pgx/v5 v5.8.0
+	github.com/jackc/pgx/v5 v5.9.1
 	github.com/rs/zerolog v1.34.0
 	google.golang.org/genproto/googleapis/api v0.0.0-20260128011058-8636f8732409
 	google.golang.org/grpc v1.78.0
