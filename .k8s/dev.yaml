@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dev-realtime-map
+  namespace: dev-realtime-map
+spec:
+  replicas: 1
+  revisionHistoryLimit: 2
+  selector:
+    matchLabels:
+      app: dev-realtime-map-pod
+  template:
+    metadata:
+      labels:
+        app: dev-realtime-map-pod
+    spec:
+      containers:
+        - name: dev-realtime-map-container
+          image: <IMAGE>
+          envFrom:
+            - secretRef:
+                name: dev-realtime-map-secret
