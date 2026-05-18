@@ -42,7 +42,10 @@ func wsHandler(h *hub.Hub, l logger.Interface) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		conn, err := upgrader.Upgrade(w, r, nil)
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			// upgrader.Upgrade writes its own error response on failure, so we
+			// only log and return — calling http.Error here would attempt a
+			// duplicate WriteHeader.
+			l.Error("dashboard ws upgrade: %v", err)
 
 			return
 		}

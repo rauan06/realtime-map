@@ -12,7 +12,7 @@ import (
 
 var errFlushPending = errors.New("kafka flush left messages in queue")
 
-const flushTimeoutMs = 5000
+const flushTimeoutMs = 30000
 
 type Loader struct {
 	producer *kafkaproducer.KafkaProducer
