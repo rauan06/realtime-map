@@ -15,10 +15,14 @@ import (
 )
 
 const (
-	defaultWarmup    = 200
+	defaultWarmup    = 500
 	defaultBufferCap = 2000
-	defaultThreshold = 0.62
+	defaultThreshold = 0.75
 	retrainEvery     = 100
+
+	// defaultCooldown silences re-fires for the same (layer, source_id) so
+	// a single anomalous ship doesn't paint the dashboard every poll.
+	defaultCooldown = 5 * time.Minute
 )
 
 // Alert is the result of a positive detection. SourceID identifies the
@@ -44,6 +48,7 @@ type Detector struct {
 	extract   FeatureFn
 	threshold float64
 	warmup    int
+	cooldown  time.Duration
 
 	mu      sync.Mutex
 	buf     [][]float64
@@ -55,6 +60,9 @@ type Detector struct {
 	// the anomaly score. Refreshed every retrain.
 	means []float64
 	stds  []float64
+	// lastAlert tracks when each source last fired so we can suppress
+	// re-fires within the cooldown window.
+	lastAlert map[string]time.Time
 }
 
 type Options struct {
@@ -63,6 +71,7 @@ type Options struct {
 	Warmup    int
 	BufferCap int
 	Threshold float64
+	Cooldown  time.Duration
 	Forest    iforest.Options
 }
 
@@ -79,13 +88,19 @@ func New(opts Options) *Detector {
 		opts.Threshold = defaultThreshold
 	}
 
+	if opts.Cooldown <= 0 {
+		opts.Cooldown = defaultCooldown
+	}
+
 	return &Detector{
 		layer:     opts.Layer,
 		extract:   opts.Extract,
 		threshold: opts.Threshold,
 		warmup:    opts.Warmup,
+		cooldown:  opts.Cooldown,
 		bufCap:    opts.BufferCap,
 		forest:    iforest.New(opts.Forest),
+		lastAlert: make(map[string]time.Time),
 	}
 }
 
@@ -128,6 +143,13 @@ func (d *Detector) Observe(payload []byte) (*Alert, error) {
 		return nil, nil //nolint:nilnil // below alerting threshold is the normal path
 	}
 
+	now := time.Now().UTC()
+	if last, ok := d.lastAlert[sourceID]; ok && now.Sub(last) < d.cooldown {
+		return nil, nil //nolint:nilnil // within cooldown window
+	}
+
+	d.lastAlert[sourceID] = now
+
 	return &Alert{
 		Layer:    d.layer,
 		SourceID: sourceID,
@@ -135,7 +157,7 @@ func (d *Detector) Observe(payload []byte) (*Alert, error) {
 		Lng:      lng,
 		Score:    score,
 		Reasons:  d.driverFeaturesLocked(vec),
-		At:       time.Now().UTC(),
+		At:       now,
 	}, nil
 }
 

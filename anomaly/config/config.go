@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"time"
 
 	"github.com/caarlos0/env/v11"
 	"github.com/joho/godotenv"
@@ -38,10 +39,14 @@ type (
 
 	Detector struct {
 		// Warmup observations per layer before scoring begins.
-		Warmup int `env:"DETECTOR_WARMUP" envDefault:"200"`
+		Warmup int `env:"DETECTOR_WARMUP" envDefault:"500"`
 
 		// Score threshold in [0,1]. Higher = fewer, more confident alerts.
-		Threshold float64 `env:"DETECTOR_THRESHOLD" envDefault:"0.62"`
+		Threshold float64 `env:"DETECTOR_THRESHOLD" envDefault:"0.75"`
+
+		// Cooldown silences re-fires for the same (layer, source_id) for
+		// this long after an alert.
+		Cooldown time.Duration `env:"DETECTOR_COOLDOWN" envDefault:"5m"`
 
 		// Rolling sample buffer capacity per layer.
 		BufferCap int `env:"DETECTOR_BUFFER_CAP" envDefault:"2000"`
