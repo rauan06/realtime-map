@@ -40,6 +40,52 @@ services:
       go-commons:
         condition: service_completed_successfully
 
+  etl:
+    build:
+      context: ./etl
+      dockerfile: Dockerfile
+    image: map-etl:latest
+    env_file:
+      - ./etl/.env
+    container_name: map-etl
+    depends_on:
+      broker:
+        condition: service_healthy
+      clickhouse:
+        condition: service_healthy
+      go-commons:
+        condition: service_completed_successfully
+
+  dashboard:
+    build:
+      context: ./dashboard
+      dockerfile: Dockerfile
+    image: map-dashboard:latest
+    env_file:
+      - ./dashboard/.env
+    container_name: map-dashboard
+    ports:
+      - "8090:8090"
+    depends_on:
+      broker:
+        condition: service_healthy
+      go-commons:
+        condition: service_completed_successfully
+
+  notification:
+    build:
+      context: ./notification
+      dockerfile: Dockerfile
+    image: map-notification:latest
+    env_file:
+      - ./notification/.env
+    container_name: map-notification
+    depends_on:
+      broker:
+        condition: service_healthy
+      go-commons:
+        condition: service_completed_successfully
+
   broker:
     image: apache/kafka:latest
     container_name: broker
@@ -74,6 +120,25 @@ services:
       retries: 10
       start_period: 20s
 
+  clickhouse:
+    image: clickhouse/clickhouse-server:latest
+    container_name: clickhouse
+    ports:
+      - "8123:8123"
+      - "9000:9000"
+    environment:
+      CLICKHOUSE_DB: realtimedb
+      CLICKHOUSE_USER: default
+      CLICKHOUSE_PASSWORD: example
+    volumes:
+      - clickhouse-data:/var/lib/clickhouse
+    healthcheck:
+      test: ["CMD", "clickhouse-client", "--query", "SELECT 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+
   db:
     image: postgis/postgis:latest
     container_name: db
@@ -91,3 +156,6 @@ services:
       timeout: 5s
       retries: 10
       start_period: 20s
+
+volumes:
+  clickhouse-data:

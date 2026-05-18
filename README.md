@@ -38,23 +38,24 @@
 
 ##  Overview
 
-**Realtime Map** is a scalable, distributed system for real-time location tracking and visualization. The system processes location data from IoT devices (OBU - On-Board Units) through a Kafka-based streaming pipeline, stores it in Redis for fast retrieval, and provides real-time visualization through WebSocket connections.
+**Realtime Map** is a scalable, distributed system for real-time location tracking and visualization. The system processes location data from IoT devices (OBU - On-Board Units) **plus four external feeds** — flights (OpenSky), ships (Digitraffic AIS), public transport (MBTA), and ML-predicted road closures (road-snowdrift-forecast) — through a Kafka-based streaming pipeline, stores it in Redis + PostgreSQL/PostGIS + ClickHouse, and provides a real-time map dashboard with WebSocket updates.
 
-The architecture leverages microservices pattern with separate components for data ingestion, processing, storage, analytics, and presentation. Built with Go, it provides high-performance real-time location tracking suitable for fleet management, logistics, and IoT applications. The analytics service persistently stores location history in PostgreSQL with PostGIS support for geospatial queries and analysis.
+The architecture leverages microservices pattern with separate components for data ingestion, processing, storage, analytics, alerting, and presentation. Built with Go, it provides high-performance real-time location tracking suitable for fleet management, logistics, and IoT applications. The analytics service persistently stores location history in PostgreSQL with PostGIS support for geospatial queries and analysis; ClickHouse is the analytical event store for the ETL feeds.
 
 ---
 
 ##  Features
 
 - **Real-time Location Tracking**: Process GPS coordinates from multiple devices simultaneously
+- **Multi-Source ETL**: Pluggable extractor/transformer/loader pipeline that ingests flights (OpenSky), ships (Digitraffic AIS), public transport (MBTA) and ML-predicted road closures (road-snowdrift-forecast)
 - **Scalable Architecture**: Microservices-based design with horizontal scaling capabilities
 - **High-Performance Data Processing**: Kafka-based streaming for handling high-throughput location data
-- **Fast Data Retrieval**: Redis clustering for sub-millisecond location lookups
-- **Real-time Visualization**: WebSocket-powered live map updates using Leaflet.js
+- **Real-time Visualization**: Dedicated dashboard service with WebSocket-powered live map updates using Leaflet.js, with separate layers for flights, ships, transport, roads and OBU
 - **gRPC API**: High-performance API for device communication and data exchange
 - **RESTful Gateway**: HTTP/REST API gateway for easy integration
-- **Multi-Device Support**: Handle thousands of concurrent device connections
-- **Data Persistence**: PostgreSQL with PostGIS for historical data storage and geospatial analytics
+- **JWT Device Auth**: HS256 bearer-token authentication on the api-gateway, with `/auth/login` endpoint for token issuance
+- **Geofencing Alerts**: Notification service that emits enter/exit events against circles + polygons across every Kafka feed, with optional webhook
+- **Data Persistence**: PostgreSQL with PostGIS for historical OBU data, ClickHouse for ETL event analytics
 - **Analytics Service**: Dedicated microservice for consuming, processing, and storing location data with database migrations
 - **Containerized Deployment**: Docker Compose setup for easy development and deployment
 
@@ -89,7 +90,10 @@ Clients connect:
 - **Seeder Service**: Generates simulated GPS data from multiple devices for testing
 - **Producer Service**: Consumes location data from Kafka, processes it, and stores in Redis
 - **Analytics Service**: Consumes location data from Kafka, processes it, and stores in PostgreSQL with PostGIS for historical analytics and geospatial queries
-- **API Gateway**: Provides gRPC, REST, and WebSocket APIs with web interface
+- **API Gateway**: Provides gRPC, REST, and WebSocket APIs with web interface, optionally gated by JWT
+- **ETL Service**: Polls four external feeds (flight/ship/transport/road) on independent cadences, runs them through a shared transformer, and fans-out the results to Kafka **and** ClickHouse via a multi-loader
+- **Dashboard Service**: Standalone Go service that subscribes to every ETL + OBU Kafka topic, fans out updates to a WebSocket hub, and serves the Leaflet map UI on port 8090
+- **Notification Service**: Geofencing alerter — consumes every position feed from Kafka, matches against configured circles + polygons, and emits enter/exit alerts to logs + webhook
 - **Go Commons**: Shared protocol buffers, database utilities, and common libraries
 
 ### Data Flow
@@ -104,13 +108,16 @@ Clients connect:
 
 ### Technology Stack
 
-- **Backend**: Go 1.21+, gRPC, Protocol Buffers
+- **Backend**: Go 1.24+, gRPC, Protocol Buffers
 - **Message Broker**: Apache Kafka for event streaming
-- **Caching**: Redis cluster for high-performance data access  
-- **Database**: PostgreSQL with PostGIS extension for persistent storage and geospatial queries
+- **Caching**: Redis cluster for high-performance data access
+- **OLTP Database**: PostgreSQL with PostGIS extension for OBU history + geospatial queries
+- **OLAP Database**: ClickHouse for ETL event analytics (30-day TTL on raw events)
 - **ORM**: GORM for database operations and migrations
+- **Auth**: HS256 JWT via `github.com/golang-jwt/jwt/v5`
 - **Frontend**: HTML5, JavaScript, Leaflet.js for map visualization
 - **Infrastructure**: Docker, Docker Compose for containerization
+- **Upstream ML**: [road-snowdrift-forecast](https://github.com/kazmaps-qaj/road-snowdrift-forecast) consumed via its `/api/v1/predictions/live` endpoint
 
 ##  Getting Started
 
@@ -215,11 +222,13 @@ To run manually (for development):
 The seeder generates simulated device location data for testing and demonstration.
 
 **Service Endpoints:**
-- **Web Interface:** http://localhost:8080
+- **Web Interface (api-gateway legacy):** http://localhost:8080
+- **Dashboard Map (full multi-layer UI):** http://localhost:8090
 - **gRPC API:** localhost:50051 (default)
 - **REST API Gateway:** http://localhost:8080/api
 - **Kafka Broker:** localhost:9092
 - **PostgreSQL with PostGIS:** localhost:5430
+- **ClickHouse HTTP:** http://localhost:8123 (native: localhost:9000)
 
 
 ###  Testing
@@ -311,11 +320,11 @@ Real-time location updates via WebSocket:
 - [X] **`Task 3`**: <strike>Basic WebSocket implementation and HTML templates.</strike>
 - [X] **`Task 4`**: <strike>Integration with Leaflet.js for map visualization.</strike>
 - [X] **`Task 5`**: <strike>Analytics service with PostgreSQL and PostGIS for historical data storage.</strike>
-- [ ] **`Task 6`**: Add Grafana dashboards for analytics and monitoring.
-- [ ] **`Task 7`**: Implement device authentication and authorization.
-- [ ] **`Task 8`**: Add geofencing and location-based alerts.
+- [X] **`Task 6`**: <strike>ETL service with ClickHouse storage for flight, ship, transport, and ML-predicted road closure feeds; multi-layer dashboard service.</strike>
+- [X] **`Task 7`**: <strike>Implement device authentication and authorization (HS256 JWT middleware + `/auth/login`).</strike>
+- [X] **`Task 8`**: <strike>Add geofencing and location-based alerts (circles + polygons, per-layer matching, webhook dispatch).</strike>
 - [ ] **`Task 9`**: Performance optimization and horizontal scaling.
-- [ ] **`Task 10`**: Comprehensive test coverage and CI/CD pipeline.
+- [X] **`Task 10`**: <strike>Unit tests for ETL extractors/transformer/loader, geofencing, and JWT; CI matrix covering all 8 services.</strike>
 ---
 
 ##  Contributing
