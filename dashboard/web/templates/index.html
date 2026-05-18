@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Realtime Map — Roads, Ships, Airplanes</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+        crossorigin="" />
+  <style>
+    html, body { margin: 0; padding: 0; height: 100%; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    #map { position: absolute; top: 0; bottom: 0; left: 0; right: 0; }
+    #panel {
+      position: absolute; z-index: 1000; top: 12px; right: 12px;
+      background: rgba(255,255,255,0.95); padding: 12px 14px; border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2); min-width: 200px; font-size: 13px;
+    }
+    #panel h3 { margin: 0 0 8px; font-size: 14px; }
+    #panel label { display: block; cursor: pointer; padding: 2px 0; }
+    #panel .count { color: #888; margin-left: 6px; }
+    #status { position: absolute; z-index: 1000; bottom: 12px; left: 12px;
+      background: rgba(0,0,0,0.75); color: #fff; padding: 6px 10px; border-radius: 4px;
+      font-family: ui-monospace, SFMono-Regular, monospace; font-size: 12px;
+    }
+    .leaflet-popup-content { font-size: 12px; min-width: 200px; }
+    .leaflet-popup-content table { width: 100%; }
+    .leaflet-popup-content td { padding: 2px 6px 2px 0; }
+    .leaflet-popup-content td:first-child { color: #666; }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+
+  <div id="panel">
+    <h3>Layers</h3>
+    <label><input type="checkbox" data-layer="flight" checked> Flights <span class="count" id="count-flight">0</span></label>
+    <label><input type="checkbox" data-layer="ship" checked> Ships <span class="count" id="count-ship">0</span></label>
+    <label><input type="checkbox" data-layer="transport" checked> Transport <span class="count" id="count-transport">0</span></label>
+    <label><input type="checkbox" data-layer="road" checked> Roads <span class="count" id="count-road">0</span></label>
+    <label><input type="checkbox" data-layer="obu" checked> OBU <span class="count" id="count-obu">0</span></label>
+  </div>
+
+  <div id="status">connecting…</div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+          integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+          crossorigin=""></script>
+  <script src="/static/map.js"></script>
+</body>
+</html>
