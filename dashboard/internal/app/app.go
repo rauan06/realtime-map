@@ -38,6 +38,10 @@ func Run(cfg *config.Config, templates fs.FS) {
 		"bootstrap.servers": cfg.Kafka.BootstrapServers,
 		"group.id":          cfg.Kafka.GroupID,
 		"auto.offset.reset": "latest",
+		// Default is 5min — too long when the dashboard starts before ETL
+		// has auto-created the topics. Refresh every 10s so newly-created
+		// topics are picked up promptly.
+		"topic.metadata.refresh.interval.ms": 10000,
 	})
 	if err != nil {
 		l.Fatal(err)

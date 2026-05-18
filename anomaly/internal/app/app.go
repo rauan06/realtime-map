@@ -79,6 +79,7 @@ func Run(cfg *config.Config) {
 		Warmup:    cfg.Detector.Warmup,
 		BufferCap: cfg.Detector.BufferCap,
 		Threshold: cfg.Detector.Threshold,
+		Cooldown:  cfg.Detector.Cooldown,
 		Forest:    forestOpts,
 	})
 
@@ -88,6 +89,7 @@ func Run(cfg *config.Config) {
 		Warmup:    cfg.Detector.Warmup,
 		BufferCap: cfg.Detector.BufferCap,
 		Threshold: cfg.Detector.Threshold,
+		Cooldown:  cfg.Detector.Cooldown,
 		Forest:    forestOpts,
 	})
 
@@ -105,10 +107,13 @@ func Run(cfg *config.Config) {
 		l.Fatal(err)
 	}
 
+	const metadataRefreshMs = 10000
+
 	c, err := kafka.NewConsumer(&kafka.ConfigMap{
-		bootstrapServersKey: cfg.Kafka.BootstrapServers,
-		"group.id":          cfg.Kafka.GroupID,
-		"auto.offset.reset": "latest",
+		bootstrapServersKey:                  cfg.Kafka.BootstrapServers,
+		"group.id":                           cfg.Kafka.GroupID,
+		"auto.offset.reset":                  "latest",
+		"topic.metadata.refresh.interval.ms": metadataRefreshMs,
 	})
 	if err != nil {
 		l.Fatal(err)
