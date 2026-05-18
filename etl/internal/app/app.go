@@ -110,7 +110,11 @@ func buildPipelines(ctx context.Context, cfg *config.Config, l *logger.Logger) (
 			name:   sourceTransport,
 			source: sourceTransport,
 			cfg:    cfg.Sources.Transport,
-			make:   func() extractor.Extractor { return transport.New(cfg.Sources.HTTPTimeout) },
+			// Transport is a synthesized Kazakhstan bus fleet (see
+			// internal/extractor/transport). HTTPTimeout is unused but kept
+			// in the signature so a future API-backed implementation can
+			// drop in.
+			make: func() extractor.Extractor { return transport.New(cfg.Sources.HTTPTimeout) },
 		},
 		{
 			name:   sourceRoad,
