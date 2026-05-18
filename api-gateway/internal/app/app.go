@@ -10,6 +10,7 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 
 	"github.com/rauan06/realtime-map/api-gateway/config"
+	"github.com/rauan06/realtime-map/api-gateway/internal/auth"
 	"github.com/rauan06/realtime-map/api-gateway/internal/controller"
 	routepb "github.com/rauan06/realtime-map/go-commons/gen/proto/route"
 	"github.com/rauan06/realtime-map/go-commons/pkg/httpserver"
@@ -37,9 +38,33 @@ func Run(cfg *config.Config) {
 
 	controller.Register(mux, routeClient)
 
+	// Optional auth: when enabled, wrap the whole mux so /ws + any /api/v1/*
+	// endpoint require a valid bearer token. /auth/login is registered before
+	// the wrap so it stays publicly reachable.
+	var handler http.Handler = mux
+	if cfg.Auth.Enabled {
+		if cfg.Auth.JWTSecret == "" {
+			l.Fatal("AUTH_ENABLED=true but AUTH_JWT_SECRET is empty")
+		}
+		issuer := auth.NewIssue(cfg.Auth.JWTSecret, cfg.Auth.TokenTTL)
+
+		publicMux := http.NewServeMux()
+		controller.RegisterAuth(publicMux, controller.LoginConfig{
+			Issuer:       issuer,
+			SharedSecret: cfg.Auth.SharedSecret,
+		})
+
+		protected := auth.Middleware([]byte(cfg.Auth.JWTSecret))(mux)
+
+		root := http.NewServeMux()
+		root.Handle("/auth/", publicMux)
+		root.Handle("/", protected)
+		handler = root
+	}
+
 	srv := &http.Server{
 		Addr:              ":" + cfg.HTTP.Port,
-		Handler:           mux,
+		Handler:           handler,
 		ReadHeaderTimeout: readTimeout,
 	}
 

@@ -3,6 +3,7 @@ package config
 import (
 	"errors"
 	"fmt"
+	"time"
 
 	"github.com/caarlos0/env/v11"
 	"github.com/joho/godotenv"
@@ -19,6 +20,7 @@ type (
 		GRPC    GRPC
 		Metrics Metrics
 		Swagger Swagger
+		Auth    Auth
 	}
 
 	// App -.
@@ -51,6 +53,15 @@ type (
 	// Swagger -.
 	Swagger struct {
 		Enabled bool `env:"SWAGGER_ENABLED" envDefault:"false"`
+	}
+
+	// Auth gates the WebSocket / device endpoints behind HS256 JWTs. Disable
+	// for local development by setting AUTH_ENABLED=false.
+	Auth struct {
+		Enabled      bool          `env:"AUTH_ENABLED"        envDefault:"false"`
+		JWTSecret    string        `env:"AUTH_JWT_SECRET"     envDefault:""`
+		TokenTTL     time.Duration `env:"AUTH_TOKEN_TTL"      envDefault:"24h"`
+		SharedSecret string        `env:"AUTH_SHARED_SECRET"  envDefault:""`
 	}
 )
 
