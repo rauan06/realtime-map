@@ -35,7 +35,7 @@ type (
 	Kafka struct {
 		BootstrapServers string   `env:"KAFKA_BOOTSTRAP_SERVERS" envDefault:"broker:29092"`
 		GroupID          string   `env:"KAFKA_GROUP_ID"          envDefault:"dashboard"`
-		Topics           []string `env:"KAFKA_TOPICS"            envSeparator:","                envDefault:"etl_flights,etl_ships,etl_transport,etl_roads,obu_data"`
+		Topics           []string `env:"KAFKA_TOPICS"            envSeparator:","                envDefault:"etl_flights,etl_ships,etl_transport,etl_roads,obu_data,anomalies"`
 	}
 )
 

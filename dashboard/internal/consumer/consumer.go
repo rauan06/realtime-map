@@ -66,6 +66,8 @@ func topicToLayer(topic string) string {
 		return "road"
 	case "obu_data":
 		return "obu"
+	case "anomalies":
+		return "anomaly"
 	default:
 		return topic
 	}

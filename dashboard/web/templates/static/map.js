@@ -1,7 +1,9 @@
 // Realtime map client.
-// Connects to /ws and renders 5 layers: flights, ships, transport, roads, OBU.
-// Marker identity is keyed by (layer, id) where id is the source-specific ID
-// from the upstream record (icao24 / mmsi / vehicle_id / road_id / device_id).
+// Connects to /ws and renders 6 layers: flights, ships, transport, roads,
+// OBU, plus ML anomaly overlays. Marker identity is keyed by (layer, id)
+// where id is the source-specific ID from the upstream record
+// (icao24 / mmsi / vehicle_id / road_id / device_id, or layer:id for
+// anomalies).
 
 (function () {
   const map = L.map('map').setView([48.0, 66.0], 4); // Kazakhstan centred default
@@ -16,10 +18,14 @@
     transport: L.layerGroup().addTo(map),
     road: L.layerGroup().addTo(map),
     obu: L.layerGroup().addTo(map),
+    anomaly: L.layerGroup().addTo(map),
   };
 
-  const features = { flight: new Map(), ship: new Map(), transport: new Map(), road: new Map(), obu: new Map() };
-  const counts = { flight: 0, ship: 0, transport: 0, road: 0, obu: 0 };
+  const features = {
+    flight: new Map(), ship: new Map(), transport: new Map(),
+    road: new Map(), obu: new Map(), anomaly: new Map(),
+  };
+  const counts = { flight: 0, ship: 0, transport: 0, road: 0, obu: 0, anomaly: 0 };
 
   // Layer-specific icons (simple emoji DIV icons keep us tile-server-free).
   function iconFor(layer) {
@@ -141,6 +147,37 @@
           ['Session', id],
           ['Updated', payload.created_at || payload.timestamp],
         ]));
+        return;
+      }
+      case 'anomaly': {
+        // Anomalies arrive from the ML service with a score in [0,1] and a
+        // list of driver-feature reasons. Render as a red ring at the
+        // reported lat/lng; the underlying flight/ship marker is still
+        // drawn by its own layer.
+        const id = payload.layer + ':' + payload.source_id;
+        if (payload.lat == null || payload.lng == null) return;
+        const popup = popupTable([
+          ['Layer', payload.layer],
+          ['ID', payload.source_id],
+          ['Score', payload.score != null ? payload.score.toFixed(3) : ''],
+          ['Reasons', (payload.reasons || []).join(', ')],
+          ['At', payload.at],
+        ]);
+        const existing = features.anomaly.get(id);
+        if (existing) {
+          existing.setLatLng([payload.lat, payload.lng]);
+          existing.bindPopup(popup);
+          return;
+        }
+        const ring = L.circleMarker([payload.lat, payload.lng], {
+          radius: 12, color: '#c0392b', weight: 3,
+          fillColor: '#e74c3c', fillOpacity: 0.25,
+        });
+        ring.bindPopup(popup);
+        ring.addTo(groups.anomaly);
+        features.anomaly.set(id, ring);
+        counts.anomaly++;
+        document.getElementById('count-anomaly').textContent = counts.anomaly;
         return;
       }
     }
