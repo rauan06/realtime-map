@@ -1,0 +1,41 @@
+{
+  "circles": [
+    {
+      "name": "Astana airport",
+      "layers": ["flight"],
+      "lat": 51.0223,
+      "lng": 71.4669,
+      "radius_m": 5000,
+      "alert_type": "airport_proximity"
+    },
+    {
+      "name": "Almaty city core",
+      "layers": ["transport", "obu"],
+      "lat": 43.2389,
+      "lng": 76.8897,
+      "radius_m": 20000,
+      "alert_type": "city_core"
+    },
+    {
+      "name": "Helsinki harbor",
+      "layers": ["ship"],
+      "lat": 60.1539,
+      "lng": 24.9388,
+      "radius_m": 3000,
+      "alert_type": "harbor_proximity"
+    }
+  ],
+  "polygons": [
+    {
+      "name": "Kazakhstan bbox",
+      "layers": ["flight", "obu", "transport"],
+      "vertices": [
+        [55.4, 46.5],
+        [55.4, 87.3],
+        [40.6, 87.3],
+        [40.6, 46.5]
+      ],
+      "alert_type": "country_entry"
+    }
+  ]
+}
