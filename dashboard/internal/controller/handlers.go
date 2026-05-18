@@ -24,7 +24,10 @@ func Register(mux *http.ServeMux, h *hub.Hub, templates fs.FS, l logger.Interfac
 	mux.Handle("/", http.FileServer(http.FS(templates)))
 	mux.HandleFunc("/healthz", func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusOK)
-		_, _ = w.Write([]byte("ok"))
+
+		if _, err := w.Write([]byte("ok")); err != nil {
+			l.Error("dashboard healthz write: %v", err)
+		}
 	})
 	mux.HandleFunc("/ws", wsHandler(h, l))
 }
@@ -40,6 +43,7 @@ func wsHandler(h *hub.Hub, l logger.Interface) http.HandlerFunc {
 		conn, err := upgrader.Upgrade(w, r, nil)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
+
 			return
 		}
 
@@ -52,6 +56,7 @@ func wsHandler(h *hub.Hub, l logger.Interface) http.HandlerFunc {
 		// Reader goroutine: detect client disconnect & exit the writer loop.
 		go func() {
 			defer cancel()
+
 			for {
 				if _, _, err := conn.NextReader(); err != nil {
 					return
@@ -60,6 +65,7 @@ func wsHandler(h *hub.Hub, l logger.Interface) http.HandlerFunc {
 		}()
 
 		defer conn.Close()
+
 		for {
 			select {
 			case <-ctx.Done():
@@ -68,12 +74,16 @@ func wsHandler(h *hub.Hub, l logger.Interface) http.HandlerFunc {
 				if !ok {
 					return
 				}
+
 				envelope := wsMessage{Layer: m.Layer, Payload: m.Payload}
+
 				data, err := json.Marshal(envelope)
 				if err != nil {
 					l.Error("dashboard ws encode: %v", err)
+
 					continue
 				}
+
 				if err := conn.WriteMessage(websocket.TextMessage, data); err != nil {
 					return
 				}

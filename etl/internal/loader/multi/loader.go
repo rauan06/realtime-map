@@ -27,11 +27,13 @@ func (l *Loader) Add(event domain.KafkaEvent) {
 
 func (l *Loader) Flush(ctx context.Context) error {
 	var errs []error
+
 	for _, c := range l.children {
 		if err := c.Flush(ctx); err != nil {
 			errs = append(errs, err)
 		}
 	}
+
 	return errors.Join(errs...)
 }
 
@@ -39,10 +41,12 @@ func (l *Loader) Flush(ctx context.Context) error {
 // based on the slowest sink, not the fastest.
 func (l *Loader) Len() int {
 	var maxN int
+
 	for _, c := range l.children {
 		if n := c.Len(); n > maxN {
 			maxN = n
 		}
 	}
+
 	return maxN
 }

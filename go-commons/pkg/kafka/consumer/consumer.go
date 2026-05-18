@@ -39,6 +39,13 @@ func New(c *kafka.Consumer, usecase uc, l logger.Logger, topic string) (*KafkaCo
 	}, nil
 }
 
+// Stop signals the consumer loop in Run to exit. Safe to call multiple times.
+func (kc *KafkaConsumer) Stop() {
+	if kc.cancel != nil {
+		kc.cancel()
+	}
+}
+
 func (kc *KafkaConsumer) Run() error {
 	workers := workersPerThread * runtime.GOMAXPROCS(-1)
 

@@ -12,5 +12,6 @@ func main() {
 	if err != nil {
 		log.Fatal("loading config: ", err)
 	}
+
 	app.Run(cfg)
 }

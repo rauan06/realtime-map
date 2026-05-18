@@ -2,13 +2,15 @@ package kafka
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"sync"
 
-	kafkaproducer "github.com/rauan06/realtime-map/go-commons/pkg/kafka/producer"
-
 	"github.com/rauan06/realtime-map/etl/internal/domain"
+	kafkaproducer "github.com/rauan06/realtime-map/go-commons/pkg/kafka/producer"
 )
+
+var errFlushPending = errors.New("kafka flush left messages in queue")
 
 const flushTimeoutMs = 5000
 
@@ -28,6 +30,7 @@ func New(producer *kafkaproducer.KafkaProducer) *Loader {
 func (l *Loader) Add(event domain.KafkaEvent) {
 	l.mu.Lock()
 	defer l.mu.Unlock()
+
 	l.buffer = append(l.buffer, event)
 }
 
@@ -50,7 +53,7 @@ func (l *Loader) Flush(ctx context.Context) error {
 
 	remaining := l.producer.Flush(flushTimeoutMs)
 	if remaining > 0 {
-		return fmt.Errorf("kafka loader flush: %d messages still in queue", remaining)
+		return fmt.Errorf("kafka loader flush: %w (remaining=%d)", errFlushPending, remaining)
 	}
 
 	return nil
@@ -59,5 +62,6 @@ func (l *Loader) Flush(ctx context.Context) error {
 func (l *Loader) Len() int {
 	l.mu.Lock()
 	defer l.mu.Unlock()
+
 	return len(l.buffer)
 }

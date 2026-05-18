@@ -9,37 +9,50 @@ import (
 	"github.com/rauan06/realtime-map/etl/internal/domain"
 )
 
+var (
+	errFakeA = errors.New("fake loader A failed")
+	errFakeB = errors.New("fake loader B failed")
+)
+
 type fakeLoader struct {
-	mu      sync.Mutex
-	events  []domain.KafkaEvent
-	flushed int
+	mu       sync.Mutex
+	events   []domain.KafkaEvent
+	flushed  int
 	flushErr error
 }
 
 func (f *fakeLoader) Add(ev domain.KafkaEvent) {
 	f.mu.Lock()
 	defer f.mu.Unlock()
+
 	f.events = append(f.events, ev)
 }
 
 func (f *fakeLoader) Flush(_ context.Context) error {
 	f.mu.Lock()
 	defer f.mu.Unlock()
+
 	f.flushed++
+
 	if f.flushErr != nil {
 		return f.flushErr
 	}
+
 	f.events = f.events[:0]
+
 	return nil
 }
 
 func (f *fakeLoader) Len() int {
 	f.mu.Lock()
 	defer f.mu.Unlock()
+
 	return len(f.events)
 }
 
 func TestLoader_AddFansOutToAllChildren(t *testing.T) {
+	t.Parallel()
+
 	a, b := &fakeLoader{}, &fakeLoader{}
 	ml := New(a, b)
 
@@ -48,12 +61,15 @@ func TestLoader_AddFansOutToAllChildren(t *testing.T) {
 	if got := a.Len(); got != 1 {
 		t.Errorf("loader A: got %d want 1", got)
 	}
+
 	if got := b.Len(); got != 1 {
 		t.Errorf("loader B: got %d want 1", got)
 	}
 }
 
 func TestLoader_LenReturnsMaxBacklog(t *testing.T) {
+	t.Parallel()
+
 	a, b := &fakeLoader{}, &fakeLoader{}
 	a.events = make([]domain.KafkaEvent, 3)
 	b.events = make([]domain.KafkaEvent, 7)
@@ -65,17 +81,18 @@ func TestLoader_LenReturnsMaxBacklog(t *testing.T) {
 }
 
 func TestLoader_FlushJoinsErrors(t *testing.T) {
-	errA := errors.New("a failed")
-	errB := errors.New("b failed")
-	a := &fakeLoader{flushErr: errA}
-	b := &fakeLoader{flushErr: errB}
+	t.Parallel()
+
+	a := &fakeLoader{flushErr: errFakeA}
+	b := &fakeLoader{flushErr: errFakeB}
 	ml := New(a, b)
 
 	err := ml.Flush(context.Background())
 	if err == nil {
 		t.Fatalf("expected error, got nil")
 	}
-	if !errors.Is(err, errA) || !errors.Is(err, errB) {
-		t.Errorf("expected joined errors with %v + %v, got %v", errA, errB, err)
+
+	if !errors.Is(err, errFakeA) || !errors.Is(err, errFakeB) {
+		t.Errorf("expected joined errors with %v + %v, got %v", errFakeA, errFakeB, err)
 	}
 }

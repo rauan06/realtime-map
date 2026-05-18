@@ -13,6 +13,14 @@ import (
 	"github.com/rauan06/realtime-map/etl/internal/domain"
 )
 
+const (
+	dialTimeout     = 10 * time.Second
+	maxOpenConns    = 10
+	maxIdleConns    = 5
+	connMaxLifetime = time.Hour
+	initialBuffer   = 512
+)
+
 // Loader buffers events and bulk-inserts them into the ClickHouse table
 // `etl_events` (see migrations/clickhouse/001_init.sql). The table is a
 // generic event sink with JSON payload — the dashboard reads it for
@@ -40,10 +48,10 @@ func New(ctx context.Context, opts Options) (*Loader, error) {
 			Username: opts.Username,
 			Password: opts.Password,
 		},
-		DialTimeout:     10 * time.Second,
-		MaxOpenConns:    10,
-		MaxIdleConns:    5,
-		ConnMaxLifetime: time.Hour,
+		DialTimeout:     dialTimeout,
+		MaxOpenConns:    maxOpenConns,
+		MaxIdleConns:    maxIdleConns,
+		ConnMaxLifetime: connMaxLifetime,
 	})
 	if err != nil {
 		return nil, fmt.Errorf("clickhouse open: %w", err)
@@ -51,13 +59,14 @@ func New(ctx context.Context, opts Options) (*Loader, error) {
 
 	if err := conn.Ping(ctx); err != nil {
 		_ = conn.Close()
+
 		return nil, fmt.Errorf("clickhouse ping: %w", err)
 	}
 
 	return &Loader{
 		conn:   conn,
 		source: opts.Source,
-		buffer: make([]domain.KafkaEvent, 0, 512),
+		buffer: make([]domain.KafkaEvent, 0, initialBuffer),
 	}, nil
 }
 
@@ -66,12 +75,14 @@ func (l *Loader) Close() error { return l.conn.Close() }
 func (l *Loader) Add(event domain.KafkaEvent) {
 	l.mu.Lock()
 	defer l.mu.Unlock()
+
 	l.buffer = append(l.buffer, event)
 }
 
 func (l *Loader) Len() int {
 	l.mu.Lock()
 	defer l.mu.Unlock()
+
 	return len(l.buffer)
 }
 
@@ -92,11 +103,13 @@ func (l *Loader) Flush(ctx context.Context) error {
 	}
 
 	now := time.Now().UTC()
+
 	for _, ev := range batch {
 		payload, err := json.Marshal(ev.Data)
 		if err != nil {
 			return fmt.Errorf("clickhouse marshal event %s: %w", ev.Key, err)
 		}
+
 		if err := bw.Append(l.source, ev.Key, string(payload), now); err != nil {
 			return fmt.Errorf("clickhouse append: %w", err)
 		}
@@ -105,5 +118,6 @@ func (l *Loader) Flush(ctx context.Context) error {
 	if err := bw.Send(); err != nil {
 		return fmt.Errorf("clickhouse send batch: %w", err)
 	}
+
 	return nil
 }

@@ -82,12 +82,15 @@ func NewConfig() (*Config, error) {
 	if cfg.Sources.Flight.Topic == "" {
 		cfg.Sources.Flight.Topic = "etl_flights"
 	}
+
 	if cfg.Sources.Ship.Topic == "" {
 		cfg.Sources.Ship.Topic = "etl_ships"
 	}
+
 	if cfg.Sources.Transport.Topic == "" {
 		cfg.Sources.Transport.Topic = "etl_transport"
 	}
+
 	if cfg.Sources.Road.Topic == "" {
 		cfg.Sources.Road.Topic = "etl_roads"
 	}

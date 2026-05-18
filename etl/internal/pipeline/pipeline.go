@@ -4,11 +4,10 @@ import (
 	"context"
 	"time"
 
-	"github.com/rauan06/realtime-map/go-commons/pkg/logger"
-
 	"github.com/rauan06/realtime-map/etl/internal/extractor"
 	"github.com/rauan06/realtime-map/etl/internal/loader"
 	"github.com/rauan06/realtime-map/etl/internal/transformer"
+	"github.com/rauan06/realtime-map/go-commons/pkg/logger"
 )
 
 type Pipeline struct {
@@ -61,9 +60,11 @@ func (p *Pipeline) Run(ctx context.Context) error {
 		select {
 		case <-ctx.Done():
 			p.l.Info("[%s] shutting down, flushing remaining events...", p.name)
+
 			if err := p.loader.Flush(context.Background()); err != nil {
 				p.l.Error("[%s] final flush error: %s", p.name, err)
 			}
+
 			return nil
 
 		case <-fetchTicker.C:
@@ -72,6 +73,7 @@ func (p *Pipeline) Run(ctx context.Context) error {
 		case <-flushTicker.C:
 			if p.loader.Len() > 0 {
 				p.l.Debug("[%s] flush ticker: flushing %d events", p.name, p.loader.Len())
+
 				if err := p.loader.Flush(ctx); err != nil {
 					p.l.Error("[%s] flush error: %s", p.name, err)
 				}
@@ -84,17 +86,20 @@ func (p *Pipeline) fetchAndBuffer(ctx context.Context) {
 	records, err := p.extractor.Extract(ctx)
 	if err != nil {
 		p.l.Error("[%s] extract error: %s", p.name, err)
+
 		return
 	}
 
 	if len(records) == 0 {
 		p.l.Debug("[%s] no records extracted", p.name)
+
 		return
 	}
 
 	events, err := p.transformer.Transform(records)
 	if err != nil {
 		p.l.Error("[%s] transform error: %s", p.name, err)
+
 		return
 	}
 
@@ -106,6 +111,7 @@ func (p *Pipeline) fetchAndBuffer(ctx context.Context) {
 
 	if p.loader.Len() >= p.batchSize {
 		p.l.Info("[%s] batch size reached (%d >= %d), flushing", p.name, p.loader.Len(), p.batchSize)
+
 		if err := p.loader.Flush(ctx); err != nil {
 			p.l.Error("[%s] batch flush error: %s", p.name, err)
 		}

@@ -9,6 +9,8 @@ import (
 	"github.com/joho/godotenv"
 )
 
+var errLoadEnv = errors.New("loading .env file")
+
 type (
 	Config struct {
 		App      App
@@ -45,12 +47,14 @@ type (
 func NewConfig() (*Config, error) {
 	if _, err := os.Stat(".env"); err == nil {
 		if err := godotenv.Load(); err != nil {
-			return nil, errors.Join(errors.New("loading .env"), err)
+			return nil, fmt.Errorf("%w: %w", errLoadEnv, err)
 		}
 	}
+
 	cfg := &Config{}
 	if err := env.Parse(cfg); err != nil {
 		return nil, fmt.Errorf("parse config: %w", err)
 	}
+
 	return cfg, nil
 }

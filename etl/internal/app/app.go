@@ -2,6 +2,7 @@ package app
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"os"
 	"os/signal"
@@ -11,6 +12,7 @@ import (
 	"github.com/confluentinc/confluent-kafka-go/v2/kafka"
 
 	"github.com/rauan06/realtime-map/etl/config"
+	"github.com/rauan06/realtime-map/etl/internal/domain"
 	"github.com/rauan06/realtime-map/etl/internal/extractor"
 	"github.com/rauan06/realtime-map/etl/internal/extractor/flight"
 	"github.com/rauan06/realtime-map/etl/internal/extractor/road"
@@ -22,9 +24,17 @@ import (
 	multiloader "github.com/rauan06/realtime-map/etl/internal/loader/multi"
 	"github.com/rauan06/realtime-map/etl/internal/pipeline"
 	"github.com/rauan06/realtime-map/etl/internal/transformer/location"
-
 	kafkaproducer "github.com/rauan06/realtime-map/go-commons/pkg/kafka/producer"
 	"github.com/rauan06/realtime-map/go-commons/pkg/logger"
+)
+
+var errNoEnabledPipelines = errors.New("no enabled source pipelines — set at least one *_ENABLED=true")
+
+const (
+	sourceFlight    = "flight"
+	sourceShip      = "ship"
+	sourceTransport = "transport"
+	sourceRoad      = "road"
 )
 
 func Run(cfg *config.Config) {
@@ -40,14 +50,17 @@ func Run(cfg *config.Config) {
 	defer cleanup()
 
 	if len(pipelines) == 0 {
-		l.Fatal("no enabled source pipelines — set at least one *_ENABLED=true")
+		l.Fatal(errNoEnabledPipelines)
 	}
 
 	var wg sync.WaitGroup
+
 	for _, p := range pipelines {
 		wg.Add(1)
+
 		go func(p *pipeline.Pipeline) {
 			defer wg.Done()
+
 			if err := p.Run(ctx); err != nil {
 				l.Error("pipeline exited with error: %s", err)
 			}
@@ -82,26 +95,26 @@ func buildPipelines(ctx context.Context, cfg *config.Config, l *logger.Logger) (
 		make   func() extractor.Extractor
 	}{
 		{
-			name:   "flight",
-			source: "flight",
+			name:   sourceFlight,
+			source: sourceFlight,
 			cfg:    cfg.Sources.Flight,
 			make:   func() extractor.Extractor { return flight.New(cfg.Sources.HTTPTimeout) },
 		},
 		{
-			name:   "ship",
-			source: "ship",
+			name:   sourceShip,
+			source: sourceShip,
 			cfg:    cfg.Sources.Ship,
 			make:   func() extractor.Extractor { return ship.New(cfg.Sources.HTTPTimeout) },
 		},
 		{
-			name:   "transport",
-			source: "transport",
+			name:   sourceTransport,
+			source: sourceTransport,
 			cfg:    cfg.Sources.Transport,
 			make:   func() extractor.Extractor { return transport.New(cfg.Sources.HTTPTimeout) },
 		},
 		{
-			name:   "road",
-			source: "road",
+			name:   sourceRoad,
+			source: sourceRoad,
 			cfg:    cfg.Sources.Road,
 			make:   func() extractor.Extractor { return road.New(cfg.Sources.HTTPTimeout, cfg.Sources.Road.Endpoint) },
 		},
@@ -110,12 +123,14 @@ func buildPipelines(ctx context.Context, cfg *config.Config, l *logger.Logger) (
 	for _, s := range specs {
 		if !s.cfg.Enabled {
 			l.Info("skipping disabled source: %s", s.name)
+
 			continue
 		}
 
 		ld, err := buildLoader(ctx, cfg, s.source, s.cfg.Topic, &closers)
 		if err != nil {
 			cleanup()
+
 			return nil, nil, fmt.Errorf("build %s loader: %w", s.name, err)
 		}
 
@@ -145,12 +160,14 @@ func buildLoader(ctx context.Context, cfg *config.Config, source, topic string, 
 		if err != nil {
 			return nil, fmt.Errorf("kafka producer: %w", err)
 		}
+
 		*closers = append(*closers, func() { kp.Close() })
 
 		prod, err := kafkaproducer.New(kp, topic)
 		if err != nil {
 			return nil, fmt.Errorf("kafka producer wrapper: %w", err)
 		}
+
 		children = append(children, kfkloader.New(prod))
 	}
 
@@ -165,15 +182,18 @@ func buildLoader(ctx context.Context, cfg *config.Config, source, topic string, 
 		if err != nil {
 			return nil, fmt.Errorf("clickhouse loader: %w", err)
 		}
+
 		*closers = append(*closers, func() { _ = ch.Close() })
 		children = append(children, ch)
 	}
 
 	if len(children) == 0 {
-		return nil, fmt.Errorf("no loaders enabled for source %s — enable kafka or clickhouse", source)
+		return nil, fmt.Errorf("%w: %s", domain.ErrNoLoaders, source)
 	}
+
 	if len(children) == 1 {
 		return children[0], nil
 	}
+
 	return multiloader.New(children...), nil
 }

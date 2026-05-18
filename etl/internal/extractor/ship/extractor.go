@@ -12,7 +12,11 @@ import (
 	"github.com/rauan06/realtime-map/etl/internal/domain"
 )
 
-const apiURL = "https://meri.digitraffic.fi/api/ais/v1/locations"
+const (
+	apiURL    = "https://meri.digitraffic.fi/api/ais/v1/locations"
+	minCoords = 2
+	msPerSec  = 1000
+)
 
 type Extractor struct {
 	client *http.Client
@@ -62,7 +66,7 @@ func (e *Extractor) Extract(ctx context.Context) ([]domain.RawRecord, error) {
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("ship extract: status %d", resp.StatusCode)
+		return nil, fmt.Errorf("ship extract: %w: %d", domain.ErrUpstreamStatus, resp.StatusCode)
 	}
 
 	body, err := io.ReadAll(resp.Body)
@@ -77,7 +81,7 @@ func (e *Extractor) Extract(ctx context.Context) ([]domain.RawRecord, error) {
 
 	records := make([]domain.RawRecord, 0, len(data.Features))
 	for _, f := range data.Features {
-		if len(f.Geometry.Coordinates) < 2 {
+		if len(f.Geometry.Coordinates) < minCoords {
 			continue
 		}
 
@@ -85,7 +89,7 @@ func (e *Extractor) Extract(ctx context.Context) ([]domain.RawRecord, error) {
 		lon := f.Geometry.Coordinates[0]
 		lat := f.Geometry.Coordinates[1]
 
-		ts := time.Unix(f.Properties.Timestamp/1000, 0)
+		ts := time.Unix(f.Properties.Timestamp/msPerSec, 0)
 		if f.Properties.Timestamp == 0 {
 			ts = time.Now()
 		}
@@ -93,13 +97,13 @@ func (e *Extractor) Extract(ctx context.Context) ([]domain.RawRecord, error) {
 		records = append(records, domain.RawRecord{
 			SourceID:  mmsi,
 			Timestamp: ts,
-			Fields: map[string]interface{}{
-				"mmsi":    mmsi,
-				"lat":     lat,
-				"lng":     lon,
-				"sog":     f.Properties.SOG,
-				"cog":     f.Properties.COG,
-				"heading": f.Properties.Heading,
+			Fields: map[string]any{
+				"mmsi":     mmsi,
+				"lat":      lat,
+				"lng":      lon,
+				"sog":      f.Properties.SOG,
+				"cog":      f.Properties.COG,
+				"heading":  f.Properties.Heading,
 				"nav_stat": f.Properties.NavStat,
 			},
 		})

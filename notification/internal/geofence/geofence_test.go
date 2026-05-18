@@ -2,7 +2,11 @@ package geofence
 
 import "testing"
 
+const anyLayerFence = "any"
+
 func TestCircle_ContainsRespectsRadius(t *testing.T) {
+	t.Parallel()
+
 	c := Circle{Name: "astana", Lat: 51.1694, Lng: 71.4491, RadiusM: 5000}
 
 	// Center: definitely inside.
@@ -20,6 +24,8 @@ func TestCircle_ContainsRespectsRadius(t *testing.T) {
 }
 
 func TestPolygon_RayCastingMatchesGeometry(t *testing.T) {
+	t.Parallel()
+
 	// Unit square covering (lat 0-1, lng 0-1).
 	p := Polygon{Name: "unit", Vertices: [][2]float64{
 		{0, 0}, {0, 1}, {1, 1}, {1, 0},
@@ -45,6 +51,8 @@ func TestPolygon_RayCastingMatchesGeometry(t *testing.T) {
 }
 
 func TestPolygon_RejectsDegenerate(t *testing.T) {
+	t.Parallel()
+
 	p := Polygon{Vertices: [][2]float64{{0, 0}, {1, 1}}}
 	if p.Contains(0.5, 0.5) {
 		t.Errorf("2-vertex polygon should never contain a point")
@@ -52,17 +60,20 @@ func TestPolygon_RejectsDegenerate(t *testing.T) {
 }
 
 func TestRegistry_FiltersByLayer(t *testing.T) {
+	t.Parallel()
+
 	r := NewRegistry(
 		Circle{Name: "flight-only", Layers: []string{"flight"}, Lat: 0, Lng: 0, RadiusM: 1000000},
-		Circle{Name: "any", Lat: 0, Lng: 0, RadiusM: 1000000},
+		Circle{Name: anyLayerFence, Lat: 0, Lng: 0, RadiusM: 1000000},
 	)
 
 	m := r.Match("flight", 0, 0)
 	if len(m) != 2 {
 		t.Errorf("flight should match both fences, got %v", m)
 	}
+
 	m = r.Match("ship", 0, 0)
-	if len(m) != 1 || m[0] != "any" {
+	if len(m) != 1 || m[0] != anyLayerFence {
 		t.Errorf("ship should only match unfiltered fence, got %v", m)
 	}
 }

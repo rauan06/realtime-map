@@ -21,10 +21,13 @@ type Hub struct {
 	bufLen int
 }
 
+const defaultSubBuffer = 64
+
 func New(subBufferLen int) *Hub {
 	if subBufferLen <= 0 {
-		subBufferLen = 64
+		subBufferLen = defaultSubBuffer
 	}
+
 	return &Hub{
 		subs:   make(map[chan Message]struct{}),
 		bufLen: subBufferLen,
@@ -33,9 +36,11 @@ func New(subBufferLen int) *Hub {
 
 func (h *Hub) Subscribe() chan Message {
 	ch := make(chan Message, h.bufLen)
+
 	h.mu.Lock()
 	h.subs[ch] = struct{}{}
 	h.mu.Unlock()
+
 	return ch
 }
 
@@ -51,6 +56,7 @@ func (h *Hub) Unsubscribe(ch chan Message) {
 func (h *Hub) Publish(m Message) {
 	h.mu.RLock()
 	defer h.mu.RUnlock()
+
 	for ch := range h.subs {
 		select {
 		case ch <- m:
@@ -64,5 +70,6 @@ func (h *Hub) Publish(m Message) {
 func (h *Hub) SubscriberCount() int {
 	h.mu.RLock()
 	defer h.mu.RUnlock()
+
 	return len(h.subs)
 }

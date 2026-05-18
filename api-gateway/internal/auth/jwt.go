@@ -18,13 +18,21 @@ import (
 )
 
 const (
-	Issuer        = "map-api-gateway"
-	DefaultTTL    = 24 * time.Hour
-	bearerPrefix  = "Bearer "
+	Issuer       = "map-api-gateway"
+	DefaultTTL   = 24 * time.Hour
+	bearerPrefix = "Bearer "
+
 	contextKeyDID ctxKey = "device_id"
 )
 
 type ctxKey string
+
+var (
+	errInvalidToken   = errors.New("invalid token")
+	errIssuerMismatch = errors.New("issuer mismatch")
+	errMissingSubject = errors.New("missing subject (device_id)")
+	errUnexpectedAlg  = errors.New("unexpected signing method")
+)
 
 // Issuer signs new tokens for a device.
 type Issue struct {
@@ -36,6 +44,7 @@ func NewIssue(secret string, ttl time.Duration) *Issue {
 	if ttl <= 0 {
 		ttl = DefaultTTL
 	}
+
 	return &Issue{Secret: []byte(secret), TTL: ttl}
 }
 
@@ -47,35 +56,43 @@ func (i *Issue) Sign(deviceID string) (string, time.Time, error) {
 		ExpiresAt: jwt.NewNumericDate(exp),
 		IssuedAt:  jwt.NewNumericDate(time.Now()),
 	}
+
 	tok := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+
 	s, err := tok.SignedString(i.Secret)
 	if err != nil {
 		return "", time.Time{}, fmt.Errorf("sign: %w", err)
 	}
+
 	return s, exp, nil
 }
 
 // Verify parses + validates a token string, returning the device id (subject).
 func Verify(secret []byte, token string) (string, error) {
-	parsed, err := jwt.ParseWithClaims(token, &jwt.RegisteredClaims{}, func(t *jwt.Token) (interface{}, error) {
+	parsed, err := jwt.ParseWithClaims(token, &jwt.RegisteredClaims{}, func(t *jwt.Token) (any, error) {
 		if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, fmt.Errorf("unexpected signing method: %v", t.Header["alg"])
+			return nil, fmt.Errorf("%w: %v", errUnexpectedAlg, t.Header["alg"])
 		}
+
 		return secret, nil
 	})
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("parse jwt: %w", err)
 	}
+
 	claims, ok := parsed.Claims.(*jwt.RegisteredClaims)
 	if !ok || !parsed.Valid {
-		return "", errors.New("invalid token")
+		return "", errInvalidToken
 	}
+
 	if claims.Issuer != Issuer {
-		return "", errors.New("issuer mismatch")
+		return "", errIssuerMismatch
 	}
+
 	if claims.Subject == "" {
-		return "", errors.New("missing subject (device_id)")
+		return "", errMissingSubject
 	}
+
 	return claims.Subject, nil
 }
 
@@ -90,17 +107,22 @@ func Middleware(secret []byte) func(http.Handler) http.Handler {
 		if len(secret) == 0 {
 			return next
 		}
+
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			tok := bearerFromRequest(r)
 			if tok == "" {
 				http.Error(w, `{"error":"missing bearer token"}`, http.StatusUnauthorized)
+
 				return
 			}
+
 			deviceID, err := Verify(secret, tok)
 			if err != nil {
 				http.Error(w, `{"error":"invalid token"}`, http.StatusUnauthorized)
+
 				return
 			}
+
 			ctx := context.WithValue(r.Context(), contextKeyDID, deviceID)
 			next.ServeHTTP(w, r.WithContext(ctx))
 		})
@@ -111,15 +133,18 @@ func bearerFromRequest(r *http.Request) string {
 	if h := r.Header.Get("Authorization"); strings.HasPrefix(h, bearerPrefix) {
 		return strings.TrimPrefix(h, bearerPrefix)
 	}
+
 	// Fallback: ?token= query param so browser WebSocket clients can authenticate
 	// without sending custom headers.
 	if v := r.URL.Query().Get("token"); v != "" {
 		return v
 	}
+
 	return ""
 }
 
 func DeviceIDFromContext(ctx context.Context) (string, bool) {
 	v, ok := ctx.Value(contextKeyDID).(string)
+
 	return v, ok
 }

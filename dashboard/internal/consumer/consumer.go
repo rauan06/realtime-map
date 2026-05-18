@@ -3,6 +3,7 @@ package consumer
 import (
 	"context"
 	"errors"
+	"fmt"
 	"time"
 
 	"github.com/confluentinc/confluent-kafka-go/v2/kafka"
@@ -10,6 +11,8 @@ import (
 	"github.com/rauan06/realtime-map/dashboard/internal/hub"
 	"github.com/rauan06/realtime-map/go-commons/pkg/logger"
 )
+
+const readTimeout = time.Second
 
 // MultiTopic subscribes to every topic in topics and republishes each Kafka
 // message to the hub tagged with the topic-derived layer name.
@@ -26,7 +29,7 @@ func New(c *kafka.Consumer, topics []string, h *hub.Hub, l logger.Interface) *Mu
 
 func (m *MultiTopic) Run(ctx context.Context) error {
 	if err := m.consumer.SubscribeTopics(m.topics, nil); err != nil {
-		return err
+		return fmt.Errorf("dashboard consumer subscribe: %w", err)
 	}
 	defer m.consumer.Close()
 
@@ -35,10 +38,11 @@ func (m *MultiTopic) Run(ctx context.Context) error {
 		case <-ctx.Done():
 			return nil
 		default:
-			msg, err := m.consumer.ReadMessage(time.Second)
+			msg, err := m.consumer.ReadMessage(readTimeout)
 			if err == nil {
 				layer := topicToLayer(*msg.TopicPartition.Topic)
 				m.hub.Publish(hub.Message{Layer: layer, Payload: msg.Value})
+
 				continue
 			}
 

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"slices"
 )
 
 // Registry holds the set of geofences the notifier checks against.
@@ -24,17 +25,22 @@ func LoadFromFile(path string) (*Registry, error) {
 	if err != nil {
 		return nil, fmt.Errorf("read geofence file %s: %w", path, err)
 	}
+
 	var ff fenceFile
 	if err := json.Unmarshal(body, &ff); err != nil {
 		return nil, fmt.Errorf("parse geofence file: %w", err)
 	}
+
 	r := &Registry{}
+
 	for _, c := range ff.Circles {
 		r.fences = append(r.fences, c)
 	}
+
 	for _, p := range ff.Polygons {
 		r.fences = append(r.fences, p)
 	}
+
 	return r, nil
 }
 
@@ -46,25 +52,19 @@ func NewRegistry(fences ...Fence) *Registry {
 // A fence with no layers configured matches every layer.
 func (r *Registry) Match(layer string, lat, lng float64) []string {
 	var matches []string
+
 	for _, f := range r.fences {
 		layers := f.GetLayers()
-		if len(layers) > 0 && !contains(layers, layer) {
+		if len(layers) > 0 && !slices.Contains(layers, layer) {
 			continue
 		}
+
 		if f.Contains(lat, lng) {
 			matches = append(matches, f.GetName())
 		}
 	}
+
 	return matches
 }
 
 func (r *Registry) Len() int { return len(r.fences) }
-
-func contains(haystack []string, needle string) bool {
-	for _, s := range haystack {
-		if s == needle {
-			return true
-		}
-	}
-	return false
-}

@@ -40,11 +40,13 @@ func (uc *Geofencing) ProcessMessage(msg *kafka.Message) {
 	if msg == nil || msg.TopicPartition.Topic == nil {
 		return
 	}
+
 	layer := topicToLayer(*msg.TopicPartition.Topic)
 
-	var payload map[string]interface{}
+	var payload map[string]any
 	if err := json.Unmarshal(msg.Value, &payload); err != nil {
 		uc.l.Error("notification: unmarshal: %v", err)
+
 		return
 	}
 
@@ -62,14 +64,17 @@ func (uc *Geofencing) ProcessMessage(msg *kafka.Message) {
 	key := layer + ":" + sourceID
 
 	uc.mu.Lock()
+
 	prev := uc.state[key]
 	if prev == nil {
 		prev = map[string]struct{}{}
 	}
+
 	cur := make(map[string]struct{}, len(matches))
 	for _, m := range matches {
 		cur[m] = struct{}{}
 	}
+
 	uc.state[key] = cur
 	uc.mu.Unlock()
 
@@ -79,15 +84,18 @@ func (uc *Geofencing) ProcessMessage(msg *kafka.Message) {
 		if _, was := prev[name]; was {
 			continue
 		}
+
 		uc.notifier.Dispatch(context.Background(), notifier.Alert{
 			Event: "enter", Layer: layer, SourceID: sourceID, Fence: name,
 			Lat: lat, Lng: lng, At: now,
 		})
 	}
+
 	for name := range prev {
 		if _, still := cur[name]; still {
 			continue
 		}
+
 		uc.notifier.Dispatch(context.Background(), notifier.Alert{
 			Event: "exit", Layer: layer, SourceID: sourceID, Fence: name,
 			Lat: lat, Lng: lng, At: now,
@@ -110,22 +118,25 @@ func topicToLayer(topic string) string {
 	}
 }
 
-func extractLatLng(p map[string]interface{}) (float64, float64, bool) {
+func extractLatLng(p map[string]any) (float64, float64, bool) {
 	lat, ok1 := toFloat(p["lat"])
 	if !ok1 {
 		lat, ok1 = toFloat(p["latitude"])
 	}
+
 	lng, ok2 := toFloat(p["lng"])
 	if !ok2 {
 		lng, ok2 = toFloat(p["long"])
 	}
+
 	if !ok2 {
 		lng, ok2 = toFloat(p["longitude"])
 	}
+
 	return lat, lng, ok1 && ok2
 }
 
-func extractSourceID(p map[string]interface{}, kafkaKey []byte) string {
+func extractSourceID(p map[string]any, kafkaKey []byte) string {
 	candidates := []string{"source_id", "device_id", "session_id", "icao24", "mmsi", "vehicle_id", "road_id"}
 	for _, k := range candidates {
 		if v, ok := p[k]; ok {
@@ -134,13 +145,15 @@ func extractSourceID(p map[string]interface{}, kafkaKey []byte) string {
 			}
 		}
 	}
+
 	if len(kafkaKey) > 0 {
 		return string(kafkaKey)
 	}
+
 	return ""
 }
 
-func toFloat(v interface{}) (float64, bool) {
+func toFloat(v any) (float64, bool) {
 	switch n := v.(type) {
 	case float64:
 		return n, true
@@ -152,6 +165,7 @@ func toFloat(v interface{}) (float64, bool) {
 		return float64(n), true
 	case json.Number:
 		f, err := n.Float64()
+
 		return f, err == nil
 	default:
 		return 0, false

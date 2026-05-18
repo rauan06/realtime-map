@@ -3,12 +3,15 @@ package consumer
 import (
 	"context"
 	"errors"
+	"fmt"
 	"time"
 
 	"github.com/confluentinc/confluent-kafka-go/v2/kafka"
 
 	"github.com/rauan06/realtime-map/go-commons/pkg/logger"
 )
+
+const readTimeout = time.Second
 
 // Processor matches the shape go-commons consumer.uc expects, but kept local
 // so the notification service can drive multiple topics from one consumer.
@@ -29,7 +32,7 @@ func New(c *kafka.Consumer, topics []string, p Processor, l logger.Interface) *M
 
 func (m *MultiTopic) Run(ctx context.Context) error {
 	if err := m.consumer.SubscribeTopics(m.topics, nil); err != nil {
-		return err
+		return fmt.Errorf("notification consumer subscribe: %w", err)
 	}
 	defer m.consumer.Close()
 
@@ -38,11 +41,13 @@ func (m *MultiTopic) Run(ctx context.Context) error {
 		case <-ctx.Done():
 			return nil
 		default:
-			msg, err := m.consumer.ReadMessage(time.Second)
+			msg, err := m.consumer.ReadMessage(readTimeout)
 			if err == nil {
 				m.proc.ProcessMessage(msg)
+
 				continue
 			}
+
 			var kafkaErr kafka.Error
 			if errors.As(err, &kafkaErr) && !kafkaErr.IsTimeout() {
 				m.l.Error("notification consumer error: %v", err)

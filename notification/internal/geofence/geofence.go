@@ -5,6 +5,13 @@ package geofence
 
 import "math"
 
+const (
+	earthRadiusM    = 6371000.0
+	degToRad        = math.Pi / 180.0
+	minPolygonSides = 3
+	half            = 2.0
+)
+
 // Fence is anything that can answer "does this lat/lng sit inside me?". Named
 // fences are keyed by Name in the alert state map, so two fences sharing a name
 // would collide — keep names unique in the config.
@@ -25,8 +32,8 @@ type Circle struct {
 	AlertType string   `json:"alert_type,omitempty"`
 }
 
-func (c Circle) GetName() string      { return c.Name }
-func (c Circle) GetLayers() []string  { return c.Layers }
+func (c Circle) GetName() string     { return c.Name }
+func (c Circle) GetLayers() []string { return c.Layers }
 func (c Circle) Contains(lat, lng float64) bool {
 	return haversineMeters(c.Lat, c.Lng, lat, lng) <= c.RadiusM
 }
@@ -46,32 +53,36 @@ func (p Polygon) GetLayers() []string { return p.Layers }
 
 func (p Polygon) Contains(lat, lng float64) bool {
 	n := len(p.Vertices)
-	if n < 3 {
+	if n < minPolygonSides {
 		return false
 	}
+
 	inside := false
 	j := n - 1
-	for i := 0; i < n; i++ {
+
+	for i := range n {
 		yi, xi := p.Vertices[i][0], p.Vertices[i][1]
 		yj, xj := p.Vertices[j][0], p.Vertices[j][1]
 		intersect := ((yi > lat) != (yj > lat)) &&
 			(lng < (xj-xi)*(lat-yi)/(yj-yi)+xi)
+
 		if intersect {
 			inside = !inside
 		}
+
 		j = i
 	}
+
 	return inside
 }
 
 // haversineMeters returns the great-circle distance between two points in
 // meters using the standard mean Earth radius (6371 km).
 func haversineMeters(lat1, lng1, lat2, lng2 float64) float64 {
-	const earthRadiusM = 6371000.0
-	rad := math.Pi / 180.0
-	dLat := (lat2 - lat1) * rad
-	dLng := (lng2 - lng1) * rad
-	a := math.Sin(dLat/2)*math.Sin(dLat/2) +
-		math.Cos(lat1*rad)*math.Cos(lat2*rad)*math.Sin(dLng/2)*math.Sin(dLng/2)
-	return 2 * earthRadiusM * math.Asin(math.Sqrt(a))
+	dLat := (lat2 - lat1) * degToRad
+	dLng := (lng2 - lng1) * degToRad
+	a := math.Sin(dLat/half)*math.Sin(dLat/half) +
+		math.Cos(lat1*degToRad)*math.Cos(lat2*degToRad)*math.Sin(dLng/half)*math.Sin(dLng/half)
+
+	return half * earthRadiusM * math.Asin(math.Sqrt(a))
 }

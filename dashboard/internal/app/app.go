@@ -2,9 +2,7 @@ package app
 
 import (
 	"context"
-	"embed"
 	"errors"
-	"fmt"
 	"io/fs"
 	"net/http"
 	"os"
@@ -21,28 +19,20 @@ import (
 	"github.com/rauan06/realtime-map/go-commons/pkg/logger"
 )
 
-const readTimeout = 5 * time.Second
+const (
+	readTimeout     = 5 * time.Second
+	shutdownTimeout = 5 * time.Second
+	hubSubBuffer    = 128
+)
 
-// Templates is the embedded UI bundle. Populated by the cmd/app build via
-// SetTemplates so the embed root stays in the binary's package.
-var Templates fs.FS
-
-func SetTemplates(efs embed.FS, subdir string) {
-	sub, err := fs.Sub(efs, subdir)
-	if err != nil {
-		panic(fmt.Sprintf("dashboard: bad template embed root %q: %v", subdir, err))
-	}
-	Templates = sub
-}
-
-func Run(cfg *config.Config) {
+// Run starts the dashboard service: kafka consumers fanning into a hub,
+// and an HTTP server serving the embedded UI + /ws. The templates filesystem
+// is passed in from main so the embed.FS lives next to the binary entry
+// point and we don't need a package-level global.
+func Run(cfg *config.Config, templates fs.FS) {
 	l := logger.New(cfg.Log.Level)
 
-	if Templates == nil {
-		l.Fatal("dashboard: templates not set — call app.SetTemplates from main")
-	}
-
-	h := hub.New(128)
+	h := hub.New(hubSubBuffer)
 
 	c, err := kafka.NewConsumer(&kafka.ConfigMap{
 		"bootstrap.servers": cfg.Kafka.BootstrapServers,
@@ -57,6 +47,7 @@ func Run(cfg *config.Config) {
 	defer cancel()
 
 	mt := consumer.New(c, cfg.Kafka.Topics, h, l)
+
 	go func() {
 		if err := mt.Run(ctx); err != nil {
 			l.Error("consumer exited: %v", err)
@@ -64,7 +55,7 @@ func Run(cfg *config.Config) {
 	}()
 
 	mux := http.NewServeMux()
-	controller.Register(mux, h, Templates, l)
+	controller.Register(mux, h, templates, l)
 
 	srv := &http.Server{
 		Addr:              ":" + cfg.HTTP.Port,
@@ -74,6 +65,7 @@ func Run(cfg *config.Config) {
 
 	go func() {
 		l.Info("dashboard listening on :%s (topics=%v)", cfg.HTTP.Port, cfg.Kafka.Topics)
+
 		if err := srv.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 			l.Error("http server: %v", err)
 			cancel()
@@ -89,10 +81,12 @@ func Run(cfg *config.Config) {
 	case <-ctx.Done():
 	}
 
-	shutdownCtx, shutdownCancel := context.WithTimeout(context.Background(), 5*time.Second)
+	shutdownCtx, shutdownCancel := context.WithTimeout(context.Background(), shutdownTimeout)
 	defer shutdownCancel()
+
 	if err := srv.Shutdown(shutdownCtx); err != nil {
 		l.Error("dashboard shutdown: %v", err)
 	}
+
 	cancel()
 }

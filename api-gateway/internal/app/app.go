@@ -42,10 +42,12 @@ func Run(cfg *config.Config) {
 	// endpoint require a valid bearer token. /auth/login is registered before
 	// the wrap so it stays publicly reachable.
 	var handler http.Handler = mux
+
 	if cfg.Auth.Enabled {
 		if cfg.Auth.JWTSecret == "" {
 			l.Fatal("AUTH_ENABLED=true but AUTH_JWT_SECRET is empty")
 		}
+
 		issuer := auth.NewIssue(cfg.Auth.JWTSecret, cfg.Auth.TokenTTL)
 
 		publicMux := http.NewServeMux()

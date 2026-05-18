@@ -55,7 +55,7 @@ func (e *Extractor) Extract(ctx context.Context) ([]domain.RawRecord, error) {
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("transport extract: status %d", resp.StatusCode)
+		return nil, fmt.Errorf("transport extract: %w: %d", domain.ErrUpstreamStatus, resp.StatusCode)
 	}
 
 	body, err := io.ReadAll(resp.Body)
@@ -74,12 +74,12 @@ func (e *Extractor) Extract(ctx context.Context) ([]domain.RawRecord, error) {
 			continue
 		}
 
-		ts, _ := time.Parse(time.RFC3339, v.Attributes.UpdatedAt)
-		if ts.IsZero() {
+		ts, err := time.Parse(time.RFC3339, v.Attributes.UpdatedAt)
+		if err != nil || ts.IsZero() {
 			ts = time.Now()
 		}
 
-		fields := map[string]interface{}{
+		fields := map[string]any{
 			"vehicle_id": v.ID,
 			"label":      v.Attributes.Label,
 			"lat":        *v.Attributes.Latitude,
@@ -90,6 +90,7 @@ func (e *Extractor) Extract(ctx context.Context) ([]domain.RawRecord, error) {
 		if v.Attributes.Bearing != nil {
 			fields["bearing"] = *v.Attributes.Bearing
 		}
+
 		if v.Attributes.Speed != nil {
 			fields["speed"] = *v.Attributes.Speed
 		}

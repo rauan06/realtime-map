@@ -25,6 +25,7 @@ func New(timeout time.Duration, endpoint string) *Extractor {
 	if endpoint == "" {
 		endpoint = defaultAPIURL
 	}
+
 	return &Extractor{
 		client: &http.Client{Timeout: timeout},
 		url:    endpoint,
@@ -37,18 +38,18 @@ type apiResponse struct {
 }
 
 type apiPredition struct {
-	ID              int64       `json:"id"`
-	RoadID          string      `json:"road_id"`
-	RoadName        string      `json:"road_name"`
-	Segment         apiSegment  `json:"segment"`
-	RestrictionType string      `json:"restriction_type"`
-	Severity        string      `json:"severity"`
-	Reason          []string    `json:"reason"`
-	Confidence      float64     `json:"confidence"`
-	Weather         apiWeather  `json:"weather_context"`
-	PredictedStart  string      `json:"predicted_start"`
-	PredictedEnd    string      `json:"predicted_end"`
-	PredictedAt     string      `json:"predicted_at"`
+	ID              int64      `json:"id"`
+	RoadID          string     `json:"road_id"`
+	RoadName        string     `json:"road_name"`
+	Segment         apiSegment `json:"segment"`
+	RestrictionType string     `json:"restriction_type"`
+	Severity        string     `json:"severity"`
+	Reason          []string   `json:"reason"`
+	Confidence      float64    `json:"confidence"`
+	Weather         apiWeather `json:"weather_context"`
+	PredictedStart  string     `json:"predicted_start"`
+	PredictedEnd    string     `json:"predicted_end"`
+	PredictedAt     string     `json:"predicted_at"`
 }
 
 type apiSegment struct {
@@ -68,6 +69,7 @@ type apiWeather struct {
 	DewpointC       float64 `json:"dewpoint_c"`
 }
 
+// Extract polls the road-snowdrift-forecast API and returns one RawRecord per prediction.
 func (e *Extractor) Extract(ctx context.Context) ([]domain.RawRecord, error) {
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, e.url, nil)
 	if err != nil {
@@ -81,7 +83,7 @@ func (e *Extractor) Extract(ctx context.Context) ([]domain.RawRecord, error) {
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("road extract: status %d", resp.StatusCode)
+		return nil, fmt.Errorf("road extract: %w: %d", domain.ErrUpstreamStatus, resp.StatusCode)
 	}
 
 	body, err := io.ReadAll(resp.Body)
@@ -105,7 +107,7 @@ func (e *Extractor) Extract(ctx context.Context) ([]domain.RawRecord, error) {
 		records = append(records, domain.RawRecord{
 			SourceID:  p.RoadID,
 			Timestamp: ts,
-			Fields: map[string]interface{}{
+			Fields: map[string]any{
 				"prediction_id":    p.ID,
 				"road_id":          p.RoadID,
 				"road_name":        p.RoadName,
@@ -126,18 +128,26 @@ func (e *Extractor) Extract(ctx context.Context) ([]domain.RawRecord, error) {
 	return records, nil
 }
 
+const (
+	minWKTPair    = 2
+	degreesPerRad = 180.0
+)
+
 // parseMultiLineString converts a Web-Mercator MULTILINESTRING wkt as emitted
 // by road-snowdrift-forecast into a list of [lng, lat] WGS84 pairs (flattened,
 // ignoring sub-line breaks — the dashboard renders them as a single polyline
-// per road which is correct for the highway segments we visualise).
+// per road which is correct for the highway segments we visualize).
 func parseMultiLineString(wkt string) [][2]float64 {
 	const prefix = "MULTILINESTRING"
+
 	wkt = strings.TrimSpace(wkt)
 	if !strings.HasPrefix(strings.ToUpper(wkt), prefix) {
 		return nil
 	}
+
 	wkt = wkt[len(prefix):]
 	wkt = strings.TrimSpace(wkt)
+
 	if strings.EqualFold(wkt, "EMPTY") {
 		return nil
 	}
@@ -146,22 +156,30 @@ func parseMultiLineString(wkt string) [][2]float64 {
 	wkt = strings.TrimSuffix(wkt, ")")
 
 	var out [][2]float64
+
 	for _, group := range strings.Split(wkt, "),(") {
 		group = strings.Trim(group, "() ")
+
 		for _, pair := range strings.Split(group, ",") {
 			parts := strings.Fields(strings.TrimSpace(pair))
-			if len(parts) < 2 {
+
+			if len(parts) < minWKTPair {
 				continue
 			}
+
 			x, err1 := strconv.ParseFloat(parts[0], 64)
 			y, err2 := strconv.ParseFloat(parts[1], 64)
+
 			if err1 != nil || err2 != nil {
 				continue
 			}
+
 			lng, lat := webMercatorToWGS84(x, y)
+
 			out = append(out, [2]float64{lng, lat})
 		}
 	}
+
 	return out
 }
 
@@ -169,8 +187,10 @@ func parseMultiLineString(wkt string) [][2]float64 {
 // payload (EPSG:3857 → EPSG:4326).
 func webMercatorToWGS84(x, y float64) (lng, lat float64) {
 	const r = 6378137.0
-	lng = (x / r) * 180.0 / math.Pi
-	lat = (math.Atan(math.Exp(y/r))*2 - math.Pi/2) * 180.0 / math.Pi
+
+	lng = (x / r) * degreesPerRad / math.Pi
+	lat = (math.Atan(math.Exp(y/r))*2 - math.Pi/2) * degreesPerRad / math.Pi
+
 	return lng, lat
 }
 
@@ -178,5 +198,6 @@ func parseTime(s string) time.Time {
 	if t, err := time.Parse(time.RFC3339, s); err == nil {
 		return t
 	}
+
 	return time.Now().UTC()
 }

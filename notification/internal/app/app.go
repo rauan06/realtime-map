@@ -23,6 +23,7 @@ func Run(cfg *config.Config) {
 	if err != nil {
 		l.Fatal(err)
 	}
+
 	l.Info("loaded %d geofences from %s", reg.Len(), cfg.Geofence.ConfigPath)
 
 	n := notifier.New(cfg.Notifier.WebhookURL, l)
