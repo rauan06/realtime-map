@@ -86,6 +86,20 @@ services:
       go-commons:
         condition: service_completed_successfully
 
+  anomaly:
+    build:
+      context: ./anomaly
+      dockerfile: Dockerfile
+    image: map-anomaly:latest
+    env_file:
+      - ./anomaly/.env
+    container_name: map-anomaly
+    depends_on:
+      broker:
+        condition: service_healthy
+      go-commons:
+        condition: service_completed_successfully
+
   broker:
     image: apache/kafka:latest
     container_name: broker

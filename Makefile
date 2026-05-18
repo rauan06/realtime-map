@@ -7,7 +7,7 @@
 COMMONS_DIR = go-commons
 
 # Every Go module in the repo. Add new services here.
-SERVICES = analytics api-gateway producer seeder $(COMMONS_DIR) etl dashboard notification
+SERVICES = analytics api-gateway producer seeder $(COMMONS_DIR) etl dashboard notification anomaly
 
 # Protoc plugins
 PROTOC_GEN_GO      = $(shell go env GOPATH)/bin/protoc-gen-go

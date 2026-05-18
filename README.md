@@ -47,7 +47,8 @@ The architecture leverages microservices pattern with separate components for da
 ##  Features
 
 - **Real-time Location Tracking**: Process GPS coordinates from multiple devices simultaneously
-- **Multi-Source ETL**: Pluggable extractor/transformer/loader pipeline that ingests flights (OpenSky), ships (Digitraffic AIS), public transport (MBTA) and ML-predicted road closures (road-snowdrift-forecast)
+- **Multi-Source ETL**: Pluggable extractor/transformer/loader pipeline that ingests flights (OpenSky), ships (Digitraffic AIS), Kazakhstan public transport (synthesized bus fleet) and ML-predicted road closures (road-snowdrift-forecast)
+- **Streaming ML Anomaly Detection**: Isolation Forest (Liu et al. 2008) implemented in Go scoring every flight/ship observation; alerts go to a dedicated Kafka topic and render on the map as red rings with score + driver-feature reasons
 - **Scalable Architecture**: Microservices-based design with horizontal scaling capabilities
 - **High-Performance Data Processing**: Kafka-based streaming for handling high-throughput location data
 - **Real-time Visualization**: Dedicated dashboard service with WebSocket-powered live map updates using Leaflet.js, with separate layers for flights, ships, transport, roads and OBU
@@ -94,6 +95,7 @@ Clients connect:
 - **ETL Service**: Polls four external feeds (flight/ship/transport/road) on independent cadences, runs them through a shared transformer, and fans-out the results to Kafka **and** ClickHouse via a multi-loader
 - **Dashboard Service**: Standalone Go service that subscribes to every ETL + OBU Kafka topic, fans out updates to a WebSocket hub, and serves the Leaflet map UI on port 8090
 - **Notification Service**: Geofencing alerter — consumes every position feed from Kafka, matches against configured circles + polygons, and emits enter/exit alerts to logs + webhook
+- **Anomaly Service**: Streaming ML — subscribes to `etl_flights` + `etl_ships`, maintains per-layer rolling buffers, retrains an in-process Isolation Forest every 100 observations after a warm-up window, and publishes scored anomalies to the `anomalies` topic
 - **Go Commons**: Shared protocol buffers, database utilities, and common libraries
 
 ### Data Flow
@@ -320,7 +322,7 @@ Real-time location updates via WebSocket:
 - [X] **`Task 3`**: <strike>Basic WebSocket implementation and HTML templates.</strike>
 - [X] **`Task 4`**: <strike>Integration with Leaflet.js for map visualization.</strike>
 - [X] **`Task 5`**: <strike>Analytics service with PostgreSQL and PostGIS for historical data storage.</strike>
-- [X] **`Task 6`**: <strike>ETL service with ClickHouse storage for flight, ship, transport, and ML-predicted road closure feeds; multi-layer dashboard service.</strike>
+- [X] **`Task 6`**: <strike>ETL service with ClickHouse storage for flight, ship, Kazakhstan transport, and ML-predicted road closure feeds; multi-layer dashboard service; streaming Isolation-Forest anomaly detector.</strike>
 - [X] **`Task 7`**: <strike>Implement device authentication and authorization (HS256 JWT middleware + `/auth/login`).</strike>
 - [X] **`Task 8`**: <strike>Add geofencing and location-based alerts (circles + polygons, per-layer matching, webhook dispatch).</strike>
 - [ ] **`Task 9`**: Performance optimization and horizontal scaling.

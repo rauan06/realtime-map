@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        service: [analytics, api-gateway, producer, seeder, go-commons, etl, dashboard, notification]
+        service: [analytics, api-gateway, producer, seeder, go-commons, etl, dashboard, notification, anomaly]
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
